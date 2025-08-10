@@ -930,6 +930,17 @@ def metrics(in_dir: str = "/Users/alexanderlange/alphamind/subnet/out"):
         quorum_covered = list(qmap.values())
         quorum_pct = (sum(1 for v in quorum_covered if v >= float(os.environ.get("AM_PRICE_QUORUM", 0.33))) / float(len(quorum_covered) or 1))
         max_stale = max(stale.values()) if stale else 0.0
+        # Publish status from latest manifest if available
+        pub_status = ""
+        pub_verify = False
+        pub_epoch = 0
+        try:
+            man = json.loads((base / "published_last.json").read_text(encoding="utf-8"))
+            pub_status = str(man.get("status", ""))
+            pub_verify = bool(man.get("verify_ok", False))
+            pub_epoch = int(man.get("epoch", 0))
+        except Exception:
+            pass
         # Paused tokens
         paused = list(_load_paused(base))
         # Slashing deviations count
@@ -954,6 +965,9 @@ def metrics(in_dir: str = "/Users/alexanderlange/alphamind/subnet/out"):
         return {
             "quorum_pct": float(quorum_pct),
             "max_price_staleness_sec": float(max_stale),
+            "publish_last_status": pub_status,
+            "publish_verify_ok": bool(pub_verify),
+            "publish_last_epoch": int(pub_epoch),
             "paused_tokens": paused,
             "slashing_deviation_events": int(dev),
             "miners_suspended": int(miners_suspended),
