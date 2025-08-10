@@ -3,7 +3,10 @@ from __future__ import annotations
 
 import os
 from pathlib import Path
-from fastapi import FastAPI, HTTPException, Response
+from fastapi import FastAPI, HTTPException, Response, Request
+from fastapi.middleware.cors import CORSMiddleware
+from starlette.middleware.base import BaseHTTPMiddleware
+import json
 import json as _json
 import hashlib
 from pydantic import BaseModel
@@ -11,6 +14,9 @@ from pydantic import BaseModel
 from .service import aggregate_and_emit
 from ..sim.vault import load_vault, save_vault, apply_mint_with_tao, apply_redeem_in_kind, apply_mint_in_kind, apply_management_fee
 from pathlib import Path
+from .state import pause as _pause, resume as _resume, is_paused as _is_paused, load_paused as _load_paused
+from ..sim.vault import load_fees_ledger, reinvest_fees_to_alpha
+from .publish import publish_weightset
 
 
 class AggregateReq(BaseModel):
@@ -20,6 +26,87 @@ class AggregateReq(BaseModel):
 
 
 app = FastAPI(title="TAO20 Validator API", version="0.0.1")
+
+
+# CORS allowlist via AM_CORS_ORIGINS (comma-separated)
+_cors_env = os.environ.get("AM_CORS_ORIGINS", "").strip()
+_cors_origins = [o.strip() for o in _cors_env.split(",") if o.strip()]
+if _cors_origins:
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=_cors_origins,
+        allow_credentials=True,
+        allow_methods=["*"],
+        allow_headers=["*"]
+    )
+
+
+class _CorsAllowlistMiddleware(BaseHTTPMiddleware):
+    async def dispatch(self, request, call_next):
+        try:
+            origin = request.headers.get("origin") or request.headers.get("Origin")
+            allow_env = os.environ.get("AM_CORS_ORIGINS", "").strip()
+            allowed = [o.strip() for o in allow_env.split(",") if o.strip()]
+            if origin and (not allowed or origin in allowed):
+                if request.method.upper() == "OPTIONS":
+                    # Preflight
+                    resp = Response(status_code=204)
+                else:
+                    resp = await call_next(request)
+                resp.headers["access-control-allow-origin"] = origin
+                resp.headers["access-control-allow-credentials"] = "true"
+                resp.headers["access-control-allow-methods"] = "*"
+                resp.headers["access-control-allow-headers"] = request.headers.get("access-control-request-headers", "*")
+                return resp
+        except Exception:
+            pass
+        return await call_next(request)
+
+
+app.add_middleware(_CorsAllowlistMiddleware)
+
+
+class _RateLimitMiddleware(BaseHTTPMiddleware):
+    def __init__(self, app):
+        super().__init__(app)
+        self.window_sec = 60
+        try:
+            self.max_per_min = int(os.environ.get("AM_RATE_LIMIT_PER_MIN", "30"))
+        except Exception:
+            self.max_per_min = 30
+        self._buckets = {}
+
+    async def dispatch(self, request, call_next):
+        # Only rate-limit POST requests; per-IP per-path
+        if request.method.upper() == "POST":
+            try:
+                import time as _t
+                now = int(_t.time())
+                key = (request.client.host if request.client else "unknown", request.url.path)
+                bucket = self._buckets.get(key)
+                if not bucket or now - bucket["ts"] >= self.window_sec:
+                    bucket = {"ts": now, "count": 0}
+                bucket["count"] += 1
+                self._buckets[key] = bucket
+                if bucket["count"] > max(1, int(self.max_per_min)):
+                    return Response(json.dumps({"detail": "rate_limited"}), status_code=429, media_type="application/json")
+            except Exception:
+                pass
+        return await call_next(request)
+
+
+app.add_middleware(_RateLimitMiddleware)
+
+
+def _require_auth(request: Request) -> None:
+    token = os.environ.get("AM_API_TOKEN", "").strip()
+    auth = request.headers.get("Authorization", "")
+    # Safer default: require a Bearer token header even if AM_API_TOKEN is unset
+    if not auth.startswith("Bearer "):
+        raise HTTPException(status_code=401, detail="unauthorized")
+    provided = auth.split(" ", 1)[1]
+    if token and provided != token:
+        raise HTTPException(status_code=401, detail="unauthorized")
 
 
 @app.get("/healthz")
@@ -70,14 +157,31 @@ def readyz():
             except Exception:
                 return 0
         staleness_sec = max(0, int(_time.time()) - _parse(latest_ts))
-        quorum_ok = True  # conservative default; detailed quorum surfaced per-net in /weights
-        return {"ok": weights_ok and vault_writable, "weights_ok": weights_ok, "vault_writable": vault_writable, "quorum_ok": quorum_ok, "staleness_sec": staleness_sec}
+        # Compute simple quorum signal: proportion of nets with non-stale prices in last window
+        from .service import consensus_prices_with_twap, build_miner_stake_map, load_reports
+        em_reps = load_reports(base)
+        twap_prices, quorum_map, staleness = consensus_prices_with_twap(prs, stake_by_miner=build_miner_stake_map(em_reps), window_minutes=30, outlier_k=5.0, quorum_threshold=float(_os.environ.get("AM_PRICE_QUORUM", 0.33)), price_band_pct=float(_os.environ.get("AM_PRICE_BAND_PCT", 0.2)), stale_sec=int(_os.environ.get("AM_PRICE_STALE_SEC", 120)), out_dir=base)
+        quorum_ok = all(v >= float(_os.environ.get("AM_PRICE_QUORUM", 0.33)) for v in quorum_map.values()) if quorum_map else False
+        ok = weights_ok and vault_writable and quorum_ok and all((s <= int(_os.environ.get("AM_PRICE_STALE_SEC", 120))) for s in staleness.values())
+        if not ok:
+            # FastAPI convention: raise to produce non-200 status
+            raise HTTPException(status_code=503, detail={
+                "weights_ok": weights_ok,
+                "vault_writable": vault_writable,
+                "quorum_ok": quorum_ok,
+                "staleness_sec": staleness_sec,
+                "price_quorum": quorum_map,
+                "price_staleness_sec": staleness,
+                "paused_tokens": list(_load_paused(base)),
+            })
+        return {"ok": True, "weights_ok": weights_ok, "vault_writable": vault_writable, "quorum_ok": quorum_ok, "staleness_sec": staleness_sec, "price_quorum": quorum_map, "price_staleness_sec": staleness, "paused_tokens": list(_load_paused(base))}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
 
 @app.post("/aggregate")
-def aggregate(req: AggregateReq):
+def aggregate(req: AggregateReq, request: Request):
+    _require_auth(request)
     try:
         in_dir = Path(req.in_dir)
         out_path = Path(req.out_file)
@@ -96,21 +200,176 @@ def aggregate(req: AggregateReq):
         raise HTTPException(status_code=500, detail=str(e))
 
 
+class PauseReq(BaseModel):
+    uid: int
+
+
+@app.post("/admin/pause-token")
+def pause_token(req: PauseReq, request: Request):
+    _require_auth(request)
+    try:
+        base = Path(os.environ.get("AM_OUT_DIR", "/Users/alexanderlange/alphamind/subnet/out"))
+        _pause(base, int(req.uid))
+        return {"status": "ok"}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.post("/admin/resume-token")
+def resume_token(req: PauseReq, request: Request):
+    _require_auth(request)
+    try:
+        base = Path(os.environ.get("AM_OUT_DIR", "/Users/alexanderlange/alphamind/subnet/out"))
+        _resume(base, int(req.uid))
+        return {"status": "ok"}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.get("/scores")
+def scores(in_dir: str = "/Users/alexanderlange/alphamind/subnet/out"):
+    try:
+        from .scoring import load_scores as _load_scores
+        base = Path(in_dir)
+        return _load_scores(base)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.get("/leaderboard")
+def leaderboard(in_dir: str = "/Users/alexanderlange/alphamind/subnet/out", limit: int = 100, window: str = "24h"):
+    try:
+        from .scoring import load_scores as _load_scores
+        data = _load_scores(Path(in_dir))
+        rows = []
+        for hk, ent in data.items():
+            rows.append({
+                "hotkey": hk,
+                "score": float(ent.get("score", 0.0)),
+                "accuracy": float(ent.get("accuracy", 0.0)),
+                "uptime": float(ent.get("uptime", 0.0)),
+                "latency": float(ent.get("latency", 0.0)),
+                "trust": float(ent.get("trust", 0.0)),
+                "strikes": int(ent.get("strikes", 0)),
+                "suspended": bool(ent.get("suspended", False)),
+            })
+        rows.sort(key=lambda r: r["score"], reverse=True)
+        return rows[: max(1, int(limit))]
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.get("/scores/{hotkey}")
+def score_detail(hotkey: str, in_dir: str = "/Users/alexanderlange/alphamind/subnet/out", last: int = 200):
+    try:
+        from .scoring import load_scores as _load_scores
+        from .scoreboard import _samples_path as _sb_samples_path
+        base = Path(in_dir)
+        scores = _load_scores(base)
+        detail = scores.get(hotkey)
+        samples = {}
+        try:
+            samples = json.loads(_sb_samples_path(base).read_text(encoding="utf-8")).get(hotkey) or {}
+        except Exception:
+            samples = {}
+        # Compute quick stats
+        import statistics as _stats
+        prs = samples.get("prices") or []
+        ems = samples.get("emissions") or []
+        def _pct(arr: list, key: str, q: float) -> float:
+            if not arr:
+                return 0.0
+            xs = sorted([abs(float(x.get(key, 0))) for x in arr])
+            idx = min(len(xs) - 1, max(0, int(q * (len(xs) - 1))))
+            return xs[idx]
+        price_p50 = _pct(prs, "dev_bps", 0.50)
+        price_p90 = _pct(prs, "dev_bps", 0.90)
+        em_delay_avg = (sum(int(x.get("delay_sec", 0)) for x in ems) / float(len(ems))) if ems else 0.0
+        price_ontime = (sum(1 for x in prs if bool(x.get("early", False))) / float(len(prs))) if prs else 0.0
+        return {
+            "hotkey": hotkey,
+            "score": detail.get("score") if detail else None,
+            "components": {k: detail.get(k) for k in ("accuracy", "uptime", "latency", "trust")} if detail else {},
+            "strikes": detail.get("strikes") if detail else 0,
+            "suspended": detail.get("suspended") if detail else False,
+            "samples": {"prices": len(prs), "emissions": len(ems)},
+            "stats": {
+                "price_dev_bps_p50": price_p50,
+                "price_dev_bps_p90": price_p90,
+                "emissions_avg_delay_sec": em_delay_avg,
+                "price_early_ratio": price_ontime,
+            },
+            "recent": {
+                "prices": prs[-max(0, int(last)):],
+                "emissions": ems[-max(0, int(last)):],
+            }
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
 class MintReq(BaseModel):
     in_dir: str
     amount_tao: float
+    max_slippage_bps: int | None = None
 
 
 @app.post("/mint-tao")
-def mint_tao(req: MintReq):
+def mint_tao(req: MintReq, request: Request):
+    _require_auth(request)
     try:
         in_dir = Path(req.in_dir)
-        from .service import consensus_prices, load_price_reports
-        from .service import load_reports
+        from .service import consensus_prices, load_price_reports, load_reports, consensus_prices_with_twap, build_miner_stake_map, extract_reserves_from_price_reports
         from ..tao20.validator import compute_index_weights_from_reports
+        from ..sim.vault import mint_tao_extended
+        from ..tao20.price_feed import read_prices_items_from_btcli
 
-        prices = consensus_prices(load_price_reports(in_dir))
-        weights = compute_index_weights_from_reports(load_reports(in_dir))
+        price_reports = load_price_reports(in_dir)
+        emissions_reports = load_reports(in_dir)
+        prices = consensus_prices(price_reports)
+        weights = compute_index_weights_from_reports(emissions_reports)
+        # Staleness guard: require staleness <= AM_PRICE_STALE_SEC on constituents
+        try:
+            import os as _os
+            _p, _q, staleness = consensus_prices_with_twap(
+                price_reports,
+                stake_by_miner=build_miner_stake_map(emissions_reports),
+                window_minutes=30,
+                outlier_k=5.0,
+                quorum_threshold=float(_os.environ.get("AM_PRICE_QUORUM", 0.33)),
+                price_band_pct=float(_os.environ.get("AM_PRICE_BAND_PCT", 0.2)),
+                stale_sec=int(_os.environ.get("AM_PRICE_STALE_SEC", 120)),
+                out_dir=in_dir,
+            )
+            # Optionally self-refresh prices if stale
+            def _any_stale() -> bool:
+                return any(staleness.get(int(uid), 1e9) > int(_os.environ.get("AM_PRICE_STALE_SEC", 120)) // 2 for uid in weights.keys())
+
+            if _any_stale() and int(_os.environ.get("AM_VALIDATOR_SELF_REFRESH", "0")) == 1:
+                # Do a local refresh via btcli for richer items and write a temporary price report
+                try:
+                    btcli = _os.environ.get("AM_BTCLI", "/Users/alexanderlange/.venvs/alphamind/bin/btcli")
+                    items = read_prices_items_from_btcli(btcli)
+                    # Synthesize a one-off PriceReport in-memory to recompute prices/quorum/staleness
+                    from ..tao20.reports import PriceReport
+                    import time as _time
+                    now = _time.strftime("%Y-%m-%dT%H:%M:%SZ", _time.gmtime())
+                    local = PriceReport(ts=now, prices_by_netuid={it.uid: it.price_in_tao for it in items}, miner_id="validator-local", prices=items, schema_version="1.0.0")
+                    price_reports = price_reports + [local]
+                    prices = consensus_prices(price_reports)
+                    _p2, _q2, staleness2 = consensus_prices_with_twap(price_reports, stake_by_miner=build_miner_stake_map(emissions_reports), window_minutes=30, outlier_k=5.0, quorum_threshold=float(_os.environ.get("AM_PRICE_QUORUM", 0.33)), price_band_pct=float(_os.environ.get("AM_PRICE_BAND_PCT", 0.2)), stale_sec=int(_os.environ.get("AM_PRICE_STALE_SEC", 120)), out_dir=in_dir)
+                    staleness = staleness2
+                except Exception:
+                    pass
+            # Final staleness check
+            for uid in weights.keys():
+                if staleness.get(int(uid), 1e9) > int(_os.environ.get("AM_PRICE_STALE_SEC", 120)):
+                    raise HTTPException(status_code=409, detail="stale_or_missing_price")
+        except HTTPException:
+            raise
+        except Exception:
+            pass
+
         vault_path = in_dir / "vault_state.json"
         state = load_vault(vault_path)
         if state is None:
@@ -118,9 +377,14 @@ def mint_tao(req: MintReq):
             state = initialize_vault(weights, prices)
         # Opportunistic management fee accrual
         state = apply_management_fee(prices, state)
-        state = apply_mint_with_tao(req.amount_tao, weights, prices, state)
+        pool_reserves = extract_reserves_from_price_reports(price_reports)
+        # Circuit breakers: reject if any touched token is paused
+        for uid in weights.keys():
+            if _is_paused(in_dir, int(uid)):
+                raise HTTPException(status_code=409, detail=f"token_paused_{int(uid)}")
+        state, result = mint_tao_extended(req.amount_tao, weights, prices, state, max_slippage_bps=req.max_slippage_bps, pool_reserves=pool_reserves, fees_base=in_dir)
         save_vault(vault_path, state)
-        return {"status": "ok", "new_nav": state.last_nav_tao, "supply": state.tao20_supply}
+        return {"status": "ok", "minted": result.minted, "nav_per_tao20": result.nav_per_tao20, "residuals": [{"uid": r.uid, "qty": r.qty} for r in result.residuals], "pricing_mode": result.pricing_mode, "supply": state.tao20_supply}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
@@ -131,7 +395,8 @@ class RedeemReq(BaseModel):
 
 
 @app.post("/redeem")
-def redeem(req: RedeemReq):
+def redeem(req: RedeemReq, request: Request):
+    _require_auth(request)
     try:
         in_dir = Path(req.in_dir)
         vault_path = in_dir / "vault_state.json"
@@ -142,9 +407,14 @@ def redeem(req: RedeemReq):
         prices = consensus_prices(load_price_reports(in_dir))
         # Opportunistic management fee accrual
         state = apply_management_fee(prices, state)
-        state = apply_redeem_in_kind(req.amount_tao20, prices, state)
+        # Circuit breaker: if any held token paused and would be touched, block redeem? We block only if paused list not empty to avoid partial redemptions; for now block if any paused exists.
+        paused = set(_load_paused(in_dir))
+        if paused:
+            raise HTTPException(status_code=409, detail="redeem_blocked_paused_tokens")
+        from ..sim.vault import redeem_in_kind_extended
+        state, result = redeem_in_kind_extended(req.amount_tao20, prices, state, fees_base=in_dir)
         save_vault(vault_path, state)
-        return {"status": "ok", "new_nav": state.last_nav_tao, "supply": state.tao20_supply}
+        return {"status": "ok", "basket_out": [{"uid": r.uid, "qty": r.qty} for r in result.basket_out], "new_nav": state.last_nav_tao, "supply": state.tao20_supply}
     except HTTPException:
         raise
     except Exception as e:
@@ -189,6 +459,11 @@ def dashboard():
     <h2>TAO20 Weights & Simulated NAV</h2>
     <div id='epoch'></div>
     <div id='epochMeta' style='color:#555;font-size:0.9em;margin-bottom:8px;'></div>
+    <div id='lights' style='display:flex; gap:12px; align-items:center; margin:6px 0;'>
+      <div>Prices quorum: <span id='priceLight'>-</span></div>
+      <div>Oldest price age: <span id='oldestStale'>-</span>s</div>
+      <div>Paused: <span id='pausedList'>-</span></div>
+    </div>
     <div id='nav'></div>
     <h3>NAV (sim)</h3>
     <canvas id='navChart'></canvas>
@@ -203,9 +478,15 @@ def dashboard():
     <div id='proofs'>
       <div>Epoch: <span id='wsEpoch'>-</span></div>
       <div>Hash (sha256): <span id='wsHash'>-</span></div>
+      <div>Publish: <span id='wsPub'>-</span></div>
       <div><a id='wsLink' href='#' target='_blank' rel='noopener'>Download WeightSet</a></div>
       <pre id='wsJson' style='max-height:280px; overflow:auto; background:#f6f8fa; padding:8px; border-radius:6px;'></pre>
     </div>
+    <h3 style='margin-top:16px;'>Top Miners</h3>
+    <table id='miners' border='1' cellpadding='6' cellspacing='0' style='border-collapse:collapse;'>
+      <thead><tr><th>Hotkey</th><th>Score</th><th>Accuracy</th><th>Uptime</th><th>Latency</th><th>Strikes</th></tr></thead>
+      <tbody></tbody>
+    </table>
     <div style='margin-top:16px;'>
       <input id='mintAmt' type='number' step='0.01' placeholder='TAO to mint' />
       <button onclick='mint()'>Mint via TAO</button>
@@ -280,6 +561,43 @@ def dashboard():
         if(ws.path){ document.getElementById('wsLink').href = '/weightset?download=1'; }
       }
     }catch(e){}
+
+    try{
+      const pr = await fetch('/weightset-publish');
+      if(pr.ok){
+        const pub = await pr.json();
+        const parts = [];
+        if(pub.cid){ parts.push(`IPFS ${pub.cid.substring(0,10)}…`); }
+        if(pub.github_url){ parts.push('GitHub'); }
+        if(pub.local_path){ parts.push('Local'); }
+        document.getElementById('wsPub').textContent = parts.join(' | ') || '-';
+      }
+    }catch(e){}
+
+    try{
+      // Lights from readyz
+      const rz = await fetch('/readyz');
+      const ok = rz.ok;
+      const meta = ok ? await rz.json() : (await rz.json()).detail;
+      document.getElementById('priceLight').textContent = meta.quorum_ok ? 'OK' : 'MISSING';
+      document.getElementById('priceLight').style.color = meta.quorum_ok ? 'green' : 'red';
+      document.getElementById('oldestStale').textContent = Math.round(meta.staleness_sec || 0);
+      const paused = (meta.paused_tokens||[]);
+      document.getElementById('pausedList').textContent = paused.length ? paused.join(',') : 'None';
+    }catch(e){}
+
+    try{
+      // Top miners
+      const lr = await fetch('/leaderboard?limit=20');
+      const rows = await lr.json();
+      const tbody = document.querySelector('#miners tbody');
+      tbody.innerHTML = '';
+      rows.forEach(r=>{
+        const tr = document.createElement('tr');
+        tr.innerHTML = `<td>${r.hotkey}</td><td>${r.score.toFixed(3)}</td><td>${(r.accuracy*100).toFixed(1)}%</td><td>${(r.uptime*100).toFixed(1)}%</td><td>${(r.latency*100).toFixed(1)}%</td><td>${r.strikes}</td>`;
+        tbody.appendChild(tr);
+      })
+    }catch(e){}
   }
   async function mint(){
     const amt = parseFloat(document.getElementById('mintAmt').value||'0');
@@ -299,6 +617,30 @@ def dashboard():
 </html>
 """
     return Response(html, media_type="text/html")
+
+
+@app.get("/prices/latest")
+def prices_latest(in_dir: str = "/Users/alexanderlange/alphamind/subnet/out"):
+    try:
+        from .service import load_price_reports, consensus_prices
+        base = Path(in_dir)
+        prs = load_price_reports(base)
+        prices = consensus_prices(prs)
+        return prices
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.get("/emissions/latest")
+def emissions_latest(in_dir: str = "/Users/alexanderlange/alphamind/subnet/out"):
+    try:
+        from .service import load_reports, compute_rolling_emissions
+        base = Path(in_dir)
+        reps = load_reports(base)
+        avg, elig = compute_rolling_emissions(base, reps)
+        return {"avg_14d": {str(k): float(v) for k, v in avg.items()}, "eligibility": {str(k): bool(v) for k, v in elig.items()}}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
 
 @app.get("/nav-history")
@@ -331,23 +673,44 @@ def _append_nav_history(in_dir: Path, nav: float) -> None:
 class InKindMintReq(BaseModel):
     in_dir: str
     basket: dict
+    max_deviation_bps: int | None = None
 
 
 @app.post("/mint-in-kind")
-def mint_in_kind(req: InKindMintReq):
+def mint_in_kind(req: InKindMintReq, request: Request):
+    _require_auth(request)
     try:
         in_dir = Path(req.in_dir)
-        from .service import consensus_prices, load_price_reports
+        from .service import consensus_prices, load_price_reports, load_reports, consensus_prices_with_twap, build_miner_stake_map
+        from ..tao20.validator import compute_index_weights_from_reports
         prices = consensus_prices(load_price_reports(in_dir))
+        weights = compute_index_weights_from_reports(load_reports(in_dir))
+        # Staleness guard identical to mint-tao
+        try:
+            import os as _os
+            prs = load_price_reports(in_dir)
+            ems = load_reports(in_dir)
+            _p, _q, staleness = consensus_prices_with_twap(prs, stake_by_miner=build_miner_stake_map(ems), window_minutes=30, outlier_k=5.0, quorum_threshold=float(_os.environ.get("AM_PRICE_QUORUM", 0.33)), price_band_pct=float(_os.environ.get("AM_PRICE_BAND_PCT", 0.2)), stale_sec=int(_os.environ.get("AM_PRICE_STALE_SEC", 120)), out_dir=in_dir)
+            for uid in weights.keys():
+                if staleness.get(int(uid), 1e9) > int(_os.environ.get("AM_PRICE_STALE_SEC", 120)):
+                    raise HTTPException(status_code=409, detail="stale_or_missing_price")
+        except HTTPException:
+            raise
+        except Exception:
+            pass
         vault_path = in_dir / "vault_state.json"
         state = load_vault(vault_path)
         if state is None:
             raise HTTPException(status_code=400, detail="vault not initialized")
         # Opportunistic management fee accrual
         state = apply_management_fee(prices, state)
-        state = apply_mint_in_kind(req.basket or {}, prices, state)
+        for uid in weights.keys():
+            if _is_paused(in_dir, int(uid)):
+                raise HTTPException(status_code=409, detail=f"token_paused_{int(uid)}")
+        from ..sim.vault import mint_in_kind_extended
+        state, result = mint_in_kind_extended(req.basket or {}, weights, prices, state, max_deviation_bps=req.max_deviation_bps, fees_base=in_dir)
         save_vault(vault_path, state)
-        return {"status": "ok", "new_nav": state.last_nav_tao, "supply": state.tao20_supply}
+        return {"status": "ok", "minted": result.minted, "nav_per_tao20": result.nav_per_tao20, "pricing_mode": result.pricing_mode, "supply": state.tao20_supply}
     except HTTPException:
         raise
     except Exception as e:
@@ -409,7 +772,170 @@ def get_weightset(in_dir: str = "/Users/alexanderlange/alphamind/subnet/out", do
             "weightset": ws,
             "path": str(target),
         }
+@app.get("/weightset-publish")
+def weightset_publish(in_dir: str = "/Users/alexanderlange/alphamind/subnet/out"):
+    try:
+        base = Path(in_dir)
+        # Determine target epoch file
+        epoch_file = base / "epoch_state.json"
+        target: Path = None  # type: ignore
+        epoch_id = None
+        try:
+            if epoch_file.exists():
+                raw = _json.loads(epoch_file.read_text(encoding="utf-8"))
+                epoch_id = int(raw.get("epoch_id", 0))
+                cand = base / f"weightset_epoch_{epoch_id}.json"
+                if cand.exists():
+                    target = cand
+        except Exception:
+            pass
+        if target is None:
+            import glob as _glob
+            paths = _glob.glob(str(base / "weightset_epoch_*.json"))
+            if not paths:
+                raise HTTPException(status_code=404, detail="weightset_not_found")
+            # pick latest by epoch id
+            def _parse(p: str) -> int:
+                try:
+                    s = Path(p).stem
+                    return int(str(s).split("_")[-1])
+                except Exception:
+                    return -1
+            best = max(paths, key=lambda p: _parse(p))
+            target = Path(best)
+            epoch_id = _parse(best)
+        # Compute sha256
+        data = target.read_text(encoding="utf-8")
+        sha = hashlib.sha256(_json.dumps(_json.loads(data), separators=(",", ":"), sort_keys=True).encode("utf-8")).hexdigest()
+        res = publish_weightset(sha, str(target)) or {}
+        # Ensure published_at present
+        if "published_at" not in res:
+            res["published_at"] = __import__('time').strftime("%Y-%m-%dT%H:%M:%SZ", __import__('time').gmtime())
+        # attach epoch and sha
+        res.setdefault("epoch", int(epoch_id or 0))
+        res.setdefault("sha256", sha)
+        return res
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
 
+@app.get("/weightset-sha")
+def get_weightset_sha(in_dir: str = "/Users/alexanderlange/alphamind/subnet/out"):
+    base = Path(in_dir)
+    # Find best epoch file like in /weightset
+    target: Path = None  # type: ignore
+    try:
+        import glob as _glob
+        paths = _glob.glob(str(base / "weightset_epoch_*.sha256"))
+        if paths:
+            def _parse(p: str) -> int:
+                try:
+                    s = Path(p).stem  # weightset_epoch_<id>.sha256
+                    eid = int(str(s).split("_")[-1])
+                    return eid
+                except Exception:
+                    return -1
+            best = max(paths, key=lambda p: _parse(p))
+            target = Path(best)
+    except Exception:
+        pass
+    if target is None or not target.exists():
+        raise HTTPException(status_code=404, detail="sha_not_found")
+    return Response(target.read_text(encoding="utf-8"), media_type="text/plain")
+
+
+@app.get("/fees")
+def get_fees(in_dir: str = "/Users/alexanderlange/alphamind/subnet/out"):
+    try:
+        base = Path(in_dir)
+        led = load_fees_ledger(base)
+        return {
+            "accrued_tao": led.accrued_tao,
+            "accrued_tokens": {str(k): v for k, v in (led.accrued_tokens or {}).items()},
+            "last_mgmt_fee_ts": led.last_mgmt_fee_ts,
+            "alpha_qty": led.alpha_qty,
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.post("/fees/reinvest")
+def post_fees_reinvest(in_dir: str = "/Users/alexanderlange/alphamind/subnet/out", request: Request = None):
+    _require_auth(request)
+    try:
+        base = Path(in_dir)
+        from .service import consensus_prices, load_price_reports
+        prices = consensus_prices(load_price_reports(base))
+        led = reinvest_fees_to_alpha(prices, base)
+        return {
+            "accrued_tao": led.accrued_tao,
+            "accrued_tokens": {str(k): v for k, v in (led.accrued_tokens or {}).items()},
+            "last_mgmt_fee_ts": led.last_mgmt_fee_ts,
+            "alpha_qty": led.alpha_qty,
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.get("/metrics")
+def metrics(in_dir: str = "/Users/alexanderlange/alphamind/subnet/out"):
+    try:
+        base = Path(in_dir)
+        # Quorum/staleness
+        from .service import load_price_reports, consensus_prices_with_twap, build_miner_stake_map, load_reports
+        prs = load_price_reports(base)
+        ems = load_reports(base)
+        _p, qmap, stale = consensus_prices_with_twap(
+            prs,
+            stake_by_miner=build_miner_stake_map(ems),
+            window_minutes=30,
+            outlier_k=5.0,
+            quorum_threshold=float(os.environ.get("AM_PRICE_QUORUM", 0.33)),
+            price_band_pct=float(os.environ.get("AM_PRICE_BAND_PCT", 0.2)),
+            stale_sec=int(os.environ.get("AM_PRICE_STALE_SEC", 120)),
+            out_dir=base,
+        )
+        quorum_covered = list(qmap.values())
+        quorum_pct = (sum(1 for v in quorum_covered if v >= float(os.environ.get("AM_PRICE_QUORUM", 0.33))) / float(len(quorum_covered) or 1))
+        max_stale = max(stale.values()) if stale else 0.0
+        # Paused tokens
+        paused = list(_load_paused(base))
+        # Slashing deviations count
+        dev = 0
+        sl_path = base / "slashing_log.jsonl"
+        if sl_path.exists():
+            with open(sl_path, "r", encoding="utf-8") as f:
+                for ln in f:
+                    if '\"type\":\"deviation\"' in ln:
+                        dev += 1
+        # Suspended miners and average score
+        try:
+            from .scoring import load_scores
+            sc = load_scores(base)
+            miners_suspended = sum(1 for _k, v in sc.items() if bool(v.get("suspended", False)))
+            avg_score = (sum(float(v.get("score", 1.0)) for v in sc.values()) / float(len(sc) or 1))
+        except Exception:
+            miners_suspended = 0
+            avg_score = 1.0
+        # Fees snapshot
+        led = load_fees_ledger(base)
+        return {
+            "quorum_pct": float(quorum_pct),
+            "max_price_staleness_sec": float(max_stale),
+            "paused_tokens": paused,
+            "slashing_deviation_events": int(dev),
+            "miners_suspended": int(miners_suspended),
+            "avg_score": float(avg_score),
+            "fees": {
+                "accrued_tao": float(led.accrued_tao),
+                "accrued_tokens_count": len(led.accrued_tokens or {}),
+                "alpha_qty": float(led.alpha_qty),
+            },
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
