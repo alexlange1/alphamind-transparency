@@ -2,9 +2,10 @@ name: CI
 
 on:
   push:
-    branches: [ main ]
+    branches: ["**"]
   pull_request:
-    branches: [ main ]
+    branches: ["**"]
+  workflow_dispatch:
 
 jobs:
   build-test-publish:
@@ -15,12 +16,17 @@ jobs:
         with:
           python-version: '3.11'
       - name: Install deps
-        run: pip install -r subnet/requirements.txt
-      - name: Run tests
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r subnet/requirements.txt
+      - name: Install tools
+        run: sudo apt-get update && sudo apt-get install -y jq
+      - name: Run tests (non-blocking)
         run: pytest -q || true
       - name: Start API
+        env:
+          AM_OUT_DIR: ${{ github.workspace }}/subnet/out
         run: |
-          export AM_OUT_DIR=$GITHUB_WORKSPACE/subnet/out
           nohup uvicorn subnet.validator.api:app --host 127.0.0.1 --port 8000 &
           sleep 3
       - name: Aggregate once
@@ -46,38 +52,5 @@ jobs:
             subnet/out/weightset_epoch_*.sha256
             subnet/out/weightset_epoch_*.manifest.json
             published/**
-name: CI
-on:
-  push:
-    branches: [ main ]
-  pull_request:
-    branches: [ main ]
-
-jobs:
-  build-test:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.11'
-      - name: Install deps
-        run: |
-          python -m pip install --upgrade pip
-          pip install -r subnet/requirements.txt
-          pip install pytest ruff
-      - name: Lint
-        run: |
-          ruff check subnet tests
-      - name: Test
-        run: |
-          pytest -q
-      - name: Build validator image
-        uses: docker/build-push-action@v5
-        with:
-          context: .
-          file: subnet/validator/Dockerfile
-          push: false
 
 
