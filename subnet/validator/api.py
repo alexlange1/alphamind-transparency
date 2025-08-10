@@ -815,6 +815,33 @@ def weightset_publish(in_dir: str = "/Users/alexanderlange/alphamind/subnet/out"
         res.setdefault("epoch", int(epoch_id or 0))
         res.setdefault("sha256", sha)
         return res
+@app.get("/weightset-proof")
+def weightset_proof(in_dir: str = "/Users/alexanderlange/alphamind/subnet/out"):
+    try:
+        base = Path(in_dir)
+        # Use manifest if available
+        import glob as _glob
+        paths = _glob.glob(str(base / "weightset_epoch_*.manifest.json"))
+        if not paths:
+            raise HTTPException(status_code=404, detail="manifest_not_found")
+        latest = max(paths)  # file name includes epoch and sha8; lexicographic ok for simple cases
+        man = _json.loads(Path(latest).read_text(encoding="utf-8"))
+        return {
+            "epoch": int(man.get("epoch", 0)),
+            "sha256": str(man.get("sha256", "")),
+            "signer_ss58": str(man.get("signer_ss58", "")),
+            "sig": str(man.get("sig", "")),
+            "cid": str(man.get("cid", "")),
+            "github_url": str(man.get("github_url", "")),
+            "published_at": str(man.get("published_at", "")),
+            "status": str(man.get("status", "")),
+            "verify_ok": bool(man.get("verify_ok", False)),
+        }
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
     except HTTPException:
         raise
     except Exception as e:
