@@ -27,7 +27,7 @@ Alphamind is an end-to-end prototype of the TAO20 subnet. Miners produce signed 
 ```bash
 pip install -r subnet/requirements.txt
 export AM_OUT_DIR=$(pwd)/subnet/out
-python -m subnet.validator.api  # starts FastAPI at http://127.0.0.1:8000
+uvicorn subnet.validator.api:app --host 127.0.0.1 --port 8000
 ```
 
 Open the dashboard at:
@@ -104,3 +104,18 @@ Set `AM_API_TOKEN` in all non-dev deployments. Prefer hotkey signatures for mine
 ## Documentation
 - Protocol: `docs/PROTOCOL_V1.md`
 - Architecture: `subnet/specs/ARCHITECTURE.md`
+
+## Verify it yourself
+1) Download latest weightset JSON:
+```bash
+curl -s http://127.0.0.1:8000/weightset | jq -c > /tmp/weightset.json
+```
+2) Hash and compare to published SHA:
+```bash
+shasum -a 256 /tmp/weightset.json
+curl -s http://127.0.0.1:8000/weightset-sha
+```
+3) Fetch proof object (signature, signer, refs):
+```bash
+curl -s http://127.0.0.1:8000/weightset-proof | jq
+```

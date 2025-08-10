@@ -45,4 +45,10 @@ Docs
 - Protocol: `../docs/PROTOCOL_V1.md`
 - Architecture: `specs/ARCHITECTURE.md`
 
+Publishing (smoke)
+```bash
+make -C . aggregate
+curl -s http://127.0.0.1:8000/weightset-publish | jq
+```
+
 

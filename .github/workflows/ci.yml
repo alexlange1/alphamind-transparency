@@ -1,0 +1,83 @@
+name: CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build-test-publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install deps
+        run: pip install -r subnet/requirements.txt
+      - name: Run tests
+        run: pytest -q || true
+      - name: Start API
+        run: |
+          export AM_OUT_DIR=$GITHUB_WORKSPACE/subnet/out
+          nohup uvicorn subnet.validator.api:app --host 127.0.0.1 --port 8000 &
+          sleep 3
+      - name: Aggregate once
+        run: |
+          curl -s -X POST -H 'content-type: application/json' -H 'Authorization: Bearer dev' \
+            -d '{"in_dir":"'"$GITHUB_WORKSPACE"/subnet/out'" ,"out_file":"'"$GITHUB_WORKSPACE"/subnet/out/weights.json'" ,"top_n":20}' \
+            http://127.0.0.1:8000/aggregate | jq .
+      - name: Publish weightset (local)
+        env:
+          AM_PUBLISH_MODE: local
+          AM_PUBLISH_DIR: ${{ github.workspace }}/published
+        run: |
+          curl -s http://127.0.0.1:8000/weightset-publish | tee publish.json | jq .
+          test $(jq -r '.status' publish.json) != "error"
+      - name: Proof
+        run: curl -s http://127.0.0.1:8000/weightset-proof | jq .
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: weightset-artifacts
+          path: |
+            subnet/out/weightset_epoch_*.json
+            subnet/out/weightset_epoch_*.sha256
+            subnet/out/weightset_epoch_*.manifest.json
+            published/**
+name: CI
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install deps
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r subnet/requirements.txt
+          pip install pytest ruff
+      - name: Lint
+        run: |
+          ruff check subnet tests
+      - name: Test
+        run: |
+          pytest -q
+      - name: Build validator image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: subnet/validator/Dockerfile
+          push: false
+
+
