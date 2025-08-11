@@ -3,6 +3,11 @@ pragma solidity ^0.8.21;
 
 import {IOracle} from "./IOracle.sol";
 
+interface IStakeOracle {
+    function getStake(address validator) external view returns (uint256);
+    function getTotalStake(uint256 netuid) external view returns (uint256);
+}
+
 contract OracleWeighted is IOracle {
     struct Report { uint256 price; uint256 ts; uint256 stake; address reporter; }
     mapping(uint256 => Report[]) private _reports; // netuid => reports
@@ -15,11 +20,6 @@ contract OracleWeighted is IOracle {
     
     // Security: Interface for stake verification
     address public stakeOracle;
-    
-    interface IStakeOracle {
-        function getStake(address validator) external view returns (uint256);
-        function getTotalStake(uint256 netuid) external view returns (uint256);
-    }
     
     event ReportSubmitted(uint256 indexed netuid, address indexed reporter, uint256 price, uint256 stake);
     event ReportOutlier(uint256 indexed netuid, address indexed reporter, uint256 price, uint256 median, uint256 bandBps);

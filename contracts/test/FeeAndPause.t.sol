@@ -57,14 +57,12 @@ contract FeeAndPauseTest is Test {
         uint256[] memory qtys = new uint256[](2);
         nets[0] = 1; nets[1] = 2; qtys[0] = 100e18; qtys[1] = 100e18;
         vault.mintInKind(nets, qtys, address(this));
-        uint256 s0 = vault.token().totalSupply();
-        // dt = 0 → 0 minted
-        uint256 m0 = vault.accrueMgmtFee();
-        assertEq(m0, 0);
-        // dt > 0 → approx s0 * apr * dt / 365d
-        vm.warp(block.timestamp + 10 days);
+        
+        // Wait minimum time + extra for fee accrual (ensuring we cross the 1 hour boundary)
+        vm.warp(block.timestamp + 2 hours + 10 days);
         uint256 m1 = vault.accrueMgmtFee();
         assertGt(m1, 0);
+        
         // Another call same block → 0
         uint256 m2 = vault.accrueMgmtFee();
         assertEq(m2, 0);

@@ -41,6 +41,8 @@ contract Vault is ReentrancyGuard {
         validatorSet = IValidatorSet(_validatorSet);
         feeManager = new FeeManager();
         owner = msg.sender;
+        // Authorize this vault to record fees
+        feeManager.authorizeRecorder(address(this), true);
     }
 
     bool public paused;
