@@ -2,6 +2,106 @@ name: CI
 
 on:
   push:
+  pull_request:
+
+jobs:
+  python-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install deps
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -r subnet/requirements.txt
+      - name: Run pytest
+        run: |
+          python -m pytest -q
+
+  foundry-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Install Foundry
+        run: |
+          curl -L https://foundry.paradigm.xyz | bash
+          echo "$HOME/.foundry/bin" >> $GITHUB_PATH
+          ~/.foundry/bin/foundryup
+      - name: Forge version
+        run: forge --version
+      - name: Run forge tests
+        working-directory: contracts
+        run: forge test -q
+
+  e2e-anvil:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Install Foundry
+        run: |
+          curl -L https://foundry.paradigm.xyz | bash
+          echo "$HOME/.foundry/bin" >> $GITHUB_PATH
+          ~/.foundry/bin/foundryup
+      - name: Start anvil
+        run: nohup anvil --port 8545 --chain-id 31337 --silent &
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install deps
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -r subnet/requirements.txt
+      - name: Deploy registry and validator set
+        run: |
+          REG=$(forge create contracts/src/WeightsetRegistry.sol:WeightsetRegistry --rpc-url http://127.0.0.1:8545 --private-key 0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80 --json | jq -r .deployedTo)
+          VS=$(forge create contracts/src/ValidatorSet.sol:ValidatorSet --constructor-args 0x0000000000000000000000000000000000000001 --rpc-url http://127.0.0.1:8545 --private-key 0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80 --json | jq -r .deployedTo)
+          echo "REG=$REG" >> $GITHUB_ENV
+          echo "VS=$VS" >> $GITHUB_ENV
+          cast send $VS "setRegistry(address)" $REG --rpc-url http://127.0.0.1:8545 --private-key 0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80
+      - name: Run validator API and publish
+        env:
+          AM_OUT_DIR: ${{ github.workspace }}/subnet/out
+          AM_API_TOKEN: dev
+          AM_CHAIN: '1'
+          AM_RPC_URL: http://127.0.0.1:8545
+          AM_CHAIN_PRIVKEY: 0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80
+          AM_REGISTRY_ADDR: ${{ env.REG }}
+          AM_VALIDATORSET_ADDR: ${{ env.VS }}
+        run: |
+          python -m subnet.miner.loop --emit-emissions-once || true
+          python -m subnet.miner.loop --emit-prices-once || true
+          nohup uvicorn subnet.validator.api:app --host 127.0.0.1 --port 8000 &
+          sleep 2
+          curl -s -X POST -H 'Authorization: Bearer dev' -H 'content-type: application/json' \
+            -d '{"in_dir":"'"$AM_OUT_DIR"'","out_file":"'"$AM_OUT_DIR"'/weights.json","top_n":20}' \
+            http://127.0.0.1:8000/aggregate | cat
+          curl -s http://127.0.0.1:8000/weightset-publish | tee /tmp/manifest.json
+      - name: Upload manifest
+        uses: actions/upload-artifact@v4
+        with:
+          name: weightset-manifest
+          path: /tmp/manifest.json
+
+  docker-build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Build validator image
+        run: |
+          docker build -f subnet/validator/Dockerfile -t alphamind-validator:ci .
+
+name: CI
+
+on:
+  push:
     branches: ["**"]
   pull_request:
     branches: ["**"]

@@ -56,6 +56,21 @@ def take_snapshot(btcli_path: str, network: str = "finney", emission_col_index: 
     return EmissionSnapshot(ts=ts, emissions_by_netuid=em)
 
 
+def take_snapshot_map() -> Dict[int, float]:
+    """Convenience: read btcli path from env and return {uid: daily_emission_tao}.
+
+    Non-breaking addition for miner loop integration.
+    """
+    import os as _os
+    btcli = _os.environ.get("AM_BTCLI", "/Users/alexanderlange/.venvs/alphamind/bin/btcli")
+    net = _os.environ.get("AM_NETWORK", "finney")
+    try:
+        snap = take_snapshot(btcli, network=net)
+        return snap.emissions_by_netuid
+    except Exception:
+        return {}
+
+
 def append_snapshot_tsv(out_dir: Path, snap: EmissionSnapshot) -> Path:
     out_dir.mkdir(parents=True, exist_ok=True)
     path = out_dir / "emissions_daily.tsv"

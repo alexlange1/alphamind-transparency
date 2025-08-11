@@ -1,0 +1,77 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "alphamind.fullname" . }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ include "alphamind.name" . }}
+  template:
+    metadata:
+      labels:
+        app: {{ include "alphamind.name" . }}
+    spec:
+      containers:
+        - name: validator
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - containerPort: 8000
+          env:
+            - name: AM_OUT_DIR
+              value: {{ .Values.env.AM_OUT_DIR | quote }}
+            - name: AM_REQUIRE_SIGNING
+              value: {{ .Values.env.AM_REQUIRE_SIGNING | quote }}
+            - name: AM_REQUIRE_HOTKEY
+              value: {{ .Values.env.AM_REQUIRE_HOTKEY | quote }}
+            - name: AM_REJECT_HMAC
+              value: {{ .Values.env.AM_REJECT_HMAC | quote }}
+            - name: AM_REQUIRE_PUBLISH
+              value: {{ .Values.env.AM_REQUIRE_PUBLISH | quote }}
+            - name: AM_REQUIRE_RESERVES
+              value: {{ .Values.env.AM_REQUIRE_RESERVES | quote }}
+            - name: AM_PRICE_QUORUM
+              value: {{ .Values.env.AM_PRICE_QUORUM | quote }}
+            - name: AM_PRICE_STALE_SEC
+              value: {{ .Values.env.AM_PRICE_STALE_SEC | quote }}
+            - name: AM_CHAIN
+              value: {{ .Values.env.AM_CHAIN | quote }}
+            - name: AM_API_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "alphamind.fullname" . }}
+                  key: AM_API_TOKEN
+            - name: AM_ADMIN_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "alphamind.fullname" . }}
+                  key: AM_ADMIN_TOKEN
+            - name: AM_RPC_URL
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "alphamind.fullname" . }}
+                  key: AM_RPC_URL
+            - name: AM_CHAIN_PRIVKEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "alphamind.fullname" . }}
+                  key: AM_CHAIN_PRIVKEY
+            - name: AM_REGISTRY_ADDR
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "alphamind.fullname" . }}
+                  key: AM_REGISTRY_ADDR
+            - name: AM_VALIDATORSET_ADDR
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "alphamind.fullname" . }}
+                  key: AM_VALIDATORSET_ADDR
+          volumeMounts:
+            - name: out
+              mountPath: /data/out
+      volumes:
+        - name: out
+          persistentVolumeClaim:
+            claimName: {{ include "alphamind.fullname" . }}
+

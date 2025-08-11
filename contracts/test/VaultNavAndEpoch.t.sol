@@ -4,7 +4,7 @@ pragma solidity ^0.8.21;
 import "forge-std/Test.sol";
 import {Vault} from "../src/Vault.sol";
 import {ValidatorSet} from "../src/ValidatorSet.sol";
-import {Router} from "../src/Router.sol";
+import {Router, IAMM} from "../src/Router.sol";
 import {OracleAggregator} from "../src/OracleAggregator.sol";
 
 contract DummyAMM3 is IAMM {
@@ -19,6 +19,7 @@ contract VaultNavAndEpochTest is Test {
     OracleAggregator o;
 
     function setUp() public {
+        vm.warp(block.timestamp + 200 days);
         vs = new ValidatorSet(address(this));
         vault = new Vault(address(vs));
         r = new Router(address(new DummyAMM3()));
@@ -31,7 +32,9 @@ contract VaultNavAndEpochTest is Test {
         uint256 epochId = 1; uint256[] memory nets = new uint256[](20); uint16[] memory w = new uint16[](20);
         for (uint256 i = 0; i < 20; i++) { nets[i] = i + 1; w[i] = 500; }
         bytes32 h = keccak256(abi.encode(epochId, nets, w));
-        vs.setValidator(address(this), true); vs.publishWeightSet(epochId, nets, w, h);
+        vs.setValidator(address(this), true);
+        for (uint256 i = 0; i < 20; i++) { vs.recordFirstSeen(nets[i], block.timestamp - 100 days); }
+        vs.publishWeightSet(epochId, nets, w, h);
     }
 
     function testNavCorrectness() public {

@@ -21,7 +21,7 @@ contract FeeManagerTest is Test {
         r = new Router(address(0));
         r.setBuybackAmm(address(new BBAMM()));
         fm.setRouter(address(r));
-        fm.setAlpha(address(0xA1PHA));
+        fm.setAlpha(address(0xA1));
     }
 
     function testBuybackAccounting() public {

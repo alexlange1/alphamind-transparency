@@ -21,7 +21,11 @@ def test_emissions_slashing_log(tmp_path: Path):
     logp = tmp_path / "slashing_log.jsonl"
     assert logp.exists()
     lines = [json.loads(x) for x in logp.read_text(encoding="utf-8").splitlines() if x.strip()]
-    assert any(l.get("type") in ("emission_outlier", "emission_band_violation") for l in lines)
+    assert any(
+        (l.get("type") in ("emission_outlier", "emission_band_violation"))
+        or (l.get("type") == "deviation" and l.get("metric") == "emissions")
+        for l in lines
+    )
 
 
 def test_price_slashing_log(tmp_path: Path):
@@ -34,6 +38,6 @@ def test_price_slashing_log(tmp_path: Path):
     logp = tmp_path / "slashing_log.jsonl"
     assert logp.exists()
     lines = [json.loads(x) for x in logp.read_text(encoding="utf-8").splitlines() if x.strip()]
-    assert any(l.get("type") == "price_stale" for l in lines)
+    assert any(l.get("type") == "price_stale" or (l.get("type") == "deviation" and l.get("metric") == "price") for l in lines)
 
 

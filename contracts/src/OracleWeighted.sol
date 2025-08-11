@@ -40,7 +40,7 @@ contract OracleWeighted is IOracle {
     function _filterFresh(uint256 netuid) internal view returns (Report[] memory fresh, uint256 totalStake) {
         Report[] memory s = _reports[netuid];
         if (s.length == 0) return (fresh, 0);
-        uint256 cutoff = block.timestamp - maxAgeSec;
+        uint256 cutoff = block.timestamp > maxAgeSec ? (block.timestamp - maxAgeSec) : 0;
         uint256 count;
         for (uint256 i = s.length; i > 0; i--) { if (s[i-1].ts >= cutoff) count++; else break; }
         if (count == 0) return (fresh, 0);

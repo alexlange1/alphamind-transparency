@@ -1,9 +1,10 @@
 PY?=python3
-VENVPY?=/Users/alexanderlange/.venvs/alphamind/bin/python
-UVICORN=/Users/alexanderlange/.venvs/alphamind/bin/uvicorn
+# Prefer project-local venv if present
+VENVPY?=$(ROOT)/.venv/bin/python
+UVICORN?=$(ROOT)/.venv/bin/uvicorn
 ROOT=/Users/alexanderlange/alphamind
 
-.PHONY: miner validator api deps api3 aggregate mint redeem open test lint typecheck
+.PHONY: miner validator api deps api3 aggregate mint redeem open test lint typecheck e2e-local
 
 deps:
 	$(VENVPY) -m pip install -r requirements.txt
@@ -42,6 +43,13 @@ redeem:
 open:
 	open http://127.0.0.1:8003/dashboard || echo "Dashboard: http://127.0.0.1:8003/dashboard"
 
+# QoL one-shot emits
+emit-emissions:
+	PYTHONPATH=$(ROOT) $(PY) -m subnet.miner.loop --emit-emissions-once
+
+emit-prices:
+	PYTHONPATH=$(ROOT) $(PY) -m subnet.miner.loop --emit-prices-once
+
 
 test:
 	PYTHONPATH=$(ROOT) pytest -q
@@ -51,4 +59,25 @@ lint:
 
 typecheck:
 	true # placeholder for mypy if types are added
+
+# End-to-end local run on anvil: deploy contracts, run API, emit data, aggregate, publish
+e2e-local:
+	@echo "Starting anvil..."; \
+	anvil --port 8545 --chain-id 31337 --silent & echo $$! > /tmp/anvil.pid; sleep 1; \
+	echo "Deploying contracts..."; \
+	cd $(ROOT)/contracts && \
+	REG_ADDR=$$(forge create src/WeightsetRegistry.sol:WeightsetRegistry --rpc-url http://127.0.0.1:8545 --private-key 0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80 --json | jq -r .deployedTo); \
+	VS_ADDR=$$(forge create src/ValidatorSet.sol:ValidatorSet --constructor-args 0x0000000000000000000000000000000000000001 --rpc-url http://127.0.0.1:8545 --private-key 0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80 --json | jq -r .deployedTo); \
+	cast send $$VS_ADDR "setRegistry(address)" $$REG_ADDR --rpc-url http://127.0.0.1:8545 --private-key 0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80 >/dev/null; \
+	cd $(ROOT); \
+	echo "Starting API..."; \
+	AM_OUT_DIR=$(ROOT)/subnet/out AM_API_TOKEN=dev AM_CHAIN=1 AM_RPC_URL=http://127.0.0.1:8545 AM_CHAIN_PRIVKEY=0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80 AM_REGISTRY_ADDR=$$REG_ADDR AM_VALIDATORSET_ADDR=$$VS_ADDR \
+	PYTHONPATH=$(ROOT) $(UVICORN) subnet.validator.api:app --host 127.0.0.1 --port 8003 & echo $$! > /tmp/api.pid; sleep 2; \
+	PYTHONPATH=$(ROOT) $(PY) -m subnet.miner.loop --emit-emissions-once; \
+	PYTHONPATH=$(ROOT) $(PY) -m subnet.miner.loop --emit-prices-once; \
+	make -s aggregate; \
+	echo "Publishing weightset..."; \
+	curl -s http://127.0.0.1:8003/weightset-publish | jq .; \
+	echo "Dashboard: http://127.0.0.1:8003/dashboard"; \
+	trap 'kill $$(cat /tmp/api.pid) $$(cat /tmp/anvil.pid) 2>/dev/null || true' EXIT
 

@@ -15,58 +15,103 @@ from ..tao20.models import EmissionsReport, WeightSet
 from ..tao20.validator import compute_index_weights_from_reports
 from ..tao20.reports import PriceReport, NavReport
 from ..tao20.consensus import WeightedValue, aggregate_map_median
+from ..common.stake_oracle import load_stake_oracle
 from ..common.bt_signing import verify_with_ss58
+from ..common.crypto import verify_signature as verify_hmac
 from ..sim.vault import VaultState, load_vault, save_vault, initialize_vault, compute_nav
 from ..sim.epoch import current_epoch_id
+from .publish import publish_weightset
+from .state import is_paused
+from .scoring import apply_deviation as scoring_apply_deviation
+from .scoring import weight_multiplier as scoring_weight_multiplier
+from .scoring import is_suspended as scoring_is_suspended
+from .scoreboard import Scoreboard, get_multiplier_from_scores
 
 
-def load_reports(in_dir: Path) -> List[EmissionsReport]:
-    reports: List[EmissionsReport] = []
-    for path in glob.glob(str(in_dir / "emissions_*_*.json")):
+def _load_and_verify_reports(in_dir: Path, report_type: str, from_json_func):
+    reports = []
+    reject_hmac = os.environ.get("AM_REJECT_HMAC", "0") == "1"
+    
+    for path in glob.glob(str(in_dir / f"{report_type}_*_*.json")):
         try:
             text = Path(path).read_text(encoding="utf-8")
-            rep = EmissionsReport.from_json(text)
-            # If signature present and has signer, keep only valid ones
-            if rep.signature and rep.signer_ss58:
-                ok = verify_with_ss58(text.encode("utf-8"), rep.signature, rep.signer_ss58)
+            rep = from_json_func(text)
+            
+            if rep.signature:
+                ok = True
+                if rep.signer_ss58:
+                    ok = verify_with_ss58(text.encode("utf-8"), rep.signature, rep.signer_ss58)
+                elif not reject_hmac:
+                    try:
+                        import logging as _log
+                        _log.getLogger("validator").warning(
+                            "accepting HMAC/non-hotkey %s report from %s (legacy)",
+                            report_type,
+                            rep.miner_id
+                        )
+                    except Exception:
+                        pass
+                else:
+                    ok = False
+                
                 if not ok:
                     continue
+
+            if scoring_is_suspended(in_dir, rep.signer_ss58 or rep.miner_id):
+                continue
+            
             reports.append(rep)
         except Exception:
             continue
+            
     return reports
 
 
+def load_reports(in_dir: Path) -> List[EmissionsReport]:
+    return _load_and_verify_reports(in_dir, "emissions", EmissionsReport.from_json)
+
+
 def load_price_reports(in_dir: Path) -> List[PriceReport]:
-    reps: List[PriceReport] = []
-    for path in glob.glob(str(in_dir / "prices_*_*.json")):
-        try:
-            text = Path(path).read_text(encoding="utf-8")
-            pr = PriceReport.from_json(text)
-            if pr.signature and pr.signer_ss58:
-                ok = verify_with_ss58(text.encode("utf-8"), pr.signature, pr.signer_ss58)
-                if not ok:
-                    continue
-            reps.append(pr)
-        except Exception:
-            continue
-    return reps
+    return _load_and_verify_reports(in_dir, "prices", PriceReport.from_json)
 
 
 def load_nav_reports(in_dir: Path) -> List[NavReport]:
-    reps: List[NavReport] = []
-    for path in glob.glob(str(in_dir / "nav_*_*.json")):
-        try:
-            text = Path(path).read_text(encoding="utf-8")
-            nr = NavReport.from_json(text)
-            if nr.signature and nr.signer_ss58:
-                ok = verify_with_ss58(text.encode("utf-8"), nr.signature, nr.signer_ss58)
-                if not ok:
+    return _load_and_verify_reports(in_dir, "nav", NavReport.from_json)
+
+
+def extract_reserves_from_price_reports(price_reports: List[PriceReport]) -> Dict[int, Tuple[float, float]]:
+    """Aggregate pool reserves for each netuid from PriceReport.prices entries when present.
+
+    Returns mapping netuid -> (reserve_token_qty, reserve_tao_qty) using medians across reports.
+    Missing or invalid entries are ignored.
+    """
+    from statistics import median
+    pools: Dict[int, List[Tuple[float, float]]] = {}
+    for pr in price_reports:
+        items = getattr(pr, "prices", None) or []
+        for it in items:
+            try:
+                uid = int(getattr(it, "uid"))
+                rtok = getattr(it, "pool_reserve_token", None)
+                rtao = getattr(it, "pool_reserve_tao", None)
+                if rtok is None or rtao is None:
                     continue
-            reps.append(nr)
+                vt = float(rtok)
+                va = float(rtao)
+                if vt > 0 and va > 0:
+                    pools.setdefault(uid, []).append((vt, va))
+            except Exception:
+                continue
+    out: Dict[int, Tuple[float, float]] = {}
+    for uid, arr in pools.items():
+        try:
+            vt_med = median([x for (x, _y) in arr])
+            va_med = median([y for (_x, y) in arr])
+            if vt_med > 0 and va_med > 0:
+                out[uid] = (float(vt_med), float(va_med))
         except Exception:
             continue
-    return reps
+    return out
 
 
 def _parse_iso8601_z(ts: str) -> datetime:
@@ -95,6 +140,57 @@ def consensus_prices(price_reports: List[PriceReport]) -> Dict[int, float]:
     return aggregate_map_median(buckets)
 
 
+def validate_price_freshness(price_reports: List[PriceReport], max_age_minutes: int = 5) -> List[PriceReport]:
+    """Filter price reports to only include fresh ones"""
+    from datetime import datetime, timezone, timedelta
+    
+    now = datetime.now(timezone.utc)
+    cutoff = now - timedelta(minutes=max_age_minutes)
+    
+    fresh_reports = []
+    for report in price_reports:
+        try:
+            report_time = _parse_iso8601_z(report.ts)
+            if report_time >= cutoff:
+                fresh_reports.append(report)
+        except Exception:
+            # Skip malformed timestamps
+            continue
+    
+    return fresh_reports
+
+
+def have_price_quorum_for_uid(uid: int, price_reports: List[PriceReport], stake_by_miner: Dict[str, float], quorum_threshold: float) -> bool:
+    # Compute coverage specific to uid in window using consensus_prices_with_twap mechanics
+    prices, quorum_map, _stale = consensus_prices_with_twap(
+        price_reports,
+        stake_by_miner=stake_by_miner,
+        window_minutes=30,
+        outlier_k=5.0,
+        quorum_threshold=quorum_threshold,
+        price_band_pct=float(os.environ.get("AM_PRICE_BAND_PCT", 0.2)),
+        stale_sec=int(os.environ.get("AM_PRICE_STALE_SEC", 120)),
+        out_dir=None,
+    )
+    return float(quorum_map.get(int(uid), 0.0)) >= float(quorum_threshold) and int(uid) in prices
+
+
+def have_global_price_quorum(price_reports: List[PriceReport], stake_by_miner: Dict[str, float], quorum_threshold: float) -> bool:
+    _p, quorum_map, _s = consensus_prices_with_twap(
+        price_reports,
+        stake_by_miner=stake_by_miner,
+        window_minutes=30,
+        outlier_k=5.0,
+        quorum_threshold=quorum_threshold,
+        price_band_pct=float(os.environ.get("AM_PRICE_BAND_PCT", 0.2)),
+        stale_sec=int(os.environ.get("AM_PRICE_STALE_SEC", 120)),
+        out_dir=None,
+    )
+    if not quorum_map:
+        return False
+    return all(float(v) >= float(quorum_threshold) for v in quorum_map.values())
+
+
 def _median(values: List[float]) -> float:
     if not values:
         return 0.0
@@ -111,7 +207,13 @@ def _mad(values: List[float], med: float) -> float:
 
 
 def build_miner_stake_map(emission_reports: List[EmissionsReport]) -> Dict[str, float]:
-    # Use the latest report per miner as their stake weight
+    # Prefer external oracle when provided; fallback to latest stake in reports
+    try:
+        oracle, _age = load_stake_oracle()
+        if oracle:
+            return {str(k): float(v) for k, v in oracle.items()}
+    except Exception:
+        pass
     latest_ts: Dict[str, str] = {}
     out: Dict[str, float] = {}
     for r in emission_reports:
@@ -132,23 +234,32 @@ def consensus_prices_with_twap(
     price_band_pct: float = 0.2,
     stale_sec: int = 120,
     out_dir: Optional[Path] = None,
+    max_reports: int = 1000,
+    max_uids_per_report: int = 1000
 ) -> Tuple[Dict[int, float], Dict[int, float], Dict[int, float]]:
     now = datetime.now(timezone.utc)
     window_start = now - timedelta(minutes=window_minutes)
     # Collect samples
-    samples: Dict[int, List[Tuple[str, float, float, bool]]] = {}
+    samples: Dict[int, List[Tuple[str, float, float, bool, str, datetime]]] = {}
     pin_times: Dict[int, List[datetime]] = {}
     # tuple: (miner_id, price, stake, in_window)
-    for rep in price_reports:
+    for rep in price_reports[:max_reports]:
         rep_dt = _parse_iso8601_z(rep.ts)
         # Prefer block_time if present for windowing
         pin_dt = _parse_iso8601_z(getattr(rep, "block_time", "")) if getattr(rep, "block_time", "") else rep_dt
         is_stale = (now - pin_dt) > timedelta(seconds=max(0, int(stale_sec)))
         in_win = (pin_dt >= window_start) and not is_stale
         miner_stake = float(stake_by_miner.get(rep.miner_id, 0.0))
+        
+        # Limit the number of uids to process per report
+        uid_count = 0
         for netuid, price in rep.prices_by_netuid.items():
-            samples.setdefault(netuid, []).append((rep.miner_id, float(price), miner_stake, in_win))
+            if uid_count >= max_uids_per_report:
+                break
+            samples.setdefault(netuid, []).append((rep.miner_id, float(price), miner_stake, in_win, rep.ts, pin_dt))
             pin_times.setdefault(netuid, []).append(pin_dt)
+            uid_count += 1
+            
         if is_stale and out_dir is not None:
             try:
                 logp = out_dir / "slashing_log.jsonl"
@@ -166,7 +277,7 @@ def consensus_prices_with_twap(
     # All-time weighted median per net for fallback
     all_buckets: Dict[int, List[WeightedValue]] = {}
     for netuid, arr in samples.items():
-        for (_mid, price, stake, _in_win) in arr:
+        for (_mid, price, stake, _in_win, _ts, _pin) in arr:
             if stake > 0:
                 all_buckets.setdefault(netuid, []).append(WeightedValue(value=price, weight=stake))
     all_time = aggregate_map_median(all_buckets)
@@ -178,7 +289,7 @@ def consensus_prices_with_twap(
     total_stake = sum(max(0.0, s) for s in stake_by_miner.values()) or 1.0
     offenders: List[Dict[str, object]] = []
     for netuid, arr in samples.items():
-        win_vals = [price for (_mid, price, _stake, in_win) in arr if in_win]
+        win_vals = [price for (_mid, price, _stake, in_win, _ts, _pin) in arr if in_win]
         if not win_vals:
             prices_out[netuid] = all_time.get(netuid, 0.0)
             quorum_meta[netuid] = 0.0
@@ -192,20 +303,76 @@ def consensus_prices_with_twap(
         # Filter values outside k * MAD
         filtered: List[Tuple[str, float, float]] = []  # (miner_id, price, stake)
         win_stake_sum = 0.0
-        for (mid, price, stake, in_win) in arr:
+        for (mid, price, stake, in_win, ts_str, pin_dt) in arr:
             if not in_win:
                 continue
             if mad > 0 and abs(price - med) > outlier_k * mad:
-                offenders.append({"type": "price_outlier", "netuid": netuid, "miner_id": mid, "price": price, "median": med, "mad": mad})
+                offenders.append({
+                    "ts": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
+                    "type": "deviation",
+                    "metric": "price",
+                    "uid": int(netuid),
+                    "report_value": float(price),
+                    "median": float(med),
+                    "pct_diff": (abs(price - med) / med * 100.0) if med else 0.0,
+                    "miner_hotkey": mid,
+                })
+                try:
+                    pct_bps = int(abs(price - med) / med * 10000.0) if med else 0
+                    scoring_apply_deviation(out_dir or Path("."), mid, pct_bps)
+                    # Scoreboard: record price sample
+                    try:
+                        from .scoreboard import Scoreboard
+                        scb = Scoreboard(out_dir or Path("."))
+                        # Slot early calculation
+                        interval = int(os.environ.get("AM_PRICE_INTERVAL_SEC", 60))
+                        slot_start = int(pin_dt.timestamp() // max(1, interval)) * max(1, interval)
+                        early = (int(pin_dt.timestamp()) - slot_start) <= (max(1, interval) // 2)
+                        scb.record_price_sample(mid, ts_str, pct_bps, early)
+                    except Exception:
+                        pass
+                except Exception:
+                    pass
                 continue
             # Enforce band relative to median (e.g., 20%)
             if med > 0 and abs(price - med) / med > max(0.0, price_band_pct):
-                offenders.append({"type": "price_band_violation", "netuid": netuid, "miner_id": mid, "price": price, "median": med, "band_pct": price_band_pct})
+                offenders.append({
+                    "ts": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
+                    "type": "deviation",
+                    "metric": "price",
+                    "uid": int(netuid),
+                    "report_value": float(price),
+                    "median": float(med),
+                    "pct_diff": (abs(price - med) / med * 100.0) if med else 0.0,
+                    "miner_hotkey": mid,
+                })
+                try:
+                    pct_bps = int(abs(price - med) / med * 10000.0) if med else 0
+                    scoring_apply_deviation(out_dir or Path("."), mid, pct_bps)
+                    try:
+                        from .scoreboard import Scoreboard
+                        scb = Scoreboard(out_dir or Path("."))
+                        interval = int(os.environ.get("AM_PRICE_INTERVAL_SEC", 60))
+                        slot_start = int(pin_dt.timestamp() // max(1, interval)) * max(1, interval)
+                        early = (int(pin_dt.timestamp()) - slot_start) <= (max(1, interval) // 2)
+                        scb.record_price_sample(mid, ts_str, pct_bps, early)
+                    except Exception:
+                        pass
+                except Exception:
+                    pass
                 continue
             if stake <= 0:
                 continue
-            filtered.append((mid, price, stake))
-            win_stake_sum += stake
+            # Apply stake multiplier from scoring
+            try:
+                mult = scoring_weight_multiplier(out_dir or Path("."), mid)
+                # Compose with scoreboard multiplier if present
+                mult *= get_multiplier_from_scores(out_dir or Path("."), mid)
+            except Exception:
+                mult = 1.0
+            eff_stake = max(0.0, stake) * max(0.0, float(mult))
+            filtered.append((mid, price, eff_stake))
+            win_stake_sum += eff_stake
         coverage = win_stake_sum / total_stake
         quorum_meta[netuid] = coverage
         if not filtered:
@@ -229,7 +396,6 @@ def consensus_prices_with_twap(
             logp = out_dir / "slashing_log.jsonl"
             with open(logp, "a", encoding="utf-8") as f:
                 for entry in offenders:
-                    entry["ts"] = time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())
                     f.write(json.dumps(entry, separators=(",", ":")) + "\n")
         except Exception:
             pass
@@ -266,11 +432,15 @@ def _day_key(dt: datetime) -> str:
     return d.isoformat()
 
 
-def _aggregate_daily_emissions_by_day(reports: Iterable[EmissionsReport], out_dir: Optional[Path] = None) -> Dict[str, Dict[int, float]]:
+def _aggregate_daily_emissions_by_day(reports: Iterable[EmissionsReport], out_dir: Optional[Path] = None, max_reports: int = 1000, max_uids_per_report: int = 1000) -> Dict[str, Dict[int, float]]:
     # Build per-day consensus emissions using stake-weighted medians across miners
     # Keep miner identity for filtering and quorum checks
-    day_samples: Dict[str, Dict[int, List[Tuple[str, float, float]]]] = {}
+    day_samples: Dict[str, Dict[int, List[Tuple[str, float, float, str]]]] = {}
+    
+    report_count = 0
     for rep in reports:
+        if report_count >= max_reports:
+            break
         try:
             rep_dt = _parse_iso8601_z(rep.snapshot_ts)
         except Exception:
@@ -278,8 +448,14 @@ def _aggregate_daily_emissions_by_day(reports: Iterable[EmissionsReport], out_di
         dk = _day_key(rep_dt)
         if dk not in day_samples:
             day_samples[dk] = {}
+            
+        uid_count = 0
         for netuid, val in rep.emissions_by_netuid.items():
-            day_samples[dk].setdefault(netuid, []).append((rep.miner_id, float(val), max(0.0, float(rep.stake_tao))))
+            if uid_count >= max_uids_per_report:
+                break
+            day_samples[dk].setdefault(netuid, []).append((rep.miner_id, float(val), max(0.0, float(rep.stake_tao)), rep.snapshot_ts))
+            uid_count += 1
+        report_count += 1
 
     quorum_threshold = float(os.environ.get("AM_EMISSIONS_QUORUM", 0.33))
     band_pct = float(os.environ.get("AM_EMISSIONS_BAND_PCT", 0.5))
@@ -290,13 +466,13 @@ def _aggregate_daily_emissions_by_day(reports: Iterable[EmissionsReport], out_di
         # Compute total stake for quorum denominator (latest per miner in this day)
         miner_stake_latest: Dict[str, float] = {}
         for arr in net_map.values():
-            for (mid, _v, stake) in arr:
+            for (mid, _v, stake, _ts) in arr:
                 miner_stake_latest[mid] = stake
         total_stake = sum(miner_stake_latest.values()) or 1.0
 
         out_map: Dict[int, float] = {}
         for netuid, arr in net_map.items():
-            vals = [v for (_mid, v, _s) in arr]
+            vals = [v for (_mid, v, _s, _ts) in arr]
             if not vals:
                 out_map[netuid] = 0.0
                 continue
@@ -304,17 +480,76 @@ def _aggregate_daily_emissions_by_day(reports: Iterable[EmissionsReport], out_di
             mad = _mad(vals, med)
             filtered: List[Tuple[str, float, float]] = []
             covered = 0.0
-            for (mid, v, stake) in arr:
+            for (mid, v, stake, rep_ts) in arr:
                 if mad > 0 and abs(v - med) > outlier_k * mad:
-                    offenders.append({"type": "emission_outlier", "day": dk, "netuid": netuid, "miner_id": mid, "value": v, "median": med, "mad": mad})
+                    offenders.append({
+                        "ts": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
+                        "type": "deviation",
+                        "metric": "emissions",
+                        "uid": int(netuid),
+                        "report_value": float(v),
+                        "median": float(med),
+                        "pct_diff": (abs(v - med) / med * 100.0) if med else 0.0,
+                        "miner_hotkey": mid,
+                    })
+                    try:
+                        pct_bps = int(abs(v - med) / med * 10000.0) if med else 0
+                        scoring_apply_deviation(out_dir or Path("."), mid, pct_bps)
+                        # Scoreboard: record emission sample with delay/on_time
+                        try:
+                            scb = Scoreboard(out_dir or Path("."))
+                            # snapshot at configured hour UTC
+                            snap_hour = int(os.environ.get("AM_SNAPSHOT_HOUR_UTC", 16))
+                            rep_dt = _parse_iso8601_z(rep_ts)
+                            snap_dt = rep_dt.replace(hour=snap_hour, minute=0, second=0, microsecond=0)
+                            delay_sec = max(0, int((rep_dt - snap_dt).total_seconds()))
+                            L_MAX = int(os.environ.get("AM_SCORE_L_MAX_SEC", 60))
+                            on_time = delay_sec <= L_MAX
+                            scb.record_emission_sample(mid, rep_ts, pct_bps, delay_sec, on_time)
+                        except Exception:
+                            pass
+                    except Exception:
+                        pass
                     continue
                 if med > 0 and abs(v - med) / med > max(0.0, band_pct):
-                    offenders.append({"type": "emission_band_violation", "day": dk, "netuid": netuid, "miner_id": mid, "value": v, "median": med, "band_pct": band_pct})
+                    offenders.append({
+                        "ts": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
+                        "type": "deviation",
+                        "metric": "emissions",
+                        "uid": int(netuid),
+                        "report_value": float(v),
+                        "median": float(med),
+                        "pct_diff": (abs(v - med) / med * 100.0) if med else 0.0,
+                        "miner_hotkey": mid,
+                    })
+                    try:
+                        pct_bps = int(abs(v - med) / med * 10000.0) if med else 0
+                        scoring_apply_deviation(out_dir or Path("."), mid, pct_bps)
+                        try:
+                            scb = Scoreboard(out_dir or Path("."))
+                            snap_hour = int(os.environ.get("AM_SNAPSHOT_HOUR_UTC", 16))
+                            rep_dt = _parse_iso8601_z(rep_ts)
+                            snap_dt = rep_dt.replace(hour=snap_hour, minute=0, second=0, microsecond=0)
+                            delay_sec = max(0, int((rep_dt - snap_dt).total_seconds()))
+                            L_MAX = int(os.environ.get("AM_SCORE_L_MAX_SEC", 60))
+                            on_time = delay_sec <= L_MAX
+                            scb.record_emission_sample(mid, rep_ts, pct_bps, delay_sec, on_time)
+                        except Exception:
+                            pass
+                    except Exception:
+                        pass
                     continue
                 if stake <= 0:
                     continue
-                filtered.append((mid, v, stake))
-                covered += stake
+                # Apply scoring multiplier
+                try:
+                    mult = scoring_weight_multiplier(out_dir or Path("."), mid)
+                    mult *= get_multiplier_from_scores(out_dir or Path("."), mid)
+                except Exception:
+                    mult = 1.0
+                eff = max(0.0, stake) * max(0.0, float(mult))
+                filtered.append((mid, v, eff))
+                covered += eff
             coverage = covered / total_stake
             if not filtered or coverage < quorum_threshold:
                 # Fallback to simple median without weights
@@ -329,7 +564,6 @@ def _aggregate_daily_emissions_by_day(reports: Iterable[EmissionsReport], out_di
             logp = out_dir / "slashing_log.jsonl"
             with open(logp, "a", encoding="utf-8") as f:
                 for entry in offenders:
-                    entry["ts"] = time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())
                     f.write(json.dumps(entry, separators=(",", ":")) + "\n")
         except Exception:
             pass
@@ -356,7 +590,14 @@ def _load_json(path: Path) -> Dict[str, any]:
     try:
         return json.loads(path.read_text(encoding="utf-8"))
     except Exception:
-        return {}
+        # Lenient fallback: quote bare numeric keys like {2: true} → {"2": true}
+        try:
+            import re as _re
+            raw = path.read_text(encoding="utf-8")
+            fixed = _re.sub(r'([\{,\s])(\d+)\s*:', r'\1"\2":', raw)
+            return json.loads(fixed)
+        except Exception:
+            return {}
 
 
 def _save_json(path: Path, data: Dict[str, any]) -> None:
@@ -378,29 +619,56 @@ def _update_first_seen(out_dir: Path, today_key: str, todays_netuids: Iterable[i
 
 
 def _eligibility_overrides(out_dir: Path) -> Dict[str, bool]:
-    return _load_json(out_dir / "state" / "eligibility_overrides.json")
+    raw = _load_json(out_dir / "state" / "eligibility_overrides.json")
+    try:
+        return {str(k): bool(v) for k, v in raw.items()}
+    except Exception:
+        return {}
+
+
+def has_continuous_emissions(out_dir: Path, day_map: Dict[str, Dict[int, float]], uid: int, days: int = 90, allowed_gaps: int = 0) -> bool:
+    """Return True if uid has nonzero emissions on each of the last `days` calendar days up to the latest day,
+    allowing at most `allowed_gaps` missing/zero days.
+    Uses the in-memory day_map built for this aggregation run; does not require history file.
+    """
+    if not day_map:
+        return False
+    days_sorted = sorted(day_map.keys())
+    last_day = days_sorted[-1]
+    # Build the last N distinct day keys (inclusive of last_day)
+    window_keys = days_sorted[-days:] if len(days_sorted) >= days else days_sorted
+    # Count gaps (missing or zero) for uid across window
+    gaps = 0
+    for dk in window_keys:
+        val = float(day_map.get(dk, {}).get(int(uid), 0.0))
+        if val <= 0:
+            gaps += 1
+            if gaps > max(0, int(allowed_gaps)):
+                return False
+    # If we had fewer than `days` total keys, require all present days to be nonzero and treat missing as gaps
+    if len(window_keys) < days:
+        missing = days - len(window_keys)
+        if gaps + missing > max(0, int(allowed_gaps)):
+            return False
+    return True
 
 
 def _filter_by_eligibility(out_dir: Path, emissions_avg: Dict[int, float], now_dt: datetime, months: int = 3) -> Dict[int, float]:
-    first_seen = _load_json(out_dir / "state" / "emission_first_seen.json")
+    """Deprecated: age-based eligibility replaced by continuity check. Kept for compatibility."""
     overrides = _eligibility_overrides(out_dir)
-    min_age_days = int(30 * months)
+    # Build continuity map from persisted history if available; else default to in-memory during compute
+    try:
+        hist = _load_json(out_dir / "state" / "eligibility_continuity.json")
+    except Exception:
+        hist = {}
     eligible: Dict[int, float] = {}
     for netuid, val in emissions_avg.items():
         key = str(netuid)
         if overrides.get(key) is True:
             eligible[netuid] = val
             continue
-        ts = first_seen.get(key)
-        if not ts:
-            # Not seen before; skip until recorded and ages in subsequent runs
-            continue
-        try:
-            first_dt = _parse_iso8601_z(ts)
-        except Exception:
-            continue
-        age_days = (now_dt - first_dt).days
-        if age_days >= min_age_days:
+        ok = bool(hist.get(key, False))
+        if ok:
             eligible[netuid] = val
     return eligible
 
@@ -452,26 +720,22 @@ def compute_rolling_emissions(out_dir: Path, reports: List[EmissionsReport]) -> 
         c = counts.get(n, 0) or 1
         avg[n] = s / float(c)
 
-    # Compute eligibility map and also provide filtered averages for weighting
-    first_seen = _load_json(out_dir / "state" / "emission_first_seen.json")
+    # Compute eligibility map using continuity (>= 90 continuous days), with overrides
     overrides = _eligibility_overrides(out_dir)
-    min_age_days = int(30 * 3)
     eligibility: Dict[int, bool] = {}
     for netuid, _v in avg.items():
         key = str(netuid)
         if overrides.get(key) is True:
             eligibility[netuid] = True
             continue
-        ts = first_seen.get(key)
-        if not ts:
-            eligibility[netuid] = False
-            continue
-        try:
-            first_dt = _parse_iso8601_z(ts)
-        except Exception:
-            eligibility[netuid] = False
-            continue
-        eligibility[netuid] = ((now_dt - first_dt).days >= min_age_days)
+        eligibility[netuid] = has_continuous_emissions(out_dir, day_map, uid=int(netuid), days=90, allowed_gaps=0)
+
+    # Optionally persist per-uid continuity flags for ops and faster checks
+    try:
+        cont = {str(int(k)): bool(v) for k, v in eligibility.items()}
+        _save_json(out_dir / "state" / "eligibility_continuity.json", cont)
+    except Exception:
+        pass
 
     return avg, eligibility
 
@@ -501,8 +765,9 @@ def aggregate_and_emit(in_dir: Path, out_file: Path, top_n: int = 20) -> None:
     weights, avg_emissions, eligibility = compute_rolling_emissions_and_weights(in_dir, reps, top_n=top_n)
     # Consensus prices with 30-minute TWAP fallback and outlier filtering; stake-weighted with quorum
     stake_by_miner = build_miner_stake_map(reps)
+    price_reports = load_price_reports(in_dir)
     prices, price_quorum, price_staleness = consensus_prices_with_twap(
-        load_price_reports(in_dir),
+        price_reports,
         stake_by_miner=stake_by_miner,
         window_minutes=30,
         outlier_k=5.0,
@@ -518,31 +783,41 @@ def aggregate_and_emit(in_dir: Path, out_file: Path, top_n: int = 20) -> None:
         vault = initialize_vault(weights, prices)
         save_vault(vault_path, vault)
     sim_nav = compute_nav(prices, vault) if vault else 0.0
-    # Build WeightSet epoch info and hash
+    # Build WeightSet epoch info and hash (canonicalized, deterministic)
     eid = current_epoch_id()
     now_ts = time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())
+    # Convert to bps and constituents
+    bps_map, weights = _to_bps(weights) if weights else ({}, {})
+    constituents = [{"uid": int(k), "weight_bps": int(v), "emissions_14d": float(avg_emissions.get(k, 0.0))} for k, v in sorted(bps_map.items())]
+    # Canonical WeightSet v1 container
     ws_obj = {
+        "schema_version": "1.0.0",
         "epoch_id": int(eid),
         "as_of_ts": now_ts,
         "weights": {str(k): float(v) for k, v in weights.items()},
+        "epoch_index": int(eid),
+        "cutover_ts": __import__("subnet.sim.epoch", fromlist=["next_epoch_cutover_ts"]).next_epoch_cutover_ts(),
+        "method": "emissions_weighted_14d",
+        "eligibility_min_days": 90,
+        "constituents": [{"uid": c["uid"], "weight_bps": c["weight_bps"], "emissions_14d": c["emissions_14d"]} for c in constituents],
     }
     canon = json.dumps(ws_obj, separators=(",", ":"), sort_keys=True)
     ws_hash = hashlib.sha256(canon.encode("utf-8")).hexdigest()
     # Persist epoch WeightSet alongside
     try:
-        (in_dir / f"weightset_epoch_{eid}.json").write_text(json.dumps(ws_obj, separators=(",", ":")), encoding="utf-8")
+        epoch_path = in_dir / f"weightset_epoch_{eid}.json"
+        epoch_path.write_text(canon, encoding="utf-8")
+        # Write sha256 artifact and call publish stub (non-blocking)
+        try:
+            (in_dir / f"weightset_epoch_{eid}.sha256").write_text(ws_hash + "\n", encoding="utf-8")
+        except Exception:
+            pass
+        try:
+            publish_weightset(ws_hash, str(epoch_path))
+        except Exception:
+            pass
     except Exception:
         pass
-
-    # Enforce exactly top-N and renormalize
-    if weights:
-        items = sorted(weights.items(), key=lambda kv: kv[1], reverse=True)
-        if top_n and top_n > 0:
-            items = items[:top_n]
-        denom = sum(w for _, w in items) or 1.0
-        weights = {k: (w / denom) for k, w in items}
-
-    bps_map, weights = _to_bps(weights) if weights else ({}, {})
 
     result = {
         "weights": weights,

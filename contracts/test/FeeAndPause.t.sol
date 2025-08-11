@@ -4,7 +4,7 @@ pragma solidity ^0.8.21;
 import "forge-std/Test.sol";
 import {Vault} from "../src/Vault.sol";
 import {ValidatorSet} from "../src/ValidatorSet.sol";
-import {Router} from "../src/Router.sol";
+import {Router, IAMM} from "../src/Router.sol";
 import {IOracle} from "../src/IOracle.sol";
 
 contract DummyAMM2 is IAMM {
@@ -30,6 +30,8 @@ contract FeeAndPauseTest is Test {
     DummyOracle2 o;
 
     function setUp() public {
+        // Advance time to avoid underflow when subtracting 100 days in tests
+        vm.warp(block.timestamp + 200 days);
         vs = new ValidatorSet(address(this));
         vault = new Vault(address(vs));
         r = new Router(address(new DummyAMM2()));
@@ -43,6 +45,8 @@ contract FeeAndPauseTest is Test {
         for (uint256 i = 0; i < 20; i++) { netuids[i] = i + 1; weights[i] = 500; }
         bytes32 h = keccak256(abi.encode(epochId, netuids, weights));
         vs.setValidator(address(this), true);
+        // mark first seen for 20 uids
+        for (uint256 i = 0; i < 20; i++) { vs.recordFirstSeen(netuids[i], block.timestamp - 100 days); }
         vs.publishWeightSet(epochId, netuids, weights, h);
     }
 
@@ -76,7 +80,9 @@ contract FeeAndPauseTest is Test {
         vault.setAssetPaused(1, true);
         vm.expectRevert(); vault.mintInKind(nets, qtys, address(this));
         // Other asset should pass
-        nets[0] = 2; vm.expectRevert(false); vault.setCompositionToleranceBps(10000); uint256 minted = vault.mintInKind(nets, qtys, address(this));
+        nets[0] = 2;
+        vault.setCompositionToleranceBps(10000);
+        uint256 minted = vault.mintInKind(nets, qtys, address(this));
         assertGt(minted, 0);
     }
 

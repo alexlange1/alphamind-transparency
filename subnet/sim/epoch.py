@@ -18,6 +18,22 @@ def current_epoch_id(now_unix: Optional[int] = None) -> int:
     return max(0, (now_unix - ANCHOR_UNIX) // EPOCH_SECONDS)
 
 
+def next_epoch_cutover_ts(now_unix: Optional[int] = None) -> str:
+    """Return ISO8601Z timestamp for next epoch boundary after now.
+    Non-breaking helper; used by API/dashboard later.
+    """
+    if now_unix is None:
+        now_unix = int(time.time())
+    idx = current_epoch_id(now_unix)
+    # end time of current epoch = start + (idx+1)*EPOCH_SECONDS
+    cut = ANCHOR_UNIX + (idx + 1) * EPOCH_SECONDS
+    return time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime(cut))
+
+
+def current_epoch_index(now_unix: Optional[int] = None) -> int:
+    return current_epoch_id(now_unix)
+
+
 @dataclass
 class EpochState:
     epoch_id: int

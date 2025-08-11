@@ -49,6 +49,7 @@ contract TAO20 {
     }
 
     function mint(address to, uint256 amount) external onlyMinter {
+        require(to != address(0), "mint to zero address");
         totalSupply += amount;
         balanceOf[to] += amount;
         emit Transfer(address(0), to, amount);

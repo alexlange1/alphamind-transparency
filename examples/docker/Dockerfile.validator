@@ -1,0 +1,45 @@
+# Alphamind Validator Docker Image
+# Inspired by successful Bittensor subnet patterns
+
+FROM python:3.11-slim
+
+# Set working directory
+WORKDIR /alphamind
+
+# Install system dependencies
+RUN apt-get update && apt-get install -y \
+    git \
+    curl \
+    build-essential \
+    && rm -rf /var/lib/apt/lists/*
+
+# Copy requirements and install Python dependencies
+COPY subnet/requirements.txt ./
+RUN pip install --no-cache-dir -r requirements.txt \
+    && pip install uvicorn[standard]
+
+# Copy application code
+COPY . .
+
+# Create non-root user
+RUN useradd -m -u 1000 alphamind && \
+    chown -R alphamind:alphamind /alphamind
+USER alphamind
+
+# Create directories
+RUN mkdir -p /alphamind/data/input /alphamind/data/output
+
+# Expose API port
+EXPOSE 8000
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
+    CMD curl -f http://localhost:8000/healthz || exit 1
+
+# Default command - start API server
+CMD ["uvicorn", "subnet.validator.api:app", "--host", "0.0.0.0", "--port", "8000"]
+
+# Labels
+LABEL maintainer="Alphamind Labs <contact@alphamind.xyz>"
+LABEL description="Alphamind TAO20 Subnet Validator"
+LABEL version="1.0.0"

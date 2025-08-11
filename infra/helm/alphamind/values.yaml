@@ -1,0 +1,34 @@
+replicaCount: 1
+
+image:
+  repository: alphamind/validator
+  tag: latest
+  pullPolicy: IfNotPresent
+
+service:
+  type: ClusterIP
+  port: 8000
+
+env:
+  AM_OUT_DIR: /data/out
+  AM_REQUIRE_SIGNING: "1"
+  AM_REQUIRE_HOTKEY: "1"
+  AM_REJECT_HMAC: "1"
+  AM_REQUIRE_PUBLISH: "1"
+  AM_REQUIRE_RESERVES: "1"
+  AM_PRICE_QUORUM: "0.7"
+  AM_PRICE_STALE_SEC: "120"
+  AM_CHAIN: "0"
+
+secrets:
+  AM_API_TOKEN: ""
+  AM_ADMIN_TOKEN: ""
+  AM_RPC_URL: ""
+  AM_CHAIN_PRIVKEY: ""
+  AM_REGISTRY_ADDR: ""
+  AM_VALIDATORSET_ADDR: ""
+
+persistence:
+  enabled: true
+  size: 5Gi
+

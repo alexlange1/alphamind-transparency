@@ -43,7 +43,7 @@ contract OracleAggregator is IOracle {
         Sample[] memory s = _samplesByNet[netuid];
         if (s.length == 0) return (0, 0);
         // Filter by maxAge
-        uint256 cutoff = block.timestamp - maxAgeSec;
+        uint256 cutoff = block.timestamp > maxAgeSec ? (block.timestamp - maxAgeSec) : 0;
         uint256 count;
         for (uint256 i = s.length; i > 0; i--) {
             if (s[i-1].ts >= cutoff) count++;
@@ -62,7 +62,7 @@ contract OracleAggregator is IOracle {
     function getTwap(uint256 netuid, uint256 windowSec) external view returns (uint256) {
         Sample[] memory s = _samplesByNet[netuid];
         if (s.length == 0) return 0;
-        uint256 cutoff = block.timestamp - windowSec;
+        uint256 cutoff = block.timestamp > windowSec ? (block.timestamp - windowSec) : 0;
         uint256 sum; uint256 cnt;
         for (uint256 i = s.length; i > 0; i--) {
             if (s[i-1].ts >= cutoff) { sum += s[i-1].price; cnt++; }

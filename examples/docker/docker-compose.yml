@@ -1,0 +1,107 @@
+version: '3.8'
+
+services:
+  # Alphamind Validator
+  validator:
+    build:
+      context: ../..
+      dockerfile: examples/docker/Dockerfile.validator
+    container_name: alphamind-validator
+    ports:
+      - "8000:8000"
+    environment:
+      - AM_OUT_DIR=/alphamind/data/output
+      - AM_IN_DIR=/alphamind/data/input
+      - AM_API_TOKEN=dev-token
+      - AM_CORS_ORIGINS=*
+      - AM_EMISSIONS_QUORUM=0.33
+      - AM_PRICE_QUORUM=0.33
+    volumes:
+      - validator_data:/alphamind/data
+      - ./config:/alphamind/config:ro
+    networks:
+      - alphamind
+    restart: unless-stopped
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.alphamind.rule=Host(`validator.alphamind.local`)"
+      - "traefik.http.services.alphamind.loadbalancer.server.port=8000"
+
+  # Alphamind Miner
+  miner:
+    build:
+      context: ../..
+      dockerfile: examples/docker/Dockerfile.miner
+    container_name: alphamind-miner
+    environment:
+      - AM_OUT_DIR=/alphamind/data/output
+      - AM_MINER_SECRET=demo-secret
+      - AM_WALLET=default
+      - AM_HOTKEY=default
+    volumes:
+      - miner_data:/alphamind/data
+      - ./config:/alphamind/config:ro
+    networks:
+      - alphamind
+    restart: unless-stopped
+    depends_on:
+      - validator
+
+  # Redis for caching (optional)
+  redis:
+    image: redis:7-alpine
+    container_name: alphamind-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - alphamind
+    restart: unless-stopped
+    command: redis-server --appendonly yes
+
+  # Monitoring with Prometheus (optional)
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: alphamind-prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus_data:/prometheus
+    networks:
+      - alphamind
+    restart: unless-stopped
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/etc/prometheus/console_libraries'
+      - '--web.console.templates=/etc/prometheus/consoles'
+
+  # Grafana for visualization (optional)
+  grafana:
+    image: grafana/grafana:latest
+    container_name: alphamind-grafana
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin123
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./monitoring/grafana:/etc/grafana/provisioning:ro
+    networks:
+      - alphamind
+    restart: unless-stopped
+    depends_on:
+      - prometheus
+
+volumes:
+  validator_data:
+  miner_data:
+  redis_data:
+  prometheus_data:
+  grafana_data:
+
+networks:
+  alphamind:
+    driver: bridge

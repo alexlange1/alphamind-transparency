@@ -4,7 +4,7 @@ pragma solidity ^0.8.21;
 import "forge-std/Test.sol";
 import {Vault} from "../src/Vault.sol";
 import {ValidatorSet} from "../src/ValidatorSet.sol";
-import {Router} from "../src/Router.sol";
+import {Router, IAMM} from "../src/Router.sol";
 import {IOracle} from "../src/IOracle.sol";
 
 contract VaultTest is Test {
@@ -13,6 +13,7 @@ contract VaultTest is Test {
     Router r;
 
     function setUp() public {
+        vm.warp(block.timestamp + 200 days);
         vs = new ValidatorSet(address(this));
         vault = new Vault(address(vs));
         r = new Router(address(new DummyAMM()));
@@ -27,6 +28,8 @@ contract VaultTest is Test {
         for (uint256 i = 0; i < 20; i++) { netuids[i] = i + 1; weights[i] = 500; }
         bytes32 h = keccak256(abi.encode(epochId, netuids, weights));
         vs.setValidator(address(this), true);
+        // set first seen for eligibility
+        for (uint256 i = 0; i < 20; i++) { vs.recordFirstSeen(netuids[i], block.timestamp - 100 days); }
         vs.publishWeightSet(epochId, netuids, weights, h);
     }
 
@@ -61,6 +64,15 @@ contract VaultTest is Test {
 
 contract DummyOracle is IOracle {
     function getPrice(uint256) external pure returns (uint256) { return 1e18; }
+    function getPriceWithTime(uint256) external view returns (uint256, uint256) { return (1e18, block.timestamp); }
 }
 
+
+contract DummyAMM is IAMM {
+    function getQuote(uint256, uint256 taoIn) external pure returns (uint256 qtyOut) { return taoIn; }
+    function swapTaoForNet(uint256, uint256 taoIn, uint256 minOut, address) external pure returns (uint256 qtyOut) {
+        require(taoIn >= minOut, "slip");
+        return taoIn;
+    }
+}
 

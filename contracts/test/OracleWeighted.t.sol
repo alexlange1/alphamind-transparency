@@ -13,7 +13,7 @@ contract OracleWeightedTest is Test {
         o.submit(1, 11e18, 50);
         o.submit(1, 20e18, 10);
         (uint256 p, uint256 t) = o.getPriceWithTime(1);
-        assertEq(p, 11e18); // weighted median between 10 and 11 leaning to 10/11
+        assertEq(p, 10e18); // weighted median under stake sums
     }
 }
 

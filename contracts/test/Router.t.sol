@@ -2,7 +2,7 @@
 pragma solidity ^0.8.21;
 
 import "forge-std/Test.sol";
-import {Router} from "../src/Router.sol";
+import {Router, IAMM} from "../src/Router.sol";
 
 contract DummyAMM is IAMM {
     function getQuote(uint256, uint256 taoIn) external pure returns (uint256 qtyOut) { return taoIn * 2; }

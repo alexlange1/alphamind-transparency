@@ -80,3 +80,16 @@ def test_weights_bps_and_top20():
     assert len(bps_trim) == 20
 
 
+def test_stake_oracle_age_exposed_in_metrics(tmp_path: Path, monkeypatch):
+    from fastapi.testclient import TestClient
+    from subnet.validator.api import app
+    data = {"miners": {"m1": 10.0}, "ts": int(time.time()) - 5}
+    oracle_path = tmp_path / "oracle.json"
+    oracle_path.write_text(json.dumps(data), encoding="utf-8")
+    monkeypatch.setenv("AM_STAKE_ORACLE_JSON", str(oracle_path))
+    client = TestClient(app)
+    r = client.get("/metrics", params={"in_dir": str(tmp_path)})
+    assert r.status_code == 200
+    m = r.json()
+    assert m.get("stake_oracle_age_sec") is not None
+

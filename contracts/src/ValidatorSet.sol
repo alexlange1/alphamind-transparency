@@ -2,9 +2,11 @@
 pragma solidity ^0.8.21;
 
 import {IValidatorSet} from "./IValidatorSet.sol";
+import {IWeightsetRegistry} from "./IWeightsetRegistry.sol";
 
 contract ValidatorSet is IValidatorSet {
     address public admin;
+    IWeightsetRegistry public registry;
     mapping(address => bool) public isValidator;
     uint256 public override currentEpochId;
 
@@ -14,14 +16,35 @@ contract ValidatorSet is IValidatorSet {
     mapping(uint256 => uint256) public firstSeenTs; // netuid => unix ts
     mapping(uint256 => bool) public eligibilityOverride; // admin override
 
+    event RegistryChanged(address indexed newRegistry);
+    event ValidatorChanged(address indexed validator, bool isValidator);
+    event FirstSeenChanged(uint256 indexed netuid, uint256 timestamp);
+    event EligibilityOverrideChanged(uint256 indexed netuid, bool isEligible);
+
     modifier onlyAdmin() { require(msg.sender == admin, "not admin"); _; }
     modifier onlyValidator() { require(isValidator[msg.sender], "not validator"); _; }
 
     constructor(address _admin) { admin = _admin; }
 
-    function setValidator(address val, bool ok) external onlyAdmin { isValidator[val] = ok; }
-    function recordFirstSeen(uint256 netuid, uint256 ts) external onlyAdmin { if (firstSeenTs[netuid] == 0 || ts < firstSeenTs[netuid]) firstSeenTs[netuid] = ts; }
-    function setEligibilityOverride(uint256 netuid, bool ok) external onlyAdmin { eligibilityOverride[netuid] = ok; }
+    function setRegistry(address reg) external onlyAdmin { 
+        registry = IWeightsetRegistry(reg); 
+        emit RegistryChanged(reg);
+    }
+
+    function setValidator(address val, bool ok) external onlyAdmin { 
+        isValidator[val] = ok; 
+        emit ValidatorChanged(val, ok);
+    }
+    function recordFirstSeen(uint256 netuid, uint256 ts) external onlyAdmin { 
+        if (firstSeenTs[netuid] == 0 || ts < firstSeenTs[netuid]) {
+            firstSeenTs[netuid] = ts; 
+            emit FirstSeenChanged(netuid, ts);
+        }
+    }
+    function setEligibilityOverride(uint256 netuid, bool ok) external onlyAdmin { 
+        eligibilityOverride[netuid] = ok; 
+        emit EligibilityOverrideChanged(netuid, ok);
+    }
 
     function publishWeightSet(uint256 epochId, uint256[] calldata netuids, uint16[] calldata weightsBps, bytes32 hash) external override onlyValidator {
         require(netuids.length == weightsBps.length, "len mismatch");
@@ -37,6 +60,11 @@ contract ValidatorSet is IValidatorSet {
         }
         bytes32 calc = keccak256(abi.encode(epochId, netuids, weightsBps));
         require(calc == hash, "hash mismatch");
+        // If registry set, verify on-chain published hash matches
+        if (address(registry) != address(0)) {
+            (uint256 e, bytes32 h,,,,,) = registry.byEpoch(epochId);
+            require(e == epochId && h == hash, "registry mismatch");
+        }
         epochWeightHash[epochId] = hash;
         // Persist arrays for retrieval
         _epochNetuids[epochId] = netuids;

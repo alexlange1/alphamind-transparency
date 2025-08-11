@@ -9,12 +9,19 @@ from ..validator.service import aggregate_and_emit
 from .epoch import current_epoch_id, EpochState
 from ..tao20.models import WeightSet
 from ..sim.vault import load_vault, save_vault, apply_management_fee
+from ..validator.scoreboard import Scoreboard
 
 
 def daily_snapshot_and_aggregate(out_dir: Path) -> None:
     # For now, just aggregate existing reports daily
     weights_file = out_dir / "weights.json"
     aggregate_and_emit(out_dir, weights_file, top_n=20)
+    # Finalize scoreboard daily (idempotent)
+    try:
+        scb = Scoreboard(out_dir)
+        scb.finalize_daily()
+    except Exception:
+        pass
 
 
 def run_scheduler() -> None:
