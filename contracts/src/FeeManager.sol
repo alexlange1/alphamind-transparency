@@ -9,21 +9,39 @@ contract FeeManager {
     address public router;
     uint256 public buybackRateBps = 100; // 1% of accrued per call
     uint256 public alphaAccumulated; // tracking only for tests/accounting
+    
+    // Security: Track authorized fee recorders
+    mapping(address => bool) public authorizedRecorders;
 
     event TxFeeRecorded(uint256 amountTao);
     event MgmtFeeRecorded(uint256 amountTao);
     event BuybackExecuted(uint256 taoSpent, uint256 alphaBought);
+    event RecorderAuthorized(address recorder, bool authorized);
 
     modifier onlyOwner() { require(msg.sender == owner, "not owner"); _; }
+    modifier onlyAuthorized() { require(authorizedRecorders[msg.sender] || msg.sender == owner, "not authorized"); _; }
 
     constructor() { owner = msg.sender; }
 
     function setAlpha(address a) external onlyOwner { alphaToken = a; }
     function setRouter(address r) external onlyOwner { router = r; }
     function setBuybackRateBps(uint256 bps) external onlyOwner { buybackRateBps = bps; }
+    
+    // Security: Only authorized recorders can record fees
+    function authorizeRecorder(address recorder, bool authorized) external onlyOwner {
+        authorizedRecorders[recorder] = authorized;
+        emit RecorderAuthorized(recorder, authorized);
+    }
 
-    function recordTxFee(uint256 amt) external { txFeesAccruedTao += amt; emit TxFeeRecorded(amt); }
-    function recordMgmtFee(uint256 amt) external { mgmtFeesAccruedTao += amt; emit MgmtFeeRecorded(amt); }
+    function recordTxFee(uint256 amt) external onlyAuthorized { 
+        txFeesAccruedTao += amt; 
+        emit TxFeeRecorded(amt); 
+    }
+    
+    function recordMgmtFee(uint256 amt) external onlyAuthorized { 
+        mgmtFeesAccruedTao += amt; 
+        emit MgmtFeeRecorded(amt); 
+    }
 
     function buyback() external {
         require(router != address(0) && alphaToken != address(0), "cfg");

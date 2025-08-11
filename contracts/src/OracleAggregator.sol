@@ -8,9 +8,37 @@ contract OracleAggregator is IOracle {
     mapping(uint256 => Sample[]) private _samplesByNet; // netuid => sliding window samples
     uint256 public maxSamples = 64;
     uint256 public maxAgeSec = 30 minutes;
+    
+    // Security: Add owner for access control
+    address public owner;
+    
+    event OwnershipTransferred(address indexed previousOwner, address indexed newOwner);
+    
+    modifier onlyOwner() { 
+        require(msg.sender == owner, "not owner"); 
+        _; 
+    }
+    
+    constructor() {
+        owner = msg.sender;
+        emit OwnershipTransferred(address(0), msg.sender);
+    }
+    
+    function transferOwnership(address newOwner) external onlyOwner {
+        require(newOwner != address(0), "zero address");
+        emit OwnershipTransferred(owner, newOwner);
+        owner = newOwner;
+    }
 
-    function setMaxSamples(uint256 n) external { require(n > 1 && n <= 256, "range"); maxSamples = n; }
-    function setMaxAgeSec(uint256 s) external { require(s >= 60, "min"); maxAgeSec = s; }
+    function setMaxSamples(uint256 n) external onlyOwner { 
+        require(n > 1 && n <= 256, "range"); 
+        maxSamples = n; 
+    }
+    
+    function setMaxAgeSec(uint256 s) external onlyOwner { 
+        require(s >= 60, "min"); 
+        maxAgeSec = s; 
+    }
 
     function submit(uint256 netuid, uint256 priceTau18) external {
         _samplesByNet[netuid].push(Sample({price: priceTau18, ts: block.timestamp}));

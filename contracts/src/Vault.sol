@@ -313,7 +313,7 @@ contract Vault is ReentrancyGuard {
         return tv / s;
     }
 
-    function accrueMgmtFee() public returns (uint256 minted) {
+    function accrueMgmtFee() public nonReentrant returns (uint256 minted) {
         uint256 s = token.totalSupply();
         if (s == 0) { 
             lastMgmtTs = block.timestamp; 

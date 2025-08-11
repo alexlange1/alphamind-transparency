@@ -9,15 +9,66 @@ contract OracleWeighted is IOracle {
     uint256 public maxAgeSec = 30 minutes;
     uint256 public quorumBps = 3300; // 33% of total stake required
     uint256 public bandBps = 2000;   // 20% deviation band for slashing
-
+    
+    // Security: Add owner for access control
+    address public owner;
+    
+    // Security: Interface for stake verification
+    address public stakeOracle;
+    
+    interface IStakeOracle {
+        function getStake(address validator) external view returns (uint256);
+        function getTotalStake(uint256 netuid) external view returns (uint256);
+    }
+    
     event ReportSubmitted(uint256 indexed netuid, address indexed reporter, uint256 price, uint256 stake);
     event ReportOutlier(uint256 indexed netuid, address indexed reporter, uint256 price, uint256 median, uint256 bandBps);
+    event OwnershipTransferred(address indexed previousOwner, address indexed newOwner);
+    
+    modifier onlyOwner() { 
+        require(msg.sender == owner, "not owner"); 
+        _; 
+    }
+    
+    constructor() {
+        owner = msg.sender;
+        emit OwnershipTransferred(address(0), msg.sender);
+    }
+    
+    function transferOwnership(address newOwner) external onlyOwner {
+        require(newOwner != address(0), "zero address");
+        emit OwnershipTransferred(owner, newOwner);
+        owner = newOwner;
+    }
+    
+    function setStakeOracle(address _stakeOracle) external onlyOwner {
+        stakeOracle = _stakeOracle;
+    }
 
-    function setMaxAgeSec(uint256 s) external { require(s >= 60, "min"); maxAgeSec = s; }
-    function setQuorumBps(uint256 bps) external { require(bps <= 10000, "bps"); quorumBps = bps; }
-    function setBandBps(uint256 bps) external { require(bps <= 10000, "bps"); bandBps = bps; }
+    function setMaxAgeSec(uint256 s) external onlyOwner { 
+        require(s >= 60, "min"); 
+        maxAgeSec = s; 
+    }
+    
+    function setQuorumBps(uint256 bps) external onlyOwner { 
+        require(bps <= 10000, "bps"); 
+        quorumBps = bps; 
+    }
+    
+    function setBandBps(uint256 bps) external onlyOwner { 
+        require(bps <= 10000, "bps"); 
+        bandBps = bps; 
+    }
 
     function submit(uint256 netuid, uint256 priceTau18, uint256 stake) external {
+        // Security: Verify stake against oracle if configured
+        if (stakeOracle != address(0)) {
+            uint256 actualStake = IStakeOracle(stakeOracle).getStake(msg.sender);
+            require(stake <= actualStake, "stake exceeds actual");
+            // Use verified stake instead of user-provided value
+            stake = actualStake;
+        }
+        
         _reports[netuid].push(Report({price: priceTau18, ts: block.timestamp, stake: stake, reporter: msg.sender}));
         emit ReportSubmitted(netuid, msg.sender, priceTau18, stake);
     }
@@ -57,10 +108,25 @@ contract OracleWeighted is IOracle {
         (Report[] memory fresh, uint256 totalStake) = _filterFresh(netuid);
         if (fresh.length == 0) return (0, 0);
         uint256 med = _weightedMedian(fresh);
-        // quorum check
-        uint256 covered;
-        for (uint256 i = 0; i < fresh.length; i++) covered += fresh[i].stake;
-        if (totalStake == 0 || (covered * 10000) / totalStake < quorumBps) return (0, fresh[0].ts);
+        
+        // Security: Meaningful quorum check against external reference
+        uint256 covered = totalStake; // stake from fresh reports
+        uint256 referenceTotalStake = covered; // default fallback
+        
+        if (stakeOracle != address(0)) {
+            try IStakeOracle(stakeOracle).getTotalStake(netuid) returns (uint256 oracleTotal) {
+                if (oracleTotal > 0) {
+                    referenceTotalStake = oracleTotal;
+                }
+            } catch {
+                // Fallback: use the sum of reporting stakes
+            }
+        }
+        
+        if (referenceTotalStake == 0 || (covered * 10000) / referenceTotalStake < quorumBps) {
+            return (0, fresh[0].ts);
+        }
+        
         return (med, fresh[0].ts);
     }
 
