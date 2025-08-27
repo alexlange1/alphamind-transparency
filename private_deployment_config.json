@@ -1,0 +1,19 @@
+{
+  "network": {
+    "name": "Private Consortium",
+    "rpc_url": "http://127.0.0.1:8545",
+    "chain_id": 8888,
+    "deployer": "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266"
+  },
+  "contracts": {
+    "ValidatorSet": "0x1000000000000000000000000000000000000001",
+    "TAO20Token": "0x1000000000000000000000000000000000000002",
+    "NAVOracle": "0x1000000000000000000000000000000000000003",
+    "VaultManager": "0x1000000000000000000000000000000000000004",
+    "TokenMinter": "0x1000000000000000000000000000000000000005",
+    "RebalancingEngine": "0x1000000000000000000000000000000000000006"
+  },
+  "deployment_time": "2025-01-01T00:00:00Z",
+  "status": "fully_deployed",
+  "privacy_level": "maximum"
+}

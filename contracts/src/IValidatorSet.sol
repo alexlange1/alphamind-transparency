@@ -6,6 +6,7 @@ interface IValidatorSet {
     function publishWeightSet(uint256 epochId, uint256[] calldata netuids, uint16[] calldata weightsBps, bytes32 hash) external;
     function currentEpochId() external view returns (uint256);
     function getWeights(uint256 epochId) external view returns (uint256[] memory netuids, uint16[] memory weightsBps);
+    function getWeightsHash(uint256 epochId) external view returns (bytes32);
 }
 
 

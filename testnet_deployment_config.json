@@ -1,0 +1,47 @@
+{
+  "network": {
+    "name": "Bittensor Testnet",
+    "rpc_url": "https://testnet.bittensor.com",
+    "chain_id": 945,
+    "deployer": "5GNJqTPyNqANBkUVMN1LPPrxXnFouWXoe2wNSmmEoLctxiZY"
+  },
+  "obfuscated_contracts": {
+    "ProxyA1B2": {
+      "address": "0x00000000000000000000000035a4d9bdc83c3664",
+      "purpose": "Main TAO20 interface proxy",
+      "visible_functions": [
+        "a1b2c3()",
+        "d4e5f6()",
+        "g7h8i9()"
+      ]
+    },
+    "OracleX9Y8": {
+      "address": "0x0000000000000000000000004d514407ede8923d",
+      "purpose": "Price oracle proxy",
+      "visible_functions": [
+        "z1a2b3()",
+        "c4d5e6()"
+      ]
+    },
+    "VaultM5N6": {
+      "address": "0x00000000000000000000000021e2d0553face2aa",
+      "purpose": "Asset management proxy",
+      "visible_functions": [
+        "p7q8r9()",
+        "s1t2u3()"
+      ]
+    }
+  },
+  "demo_interface": {
+    "url": "https://demo.tao20.network",
+    "status": "active",
+    "privacy_level": "maximum_obfuscation"
+  },
+  "deployment_time": "2025-01-15T00:00:00Z",
+  "phase": "3B_public_demo",
+  "privacy_protection": {
+    "code_exposure": "zero",
+    "business_logic": "fully_hidden",
+    "obfuscation_level": "maximum"
+  }
+}

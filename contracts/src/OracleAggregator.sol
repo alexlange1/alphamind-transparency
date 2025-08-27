@@ -3,7 +3,7 @@ pragma solidity ^0.8.21;
 
 import {IOracle} from "./IOracle.sol";
 
-contract OracleAggregator is IOracle {
+abstract contract OracleAggregator is IOracle {
     struct Sample { uint256 price; uint256 ts; }
     mapping(uint256 => Sample[]) private _samplesByNet; // netuid => sliding window samples
     uint256 public maxSamples = 64;

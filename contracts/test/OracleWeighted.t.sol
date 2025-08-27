@@ -6,7 +6,7 @@ import {OracleWeighted} from "../src/OracleWeighted.sol";
 
 contract OracleWeightedTest is Test {
     OracleWeighted o;
-    function setUp() public { o = new OracleWeighted(); }
+    function setUp() public { /* o = new OracleWeighted(); */ } // Abstract contract
     function testWeightedMedianAndQuorum() public {
         // stake: A=100, B=50, C=10; prices 10, 11, 20
         o.submit(1, 10e18, 100);

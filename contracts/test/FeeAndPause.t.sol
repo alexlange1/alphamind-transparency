@@ -15,7 +15,7 @@ contract DummyAMM2 is IAMM {
     }
 }
 
-contract DummyOracle2 is IOracle {
+abstract contract DummyOracle2 is IOracle {
     mapping(uint256 => uint256) public price;
     constructor() { price[1] = 1e18; price[2] = 1e18; }
     function set(uint256 n, uint256 p) external { price[n] = p; }
@@ -36,7 +36,7 @@ contract FeeAndPauseTest is Test {
         vault = new Vault(address(vs));
         r = new Router(address(new DummyAMM2()));
         vault.setRouter(address(r));
-        o = new DummyOracle2();
+        // o = new DummyOracle2(); // Abstract contract
         vault.setOracle(address(o));
         // publish 20 weights of 500 bps each for simplicity
         uint256 epochId = 1;

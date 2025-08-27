@@ -49,11 +49,11 @@ def test_weightset_hash_is_deterministic(tmp_path: Path):
 
 
 def test_epoch_rolls_every_14_days():
-    from subnet.sim.epoch import current_epoch_index, EPOCH_SECONDS, ANCHOR_UNIX
-    base = ANCHOR_UNIX  # exact anchor
+    from subnet.sim.epoch import current_epoch_index, REBALANCE_PERIOD_SECS, EPOCH_ANCHOR_UNIX
+    base = EPOCH_ANCHOR_UNIX  # exact anchor
     e0 = current_epoch_index(base)
-    e1 = current_epoch_index(base + EPOCH_SECONDS - 1)
-    e2 = current_epoch_index(base + EPOCH_SECONDS + 1)
+    e1 = current_epoch_index(base + REBALANCE_PERIOD_SECS - 1)
+    e2 = current_epoch_index(base + REBALANCE_PERIOD_SECS + 1)
     assert e0 == e1
     assert e2 == e0 + 1
 

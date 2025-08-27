@@ -76,6 +76,10 @@ contract ValidatorSet is IValidatorSet {
     function getWeights(uint256 epochId) external view returns (uint256[] memory netuids, uint16[] memory weightsBps) {
         return (_epochNetuids[epochId], _epochWeightsBps[epochId]);
     }
+    
+    function getWeightsHash(uint256 epochId) external view returns (bytes32) {
+        return epochWeightHash[epochId];
+    }
 }
 
 

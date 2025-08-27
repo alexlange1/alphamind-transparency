@@ -8,7 +8,7 @@ interface IStakeOracle {
     function getTotalStake(uint256 netuid) external view returns (uint256);
 }
 
-contract OracleWeighted is IOracle {
+abstract contract OracleWeighted is IOracle {
     struct Report { uint256 price; uint256 ts; uint256 stake; address reporter; }
     mapping(uint256 => Report[]) private _reports; // netuid => reports
     uint256 public maxAgeSec = 30 minutes;
