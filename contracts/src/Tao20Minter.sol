@@ -4,6 +4,8 @@ pragma solidity ^0.8.21;
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
+import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import "@openzeppelin/contracts/utils/Pausable.sol";
 import "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 import "@openzeppelin/contracts/utils/math/Math.sol";
@@ -34,6 +36,7 @@ interface IStakingV2 {
  * - Emergency Pause: Pausable for all critical functions.
  */
 contract Tao20Minter is ERC20, Ownable, ReentrancyGuard, Pausable {
+    using SafeERC20 for IERC20;
     
     // ===================== Constants =====================
     
@@ -248,6 +251,82 @@ contract Tao20Minter is ERC20, Ownable, ReentrancyGuard, Pausable {
         emit BatchRedeemExecuted(itemsToProcess, totalSharesBurned, totalValueReturned);
     }
     
+    // ===================== Internal Batch Functions (Reentrancy Fix) =====================
+    
+    function _executeMintBatchInternal(uint256 maxItems) internal {
+        uint256 itemsToProcess = Math.min(mintQueue.length, maxItems);
+        require(itemsToProcess > 0, "Empty queue");
+        
+        uint256 totalTao20ToMint = 0;
+        uint256 totalAlphaValue = 0;
+        
+        for (uint i = 0; i < itemsToProcess; i++) {
+            QueueItem storage item = mintQueue[mintQueue.length - 1 - i];
+            
+            require(block.timestamp >= item.queuedAt + minExecutionDelay, "Too early");
+            require(block.timestamp <= item.queuedAt + maxExecutionDelay, "Expired");
+            
+            uint256 taoReceived = _convertAlphaToTao(item.amount, item.netuid);
+            totalAlphaValue += taoReceived;
+            
+            uint256 tao20Amount = navOracle.getNAVForMinting(taoReceived);
+            totalTao20ToMint += tao20Amount;
+            
+            _mint(item.user, tao20Amount);
+            
+            _autoStakeUnderlying(taoReceived, item.netuid);
+        }
+        
+        // Remove processed items from the queue
+        for (uint256 i = 0; i < itemsToProcess; i++) {
+            mintQueue.pop();
+        }
+        
+        emit BatchMintExecuted(itemsToProcess, totalTao20ToMint, totalAlphaValue);
+    }
+    
+    function _executeRedeemBatchInternal(uint256 maxItems) internal {
+        uint256 itemsToProcess = Math.min(redeemQueue.length, maxItems);
+        require(itemsToProcess > 0, "Empty redeem queue");
+        
+        uint256 totalSharesBurned = 0;
+        uint256 totalValueReturned = 0;
+        
+        for (uint i = 0; i < itemsToProcess; i++) {
+            QueueItem storage item = redeemQueue[redeemQueue.length - 1 - i];
+            
+            require(block.timestamp >= item.queuedAt + minExecutionDelay, "Too early");
+            require(block.timestamp <= item.queuedAt + maxExecutionDelay, "Expired");
+            
+            uint256 redemptionValue = navOracle.getTAOForRedemption(item.amount);
+            totalValueReturned += redemptionValue;
+            totalSharesBurned += item.amount;
+            
+            _burn(address(this), item.amount);
+            
+            _transferProceeds(item.user, redemptionValue);
+        }
+        
+        // Remove processed items from the queue
+        for (uint256 i = 0; i < itemsToProcess; i++) {
+            redeemQueue.pop();
+        }
+        
+        emit BatchRedeemExecuted(itemsToProcess, totalSharesBurned, totalValueReturned);
+    }
+
+    function executeBatch(uint256 maxItems) external onlyKeeper nonReentrant whenNotPaused {
+        // Generic batch execution that processes both mint and redeem queues
+        // Prioritize mint queue execution
+        if (mintQueue.length > 0) {
+            _executeMintBatchInternal(maxItems);
+        } else if (redeemQueue.length > 0) {
+            _executeRedeemBatchInternal(maxItems);
+        } else {
+            revert("No items in queue to execute");
+        }
+    }
+    
     // ===================== Attestation =====================
     
     function submitAttestation(bytes32 depositId, bytes calldata signature) external onlyValidator {
@@ -281,7 +360,13 @@ contract Tao20Minter is ERC20, Ownable, ReentrancyGuard, Pausable {
     }
     
     function _transferProceeds(address receiver, uint256 amount) internal {
-        // In production, this would transfer TAO tokens
+        require(receiver != address(0), "Invalid receiver address");
+        require(amount > 0, "Invalid transfer amount");
+        require(receiver != address(this), "Cannot transfer to self");
+        
+        // Transfer actual TAO tokens from contract's holdings to the receiver
+        // This is the proper redemption mechanism - burning TAO20 and returning underlying TAO
+        IERC20(TAO_TOKEN).safeTransfer(receiver, amount);
     }
     
     // ===================== Admin Functions =====================
