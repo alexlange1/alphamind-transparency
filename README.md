@@ -1,7 +1,6 @@
-
 # ALPHAMIND
 
-![ALPHAMIND Logo](logo.png)
+<img src="logo.png" alt="ALPHAMIND Logo" width="200" height="60">
 
 # TAO20: The Bittensor Index Fund
 
