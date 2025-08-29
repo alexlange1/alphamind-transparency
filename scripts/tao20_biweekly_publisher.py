@@ -10,13 +10,23 @@ import json
 import os
 import subprocess
 from pathlib import Path
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 import sys
 
 class TAO20Publisher:
     def __init__(self):
         self.data_dir = Path('out')
         self.rebalance_interval = 14  # days
+        
+    def get_constituents_key(self, index_data):
+        """Get the correct key for constituents data"""
+        return 'tao20_constituents' if 'tao20_constituents' in index_data else 'collection_phase_constituents'
+    
+    def get_constituents_count(self, index_data):
+        """Get the correct count of constituents"""
+        constituents_key = self.get_constituents_key(index_data)
+        constituents = index_data.get(constituents_key, [])
+        return len(constituents)
         
     def should_publish_index(self):
         """Check if it's time for bi-weekly index publication"""
@@ -27,7 +37,7 @@ class TAO20Publisher:
             with open(last_publication_file) as f:
                 last_pub = json.load(f)
                 last_date = datetime.fromisoformat(last_pub['timestamp'])
-                days_since = (datetime.now() - last_date).days
+                days_since = (datetime.now(timezone.utc) - last_date).days
                 
                 print(f'📅 Days since last TAO20 publication: {days_since}')
                 
@@ -67,7 +77,7 @@ class TAO20Publisher:
     def create_publication_package(self, index_data):
         """Create complete publication package for transparency"""
         
-        timestamp = datetime.now()
+        timestamp = datetime.now(timezone.utc)
         date_str = timestamp.strftime('%Y%m%d')
         
         # Create publication directory
@@ -130,7 +140,7 @@ INDEX COMPOSITION (Top 10):
 """
         
         index_data = publication_package['index_composition']
-        constituents_key = 'tao20_constituents' if 'tao20_constituents' in index_data else 'collection_phase_constituents'
+        constituents_key = self.get_constituents_key(index_data)
         
         summary += 'Rank | Subnet | Weight\n'
         summary += '-----|--------|-------\n'
@@ -154,7 +164,7 @@ DISCLAIMER: {publication_package['regulatory_disclosures']['disclaimer']}
     def create_csv_export(self, index_data, csv_file):
         """Create CSV export of index weights"""
         
-        constituents_key = 'tao20_constituents' if 'tao20_constituents' in index_data else 'collection_phase_constituents'
+        constituents_key = self.get_constituents_key(index_data)
         constituents = index_data.get(constituents_key, [])
         
         with open(csv_file, 'w') as f:
@@ -167,7 +177,7 @@ DISCLAIMER: {publication_package['regulatory_disclosures']['disclaimer']}
         
         print('☁️ Uploading TAO20 publication to S3...')
         
-        date_str = datetime.now().strftime('%Y-%m-%d')
+        date_str = datetime.now(timezone.utc).strftime('%Y-%m-%d')
         s3_path = f's3://alphamind-emissions-data/tao20_publications/{date_str}/'
         
         try:
@@ -196,11 +206,11 @@ DISCLAIMER: {publication_package['regulatory_disclosures']['disclaimer']}
         """Record successful publication"""
         
         publication_record = {
-            'timestamp': datetime.now().isoformat(),
+            'timestamp': datetime.now(timezone.utc).isoformat(),
             'index_metadata': index_data['metadata'],
             's3_publication_url': s3_path,
-            'next_publication_due': (datetime.now() + timedelta(days=self.rebalance_interval)).isoformat(),
-            'constituents_count': len(index_data.get('tao20_weights', {})),
+            'next_publication_due': (datetime.now(timezone.utc) + timedelta(days=self.rebalance_interval)).isoformat(),
+            'constituents_count': self.get_constituents_count(index_data),
             'operating_mode': index_data['metadata'].get('operating_mode', 'PRODUCTION')
         }
         
@@ -245,11 +255,11 @@ DISCLAIMER: {publication_package['regulatory_disclosures']['disclaimer']}
             print('\n' + '=' * 60)
             print('🎉 TAO20 INDEX PUBLISHED SUCCESSFULLY!')
             print('=' * 60)
-            print(f'📅 Publication Date: {datetime.now().strftime("%Y-%m-%d %H:%M UTC")}')
+            print(f'📅 Publication Date: {datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC")}')
             print(f'🌐 Public URL: {s3_path}')
-            print(f'📊 Constituents: {len(index_data.get("tao20_weights", {}))}')
+            print(f'📊 Constituents: {self.get_constituents_count(index_data)}')
             print(f'🎯 Mode: {index_data["metadata"].get("operating_mode", "PRODUCTION")}')
-            print(f'📅 Next Publication: {(datetime.now() + timedelta(days=14)).strftime("%Y-%m-%d")}')
+            print(f'📅 Next Publication: {(datetime.now(timezone.utc) + timedelta(days=14)).strftime("%Y-%m-%d")}')
             
             return True
         else:

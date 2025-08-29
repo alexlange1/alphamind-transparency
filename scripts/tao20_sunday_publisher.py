@@ -10,7 +10,7 @@ import json
 import os
 import subprocess
 from pathlib import Path
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 import sys
 
 class TAO20SundayPublisher:
@@ -19,13 +19,23 @@ class TAO20SundayPublisher:
         self.rebalance_interval = 14  # days
         self.publication_day = 6  # Sunday (0=Monday, 6=Sunday)
         
+    def get_constituents_key(self, index_data):
+        """Get the correct key for constituents data"""
+        return 'tao20_constituents' if 'tao20_constituents' in index_data else 'collection_phase_constituents'
+    
+    def get_constituents_count(self, index_data):
+        """Get the correct count of constituents"""
+        constituents_key = self.get_constituents_key(index_data)
+        constituents = index_data.get(constituents_key, [])
+        return len(constituents)
+        
     def is_sunday(self):
         """Check if today is Sunday"""
-        return datetime.now().weekday() == self.publication_day
+        return datetime.now(timezone.utc).weekday() == self.publication_day
     
     def get_last_sunday(self):
         """Get the most recent Sunday date"""
-        today = datetime.now()
+        today = datetime.now(timezone.utc)
         days_since_sunday = (today.weekday() + 1) % 7
         last_sunday = today - timedelta(days=days_since_sunday)
         return last_sunday.replace(hour=16, minute=5, second=0, microsecond=0)
@@ -35,10 +45,10 @@ class TAO20SundayPublisher:
         
         # Only publish on Sundays
         if not self.is_sunday():
-            return False, f'Today is {datetime.now().strftime("%A")} - only publish on Sundays'
+            return False, f'Today is {datetime.now(timezone.utc).strftime("%A")} - only publish on Sundays'
         
         # Check if it's after 16:05 UTC
-        now = datetime.now()
+        now = datetime.now(timezone.utc)
         if now.hour < 16 or (now.hour == 16 and now.minute < 5):
             return False, f'Too early - wait until 16:05 UTC (currently {now.strftime("%H:%M")} UTC)'
         
@@ -48,7 +58,7 @@ class TAO20SundayPublisher:
             with open(last_publication_file) as f:
                 last_pub = json.load(f)
                 last_date = datetime.fromisoformat(last_pub['timestamp'])
-                days_since = (datetime.now() - last_date).days
+                days_since = (datetime.now(timezone.utc) - last_date).days
                 
                 print(f'📅 Days since last TAO20 publication: {days_since}')
                 
@@ -88,7 +98,7 @@ class TAO20SundayPublisher:
     def create_sunday_publication_package(self, index_data):
         """Create Sunday-specific publication package"""
         
-        timestamp = datetime.now()
+        timestamp = datetime.now(timezone.utc)
         date_str = timestamp.strftime('%Y%m%d')
         
         # Create publication directory
@@ -158,7 +168,7 @@ INDEX COMPOSITION (Top 10):
 """
         
         index_data = publication_package['index_composition']
-        constituents_key = 'tao20_constituents' if 'tao20_constituents' in index_data else 'collection_phase_constituents'
+        constituents_key = self.get_constituents_key(index_data)
         
         summary += 'Rank | Subnet | Weight\n'
         summary += '-----|--------|-------\n'
@@ -188,7 +198,7 @@ DISCLAIMER: {publication_package['regulatory_disclosures']['disclaimer']}
     def create_csv_export(self, index_data, csv_file):
         """Create CSV export of index weights"""
         
-        constituents_key = 'tao20_constituents' if 'tao20_constituents' in index_data else 'collection_phase_constituents'
+        constituents_key = self.get_constituents_key(index_data)
         constituents = index_data.get(constituents_key, [])
         
         with open(csv_file, 'w') as f:
@@ -201,7 +211,7 @@ DISCLAIMER: {publication_package['regulatory_disclosures']['disclaimer']}
         
         print('☁️ Uploading Sunday TAO20 publication to S3...')
         
-        date_str = datetime.now().strftime('%Y-%m-%d')
+        date_str = datetime.now(timezone.utc).strftime('%Y-%m-%d')
         s3_path = f's3://alphamind-emissions-data/tao20_publications/sunday_{date_str}/'
         
         try:
@@ -232,13 +242,13 @@ DISCLAIMER: {publication_package['regulatory_disclosures']['disclaimer']}
         next_sunday = self.get_last_sunday() + timedelta(days=14)
         
         publication_record = {
-            'timestamp': datetime.now().isoformat(),
+            'timestamp': datetime.now(timezone.utc).isoformat(),
             'publication_day': 'Sunday',
             'publication_time': '16:05_UTC',
             'index_metadata': index_data['metadata'],
             's3_publication_url': s3_path,
             'next_publication_due': next_sunday.isoformat(),
-            'constituents_count': len(index_data.get('tao20_weights', {})),
+            'constituents_count': self.get_constituents_count(index_data),
             'operating_mode': index_data['metadata'].get('operating_mode', 'PRODUCTION')
         }
         
@@ -285,9 +295,9 @@ DISCLAIMER: {publication_package['regulatory_disclosures']['disclaimer']}
             print('\n' + '=' * 60)
             print('🎉 TAO20 SUNDAY INDEX PUBLISHED!')
             print('=' * 60)
-            print(f'📅 Published: {datetime.now().strftime("%Y-%m-%d %A %H:%M UTC")}')
+            print(f'📅 Published: {datetime.now(timezone.utc).strftime("%Y-%m-%d %A %H:%M UTC")}')
             print(f'🌐 Public URL: {s3_path}')
-            print(f'📊 Constituents: {len(index_data.get("tao20_weights", {}))}')
+            print(f'📊 Constituents: {self.get_constituents_count(index_data)}')
             print(f'🎯 Mode: {index_data["metadata"].get("operating_mode", "PRODUCTION")}')
             print(f'📅 Next Sunday: {next_sunday.strftime("%Y-%m-%d %A 16:05 UTC")}')
             

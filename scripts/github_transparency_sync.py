@@ -9,7 +9,7 @@ import os
 import subprocess
 import shutil
 from pathlib import Path
-from datetime import datetime
+from datetime import datetime, timezone
 import sys
 
 class GitHubTransparencySync:
@@ -81,7 +81,7 @@ This repository provides **full transparency** for the AlphaMind TAO20 index sys
 """
         
         with open('README.md', 'w') as f:
-            f.write(readme_content.format(timestamp=datetime.now().isoformat()))
+            f.write(readme_content.format(timestamp=datetime.now(timezone.utc).isoformat()))
         
         # Create directory structure
         Path('emissions/daily').mkdir(parents=True)
@@ -140,7 +140,7 @@ This repository provides **full transparency** for the AlphaMind TAO20 index sys
         
         manifest = {
             'transparency_info': {
-                'last_updated': datetime.now().isoformat(),
+                'last_updated': datetime.now(timezone.utc).isoformat(),
                 'repository': 'AlphaMind Transparency Archive',
                 'purpose': 'Complete transparency for TAO20 index system',
                 'verification': 'All data cryptographically signed and verifiable'
@@ -158,7 +158,7 @@ This repository provides **full transparency** for the AlphaMind TAO20 index sys
             }
         }
         
-        manifest_file = self.transparency_dir / 'manifests' / f'transparency_manifest_{datetime.now().strftime("%Y%m%d")}.json'
+        manifest_file = self.transparency_dir / 'manifests' / f'transparency_manifest_{datetime.now(timezone.utc).strftime("%Y%m%d")}.json'
         with open(manifest_file, 'w') as f:
             json.dump(manifest, f, indent=2)
         
@@ -198,7 +198,7 @@ This repository provides **full transparency** for the AlphaMind TAO20 index sys
         subprocess.run(['git', 'add', '.'], check=True)
         
         # Commit with timestamp
-        commit_msg = f'Transparency update: {datetime.now().strftime("%Y-%m-%d %H:%M UTC")}'
+        commit_msg = f'Transparency update: {datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC")}'
         result = subprocess.run(['git', 'commit', '-m', commit_msg], capture_output=True, text=True)
         
         if result.returncode == 0:
