@@ -1,8 +1,8 @@
-# ALPHAMIND
+<p align="center">
+  <img src="logo.png" alt="ALPHAMIND Logo" width="200">
+</p>
 
-<img src="logo.png" alt="ALPHAMIND Logo" width="200" height="60">
-
-# TAO20: The Bittensor Index Fund
+<h1 align="center">TAO20: The Bittensor Index Fund</h1>
 
 **TAO20 is a decentralized, un-gameable index fund for the Bittensor ecosystem, providing diversified exposure to the entire subnet economy through a single, powerful ERC-20 token.**
 
