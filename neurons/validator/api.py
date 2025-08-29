@@ -76,14 +76,8 @@ class _CorsAllowlistMiddleware(BaseHTTPMiddleware):
             
             # Security: Default to localhost only, no wildcard origins
             if not allow_env:
-                # Check if this is demo mode
-                demo_mode = os.environ.get("AM_DEMO", "0") == "1"
-                if demo_mode:
-                    # Allow localhost origins only in demo mode
-                    allowed = ["http://localhost:8000", "http://localhost:8003", "http://127.0.0.1:8000", "http://127.0.0.1:8003"]
-                else:
-                    # Production: no default origins allowed
-                    allowed = []
+                        # Production: no default origins allowed
+        allowed = []
             else:
                 # Parse configured origins, validate no wildcards
                 allowed = []
@@ -158,13 +152,7 @@ def _require_auth(request: Request) -> None:
     
     # Security: Require explicit token configuration, no bypass
     if not token:
-        # Check if this is demo/development mode
-        demo_mode = os.environ.get("AM_DEMO", "0") == "1"
-        if demo_mode and provided == "dev":
-            # Allow "dev" token only in explicit demo mode
-            return
-        else:
-            raise HTTPException(status_code=401, detail="AM_API_TOKEN not configured")
+        raise HTTPException(status_code=401, detail="AM_API_TOKEN not configured")
     
     # Use constant-time comparison to prevent timing attacks
     import hmac
