@@ -24,47 +24,29 @@ log() {
     echo "[$(date '+%Y-%m-%d %H:%M:%S UTC')] $*"
 }
 
-log "📋 Updating transparency repository with daily manifest"
+log "📋 Updating transparency data in main repository with daily manifest"
 
-# Check if transparency repo is configured
-if [ -z "$TRANSPARENCY_REPO" ]; then
-    log "⚠️  TRANSPARENCY_REPO not configured - skipping transparency update"
-    log "   To enable transparency updates, set:"
-    log "   TRANSPARENCY_REPO=https://github.com/username/alphamind-transparency.git"
-    exit 0
-fi
-
-# Create temporary directory for transparency repo
-TEMP_DIR=$(mktemp -d)
-trap "rm -rf $TEMP_DIR" EXIT
-
-log "📁 Cloning transparency repository..."
-cd "$TEMP_DIR"
-
-# Clone or update transparency repo
-if ! git clone "$TRANSPARENCY_REPO" transparency; then
-    log "❌ Failed to clone transparency repository: $TRANSPARENCY_REPO"
-    log "   Please ensure:"
-    log "   - Repository exists and is accessible"
-    log "   - GitHub token has proper permissions"
-    log "   - Repository URL is correct"
+# Check if we're in a git repository
+if ! git rev-parse --git-dir > /dev/null 2>&1; then
+    log "❌ Not in a git repository - skipping transparency update"
+    log "   Please run this script from within the alphamind repository"
     exit 1
 fi
-
-cd transparency
 
 # Configure git for automated commits
 git config user.name "AlphaMind Emissions Bot"
 git config user.email "emissions-bot@alphamind.subnet"
 
-# Create directory structure
-mkdir -p {manifests,status,data}
-mkdir -p "manifests/$(date -u '+%Y')/$(date -u '+%m')"
+log "📁 Updating transparency data in main repository..."
+
+# Create directory structure in tao20-transparency folder
+mkdir -p tao20-transparency/{manifests,status,data}
+mkdir -p "tao20-transparency/manifests/$(date -u '+%Y')/$(date -u '+%m')"
 
 # Define file paths and initialize variables
 S3_URLS_FILE="logs/s3_urls_$(date -u '+%Y%m%d').json"
-STATUS_FILE="status/status_$(date -u '+%Y%m%d').json"
-LATEST_MANIFEST="manifests/manifest_latest.json"
+STATUS_FILE="tao20-transparency/status/status_$(date -u '+%Y%m%d').json"
+LATEST_MANIFEST="tao20-transparency/manifests/manifest_latest.json"
 LATEST_EMISSIONS="$PROJECT_ROOT/out/secure/secure_data/latest_emissions_secure.json"
 
 # Initialize default values
@@ -89,7 +71,7 @@ else
 fi
 
 # Extract data from latest manifest if it exists
-if [ -f "$PROJECT_ROOT/$LATEST_MANIFEST" ]; then
+if [ -f "$LATEST_MANIFEST" ]; then
     MERKLE_ROOT=$(python3 -c "
 import json
 import sys
@@ -99,7 +81,7 @@ try:
     print(data.get('merkle_root', 'unknown'))
 except Exception as e:
     print('unknown')
-" "$PROJECT_ROOT/$LATEST_MANIFEST" 2>/dev/null || echo "unknown")
+" "$LATEST_MANIFEST" 2>/dev/null || echo "unknown")
     
     SIGNATURE=$(python3 -c "
 import json
@@ -112,17 +94,17 @@ try:
     print(sig[:16] if len(sig) > 16 else sig)
 except Exception as e:
     print('unknown')
-" "$PROJECT_ROOT/$LATEST_MANIFEST" 2>/dev/null || echo "unknown")
+" "$LATEST_MANIFEST" 2>/dev/null || echo "unknown")
 else
-    log "⚠️  Latest manifest not found at $PROJECT_ROOT/$LATEST_MANIFEST"
+    log "⚠️  Latest manifest not found at $LATEST_MANIFEST"
 fi
 
 # Load S3 URLs if available
 MANIFEST_URL=""
 DATA_URL=""
-if [ -f "$PROJECT_ROOT/$S3_URLS_FILE" ]; then
-    MANIFEST_URL=$(jq -r '.manifest_url' "$PROJECT_ROOT/$S3_URLS_FILE" 2>/dev/null || echo "")
-    DATA_URL=$(jq -r '.data_url' "$PROJECT_ROOT/$S3_URLS_FILE" 2>/dev/null || echo "")
+if [ -f "$S3_URLS_FILE" ]; then
+    MANIFEST_URL=$(jq -r '.manifest_url' "$S3_URLS_FILE" 2>/dev/null || echo "")
+    DATA_URL=$(jq -r '.data_url' "$S3_URLS_FILE" 2>/dev/null || echo "")
 fi
 
 log "📊 Extracted data - Subnets: $SUBNET_COUNT, Merkle Root: ${MERKLE_ROOT:0:16}..., Signature: ${SIGNATURE}..."
@@ -146,17 +128,17 @@ cat > "$STATUS_FILE" << EOF
         "backend": "s3_versioned"
     },
     "verification": {
-        "github_actions_url": "https://github.com/$(echo $TRANSPARENCY_REPO | sed 's/.*github.com\///g' | sed 's/\.git$//')/actions",
+        "github_actions_url": "https://github.com/alexlange1/alphamind/actions",
         "public_key_url": "$DATA_URL/public_key.pem"
     }
 }
 EOF
 
 # Update latest status
-cp "$STATUS_FILE" "status/latest.json"
+cp "$STATUS_FILE" "tao20-transparency/status/latest.json"
 
 # Create or update README
-cat > README.md << EOF
+cat > tao20-transparency/README.md << EOF
 # AlphaMind Emissions Data Transparency
 
 This repository provides public transparency and verification for AlphaMind subnet emissions data collection.
@@ -204,7 +186,7 @@ python3 verify_manifest.py --manifest-url $MANIFEST_URL --data-url $DATA_URL
 
 - [Manifests by Date](manifests/)
 - [Daily Status Reports](status/)
-- [GitHub Actions Verification](https://github.com/$(echo $TRANSPARENCY_REPO | sed 's/.*github.com\///g' | sed 's/\.git$//')/actions)
+- [GitHub Actions Verification](https://github.com/alexlange1/alphamind/actions)
 
 ## 🎯 About AlphaMind
 
@@ -217,12 +199,12 @@ AlphaMind is a Bittensor subnet focused on creating secure, transparent, and ver
 *Verification: GitHub Actions + Public Merkle Tree*
 EOF
 
-# Add all changes
-git add .
+# Add transparency changes
+git add tao20-transparency/
 
 # Check if there are changes to commit
 if git diff --staged --quiet; then
-    log "📝 No changes to commit to transparency repo"
+    log "📝 No transparency changes to commit"
 else
     # Commit changes
     COMMIT_MSG="📊 Daily emissions transparency update - $DATE_STR
@@ -237,15 +219,15 @@ Manifest: $MANIFEST_URL"
 
     git commit -m "$COMMIT_MSG"
     
-    # Push to transparency repo
-    if git push origin "$TRANSPARENCY_BRANCH"; then
+    # Push to main repo
+    if git push origin main; then
         log "✅ Transparency update committed and pushed successfully"
-        log "🔗 View at: $TRANSPARENCY_REPO"
+        log "🔗 View at: https://github.com/alexlange1/alphamind"
     else
-        log "❌ Failed to push to transparency repository"
+        log "❌ Failed to push to main repository"
         log "   Check GitHub token permissions and repository access"
         exit 1
     fi
 fi
 
-log "📋 Transparency repository update completed"
+log "📋 Transparency update completed in main repository"
