@@ -76,13 +76,14 @@ SIGNATURE="unknown"
 if [ -f "$LATEST_EMISSIONS" ]; then
     SUBNET_COUNT=$(python3 -c "
 import json
+import sys
 try:
-    with open('$LATEST_EMISSIONS') as f:
+    with open(sys.argv[1]) as f:
         data = json.load(f)
     print(data.get('total_subnets', 0))
-except:
+except Exception as e:
     print(0)
-" 2>/dev/null || echo "0")
+" "$LATEST_EMISSIONS" 2>/dev/null || echo "0")
 else
     log "⚠️  Latest emissions file not found at $LATEST_EMISSIONS"
 fi
@@ -91,25 +92,27 @@ fi
 if [ -f "$PROJECT_ROOT/$LATEST_MANIFEST" ]; then
     MERKLE_ROOT=$(python3 -c "
 import json
+import sys
 try:
-    with open('$PROJECT_ROOT/$LATEST_MANIFEST') as f:
+    with open(sys.argv[1]) as f:
         data = json.load(f)
     print(data.get('merkle_root', 'unknown'))
-except:
+except Exception as e:
     print('unknown')
-" 2>/dev/null || echo "unknown")
+" "$PROJECT_ROOT/$LATEST_MANIFEST" 2>/dev/null || echo "unknown")
     
     SIGNATURE=$(python3 -c "
 import json
+import sys
 try:
-    with open('$PROJECT_ROOT/$LATEST_MANIFEST') as f:
+    with open(sys.argv[1]) as f:
         data = json.load(f)
     sig = data.get('signature', {}).get('signature', 'unknown')
     # Get first 16 characters for preview
     print(sig[:16] if len(sig) > 16 else sig)
-except:
+except Exception as e:
     print('unknown')
-" 2>/dev/null || echo "unknown")
+" "$PROJECT_ROOT/$LATEST_MANIFEST" 2>/dev/null || echo "unknown")
 else
     log "⚠️  Latest manifest not found at $PROJECT_ROOT/$LATEST_MANIFEST"
 fi
