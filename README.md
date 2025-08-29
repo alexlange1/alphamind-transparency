@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="logo.png" alt="ALPHAMIND Logo" width="200">
+  <img src="logo.png" alt="ALPHAMIND Logo" width="400">
 </p>
 
 <h1 align="center">TAO20: The Bittensor Index Fund</h1>
