@@ -20,11 +20,14 @@ TIMESTAMP=$(date -u '+%Y-%m-%dT%H:%M:%SZ')
 TRANSPARENCY_REPO="${TRANSPARENCY_REPO:-}"
 TRANSPARENCY_BRANCH="${TRANSPARENCY_BRANCH:-main}"
 
+# Get current branch name
+CURRENT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
+
 log() {
     echo "[$(date '+%Y-%m-%d %H:%M:%S UTC')] $*"
 }
 
-log "📋 Updating transparency data in main repository with daily manifest"
+log "📋 Updating transparency data in $CURRENT_BRANCH branch with daily manifest"
 
 # Check if we're in a git repository
 if ! git rev-parse --git-dir > /dev/null 2>&1; then
@@ -37,7 +40,7 @@ fi
 git config user.name "AlphaMind Emissions Bot"
 git config user.email "emissions-bot@alphamind.subnet"
 
-log "📁 Updating transparency data in main repository..."
+log "📁 Updating transparency data in $CURRENT_BRANCH branch..."
 
 # Create directory structure in tao20-transparency folder
 mkdir -p tao20-transparency/{manifests,status,data}
@@ -219,15 +222,15 @@ Manifest: $MANIFEST_URL"
 
     git commit -m "$COMMIT_MSG"
     
-    # Push to main repo
-    if git push origin main; then
+    # Push to current branch
+    if git push origin "$CURRENT_BRANCH"; then
         log "✅ Transparency update committed and pushed successfully"
-        log "🔗 View at: https://github.com/alexlange1/alphamind"
+        log "🔗 View at: https://github.com/alexlange1/alphamind/tree/$CURRENT_BRANCH"
     else
-        log "❌ Failed to push to main repository"
+        log "❌ Failed to push to $CURRENT_BRANCH branch"
         log "   Check GitHub token permissions and repository access"
         exit 1
     fi
 fi
 
-log "📋 Transparency update completed in main repository"
+log "📋 Transparency update completed in $CURRENT_BRANCH branch"
