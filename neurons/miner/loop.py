@@ -27,9 +27,7 @@ def calculate_nav(prices: List[PriceItem], total_supply: float) -> float:
     return total_value / total_supply if total_supply > 0 else 0.0
 
 
-def load_demo_emissions() -> Dict[int, float]:
-    # Placeholder: will be replaced with real daily snapshot
-    return {1: 100.0, 2: 80.0, 3: 60.0, 4: 40.0, 5: 20.0}
+
 
 
 def _epoch_day(now_unix: int | None = None) -> int:
@@ -67,12 +65,10 @@ def run_once(out_dir: Path, btcli_path: str, miner_id: str, secret: str) -> None
 
 
 def emit_emissions(out_dir: Path, miner_id: str, secret: str, ts: str) -> None:
-    # Emissions
-    do_demo = os.environ.get("AM_DEMO", "0") == "1"
-    if do_demo:
-        emissions = load_demo_emissions()
-    else:
-        emissions = take_snapshot_map()
+    # Emissions - fetch live data from Bittensor network via btcli
+    from ..common.settings import get_settings
+    settings = get_settings()
+    emissions = take_snapshot_map(btcli_path=settings.btcli_path)
     
     stake_tao = float(os.environ.get("AM_STAKE_TAO", "100.0"))
 
@@ -175,16 +171,10 @@ def main() -> None:
     btcli_path = settings.btcli_path
     miner_id = os.environ.get("AM_MINER_ID", "miner-demo")
     
-    # Security: Require explicit secret in production, no insecure default
+    # Security: Require explicit secret in production
     secret = os.environ.get("AM_MINER_SECRET", "").strip()
     if not secret:
-        # Check if this is demo/test mode
-        demo_mode = os.environ.get("AM_DEMO", "0") == "1" or miner_id.startswith("miner-demo")
-        if demo_mode:
-            secret = "demo-secret"
-            print("Warning: Using demo secret. Set AM_MINER_SECRET for production use.")
-        else:
-            raise ValueError("AM_MINER_SECRET must be set for production use. Set AM_DEMO=1 for demo mode.")
+        raise ValueError("AM_MINER_SECRET must be set for production use.")
     
     ts = time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())
 

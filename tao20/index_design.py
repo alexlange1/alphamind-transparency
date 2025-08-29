@@ -48,10 +48,6 @@ def to_bps_exact(weights: Dict[int, float], total_bps: int = 10000) -> Tuple[Dic
     return ints, weights
 
 
-def demo_weights(n: int = 20) -> Dict[int, float]:
-    # simple synthetic emissions for testing
-    demo = [EmissionStat(netuid=i, avg_daily_emission_tao=float(100 - i)) for i in range(1, n + 1)]
-    top = select_top_n_by_emission(demo, n)
-    return normalize_weights(top)
+
 
 
