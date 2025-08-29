@@ -4,6 +4,11 @@ set -euo pipefail
 # Update Transparency Repository with Daily Manifest
 # Commits signed manifest to GitHub for public verification
 
+# Determine project root directory
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+PROJECT_ROOT="$(dirname "$(dirname "$SCRIPT_DIR")")"
+cd "$PROJECT_ROOT"
+
 # Load environment variables
 if [ -f secrets/.env ]; then
     source secrets/.env
@@ -57,19 +62,7 @@ mkdir -p {manifests,status,data}
 mkdir -p "manifests/$(date -u '+%Y')/$(date -u '+%m')"
 
 # Copy latest manifest
-MANIFEST_FILE="manifests/$(date -u '+%Y')/$(date -u '+%m')/manifest_$DATE_STR.json"
-cp "$PROJECT_ROOT/manifests/manifest_latest.json" "$MANIFEST_FILE"
 
-# Create daily status summary
-STATUS_FILE="status/status_$DATE_STR.json"
-
-# Extract key information from manifest
-SUBNET_COUNT=$(jq -r '.total_files' "$MANIFEST_FILE" 2>/dev/null || echo "0")
-MERKLE_ROOT=$(jq -r '.merkle_root' "$MANIFEST_FILE" 2>/dev/null || echo "unknown")
-SIGNATURE=$(jq -r '.signature.signature[:16]' "$MANIFEST_FILE" 2>/dev/null || echo "unknown")
-
-# Load S3 URLs if available
-S3_URLS_FILE="$PROJECT_ROOT/logs/s3_urls_$(date -u '+%Y%m%d').json"
 MANIFEST_URL=""
 DATA_URL=""
 if [ -f "$S3_URLS_FILE" ]; then
