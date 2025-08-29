@@ -47,6 +47,10 @@ chmod 600 /etc/alphamind/env
 
 echo "🐍 Step 4: Setting up Python environment..."
 
+# Create /opt/alphamind directory with proper ownership
+mkdir -p /opt/alphamind
+chown alphamind:alphamind /opt/alphamind
+
 # Switch to alphamind user for setup
 sudo -u alphamind bash << 'ALPHAMIND_SETUP'
 cd ~
