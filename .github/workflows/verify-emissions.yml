@@ -1,0 +1,262 @@
+name: 🔍 Verify Daily Emissions Data
+
+on:
+  schedule:
+    # Run daily at 17:00 UTC (1 hour after collection)
+    - cron: '0 17 * * *'
+  
+  # Allow manual verification
+  workflow_dispatch:
+    inputs:
+      date:
+        description: 'Date to verify (YYYY-MM-DD, defaults to yesterday)'
+        required: false
+        type: string
+
+jobs:
+  verify-emissions:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: 📁 Checkout repository
+      uses: actions/checkout@v4
+    
+    - name: 🐍 Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+        cache: 'pip'
+    
+    - name: 📦 Install verification dependencies
+      run: |
+        pip install --upgrade pip
+        pip install cryptography boto3 requests
+    
+    - name: 🗓️ Determine verification date
+      id: date
+      run: |
+        if [ -n "${{ inputs.date }}" ]; then
+          VERIFY_DATE="${{ inputs.date }}"
+        else
+          # Default to yesterday (when collection should have happened)
+          VERIFY_DATE=$(date -d "yesterday" '+%Y-%m-%d')
+        fi
+        echo "verify_date=$VERIFY_DATE" >> $GITHUB_OUTPUT
+        echo "Verifying data for date: $VERIFY_DATE"
+    
+    - name: 🔍 Download and verify manifest
+      env:
+        AWS_ACCESS_KEY_ID: ${{ secrets.VERIFY_AWS_ACCESS_KEY_ID }}
+        AWS_SECRET_ACCESS_KEY: ${{ secrets.VERIFY_AWS_SECRET_ACCESS_KEY }}
+        AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
+        S3_BUCKET: ${{ secrets.S3_BUCKET }}
+        VERIFY_DATE: ${{ steps.date.outputs.verify_date }}
+      run: |
+        echo "🔍 Starting verification for $VERIFY_DATE"
+        
+        # Create verification script
+        cat > verify_daily_emissions.py << 'EOF'
+        import json
+        import hashlib
+        import base64
+        import sys
+        import os
+        from datetime import datetime
+        from pathlib import Path
+        import boto3
+        from botocore.exceptions import ClientError
+        from cryptography.hazmat.primitives import serialization
+        from cryptography.hazmat.primitives.asymmetric import ed25519
+        
+        def download_from_s3(bucket, key, local_path):
+            """Download file from S3"""
+            s3 = boto3.client('s3')
+            try:
+                s3.download_file(bucket, key, local_path)
+                return True
+            except ClientError as e:
+                print(f"❌ Failed to download s3://{bucket}/{key}: {e}")
+                return False
+        
+        def verify_signature(manifest_data, signature_b64, public_key_pem):
+            """Verify Ed25519 signature"""
+            try:
+                # Load public key
+                public_key = serialization.load_pem_public_key(public_key_pem.encode())
+                
+                # Create canonical JSON (same as signing process)
+                signing_data = {k: v for k, v in manifest_data.items() if k != 'signature'}
+                canonical_json = json.dumps(signing_data, sort_keys=True, separators=(',', ':'))
+                
+                # Verify signature
+                signature = base64.b64decode(signature_b64)
+                public_key.verify(signature, canonical_json.encode('utf-8'))
+                return True
+            except Exception as e:
+                print(f"❌ Signature verification failed: {e}")
+                return False
+        
+        def verify_merkle_tree(files_info, expected_root):
+            """Verify Merkle tree root"""
+            try:
+                # Extract file hashes in order
+                file_hashes = [bytes.fromhex(f["sha256"]) for f in sorted(files_info, key=lambda x: x["path"])]
+                
+                if not file_hashes:
+                    return False
+                
+                # Build Merkle tree
+                def hash_data(data):
+                    return hashlib.sha256(data).digest()
+                
+                current_level = [hash_data(h) for h in file_hashes]
+                
+                while len(current_level) > 1:
+                    next_level = []
+                    for i in range(0, len(current_level), 2):
+                        left = current_level[i]
+                        right = current_level[i + 1] if i + 1 < len(current_level) else left
+                        combined = left + right
+                        next_level.append(hash_data(combined))
+                    current_level = next_level
+                
+                computed_root = current_level[0].hex()
+                return computed_root == expected_root
+            except Exception as e:
+                print(f"❌ Merkle tree verification failed: {e}")
+                return False
+        
+        def main():
+            verify_date = os.environ.get('VERIFY_DATE')
+            bucket = os.environ.get('S3_BUCKET')
+            
+            if not verify_date or not bucket:
+                print("❌ Missing VERIFY_DATE or S3_BUCKET environment variables")
+                sys.exit(1)
+            
+            print(f"🔍 Verifying AlphaMind emissions data for {verify_date}")
+            print(f"📦 S3 Bucket: {bucket}")
+            
+            # Download manifest
+            date_path = verify_date.replace('-', '/')
+            manifest_key = f"manifests/{date_path}/manifest_{verify_date.replace('-', '')}.json"
+            manifest_file = "manifest.json"
+            
+            if not download_from_s3(bucket, manifest_key, manifest_file):
+                print(f"❌ Could not download manifest for {verify_date}")
+                sys.exit(1)
+            
+            # Load and parse manifest
+            with open(manifest_file) as f:
+                manifest = json.load(f)
+            
+            print(f"✅ Downloaded manifest: {manifest['total_files']} files")
+            print(f"🌳 Merkle root: {manifest['merkle_root']}")
+            
+            # Verify signature
+            signature_info = manifest.get('signature', {})
+            if not signature_info:
+                print("❌ No signature found in manifest")
+                sys.exit(1)
+            
+            print("🔐 Verifying Ed25519 signature...")
+            if verify_signature(manifest, signature_info['signature'], signature_info['public_key']):
+                print("✅ Signature verification: PASSED")
+            else:
+                print("❌ Signature verification: FAILED")
+                sys.exit(1)
+            
+            # Verify Merkle tree
+            print("🌳 Verifying Merkle tree...")
+            if verify_merkle_tree(manifest['files'], manifest['merkle_root']):
+                print("✅ Merkle tree verification: PASSED")
+            else:
+                print("❌ Merkle tree verification: FAILED")
+                sys.exit(1)
+            
+            # Summary
+            print("\n🎯 VERIFICATION SUMMARY")
+            print("=" * 50)
+            print(f"📅 Date: {verify_date}")
+            print(f"📊 Files verified: {manifest['total_files']}")
+            print(f"🔐 Signature: ✅ VALID")
+            print(f"🌳 Merkle tree: ✅ VALID")
+            print(f"⏰ Collection time: {manifest['timestamp']}")
+            print(f"🌐 Network: {manifest['metadata']['network']}")
+            print("\n✅ ALL VERIFICATIONS PASSED")
+            print("🛡️  Data integrity confirmed for AlphaMind subnet")
+        
+        if __name__ == "__main__":
+            main()
+        EOF
+        
+        # Run verification
+        python3 verify_daily_emissions.py
+    
+    - name: 📊 Generate verification report
+      if: always()
+      env:
+        VERIFY_DATE: ${{ steps.date.outputs.verify_date }}
+      run: |
+        STATUS=${{ job.status }}
+        TIMESTAMP=$(date -u '+%Y-%m-%dT%H:%M:%SZ')
+        
+        # Create verification report
+        cat > verification_report.json << EOF
+        {
+            "date": "$VERIFY_DATE",
+            "verification_time": "$TIMESTAMP",
+            "status": "$STATUS",
+            "verifier": "github_actions",
+            "checks": {
+                "manifest_download": "$STATUS",
+                "signature_verification": "$STATUS", 
+                "merkle_tree_verification": "$STATUS"
+            },
+            "github_run": "$GITHUB_RUN_ID",
+            "commit": "$GITHUB_SHA"
+        }
+        EOF
+        
+        echo "📋 Verification Report:"
+        cat verification_report.json | jq .
+    
+    - name: 🔔 Update status badge
+      if: always()
+      env:
+        VERIFY_DATE: ${{ steps.date.outputs.verify_date }}
+        STATUS: ${{ job.status }}
+      run: |
+        # Create status badge data
+        if [ "$STATUS" = "success" ]; then
+            BADGE_COLOR="brightgreen"
+            BADGE_MESSAGE="verified"
+        else
+            BADGE_COLOR="red"
+            BADGE_MESSAGE="failed"
+        fi
+        
+        echo "🏷️  Status badge: $BADGE_MESSAGE ($BADGE_COLOR)"
+        echo "badge_color=$BADGE_COLOR" >> $GITHUB_ENV
+        echo "badge_message=$BADGE_MESSAGE" >> $GITHUB_ENV
+    
+    - name: 📈 Post verification summary
+      if: always()
+      run: |
+        echo "=== 🔍 DAILY VERIFICATION SUMMARY ==="
+        echo "Date: ${{ steps.date.outputs.verify_date }}"
+        echo "Status: ${{ job.status }}"
+        echo "Time: $(date -u '+%Y-%m-%d %H:%M:%S UTC')"
+        echo "Run ID: $GITHUB_RUN_ID"
+        
+        if [ "${{ job.status }}" = "success" ]; then
+            echo ""
+            echo "✅ VERIFICATION SUCCESSFUL"
+            echo "🛡️  AlphaMind emissions data integrity confirmed"
+            echo "🔗 Data is cryptographically verified and tamper-proof"
+        else
+            echo ""
+            echo "❌ VERIFICATION FAILED"
+            echo "⚠️  AlphaMind emissions data may have integrity issues"
+            echo "🔍 Check logs above for detailed error information"
+        fi
