@@ -61,14 +61,71 @@ git config user.email "emissions-bot@alphamind.subnet"
 mkdir -p {manifests,status,data}
 mkdir -p "manifests/$(date -u '+%Y')/$(date -u '+%m')"
 
-# Copy latest manifest
+# Define file paths and initialize variables
+S3_URLS_FILE="logs/s3_urls_$(date -u '+%Y%m%d').json"
+STATUS_FILE="status/status_$(date -u '+%Y%m%d').json"
+LATEST_MANIFEST="manifests/manifest_latest.json"
+LATEST_EMISSIONS="$PROJECT_ROOT/out/secure/secure_data/latest_emissions_secure.json"
 
+# Initialize default values
+SUBNET_COUNT=0
+MERKLE_ROOT="unknown"
+SIGNATURE="unknown"
+
+# Extract data from latest emissions file if it exists
+if [ -f "$LATEST_EMISSIONS" ]; then
+    SUBNET_COUNT=$(python3 -c "
+import json
+import sys
+try:
+    with open(sys.argv[1]) as f:
+        data = json.load(f)
+    print(data.get('total_subnets', 0))
+except Exception as e:
+    print(0)
+" "$LATEST_EMISSIONS" 2>/dev/null || echo "0")
+else
+    log "⚠️  Latest emissions file not found at $LATEST_EMISSIONS"
+fi
+
+# Extract data from latest manifest if it exists
+if [ -f "$PROJECT_ROOT/$LATEST_MANIFEST" ]; then
+    MERKLE_ROOT=$(python3 -c "
+import json
+import sys
+try:
+    with open(sys.argv[1]) as f:
+        data = json.load(f)
+    print(data.get('merkle_root', 'unknown'))
+except Exception as e:
+    print('unknown')
+" "$PROJECT_ROOT/$LATEST_MANIFEST" 2>/dev/null || echo "unknown")
+    
+    SIGNATURE=$(python3 -c "
+import json
+import sys
+try:
+    with open(sys.argv[1]) as f:
+        data = json.load(f)
+    sig = data.get('signature', {}).get('signature', 'unknown')
+    # Get first 16 characters for preview
+    print(sig[:16] if len(sig) > 16 else sig)
+except Exception as e:
+    print('unknown')
+" "$PROJECT_ROOT/$LATEST_MANIFEST" 2>/dev/null || echo "unknown")
+else
+    log "⚠️  Latest manifest not found at $PROJECT_ROOT/$LATEST_MANIFEST"
+fi
+
+# Load S3 URLs if available
 MANIFEST_URL=""
 DATA_URL=""
-if [ -f "$S3_URLS_FILE" ]; then
-    MANIFEST_URL=$(jq -r '.manifest_url' "$S3_URLS_FILE" 2>/dev/null || echo "")
-    DATA_URL=$(jq -r '.data_url' "$S3_URLS_FILE" 2>/dev/null || echo "")
+if [ -f "$PROJECT_ROOT/$S3_URLS_FILE" ]; then
+    MANIFEST_URL=$(jq -r '.manifest_url' "$PROJECT_ROOT/$S3_URLS_FILE" 2>/dev/null || echo "")
+    DATA_URL=$(jq -r '.data_url' "$PROJECT_ROOT/$S3_URLS_FILE" 2>/dev/null || echo "")
 fi
+
+log "📊 Extracted data - Subnets: $SUBNET_COUNT, Merkle Root: ${MERKLE_ROOT:0:16}..., Signature: ${SIGNATURE}..."
 
 # Create status summary
 cat > "$STATUS_FILE" << EOF
