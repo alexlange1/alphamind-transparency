@@ -1,3 +1,5 @@
+<br>
+
 <p align="center">
   <img src="logo.png" alt="ALPHAMIND Logo" width="500">
 </p>
