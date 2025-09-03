@@ -2,29 +2,21 @@
 """
 Setup script for daily emissions collection cron job
 
-This script sets up a cron job to run emissions collection daily at 4 PM UTC.
+This script sets up a portable cron job to run emissions collection daily at 4 PM UTC.
+The cron job auto-detects the project location without requiring additional scripts.
 """
 
 set -e
 
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-PROJECT_ROOT="$(dirname "$SCRIPT_DIR")"
-PYTHON_PATH="${PROJECT_ROOT}/venv/bin/python3"
+echo "Setting up portable daily emissions collection cron job..."
 
-# Check if virtual environment exists
-if [ ! -f "$PYTHON_PATH" ]; then
-    echo "Warning: Virtual environment not found at $PYTHON_PATH"
-    PYTHON_PATH="python3"
-fi
+# Create portable cron job that finds alphamind project automatically
+CRON_JOB='0 16 * * * bash -c '\''for dir in /opt/alphamind /home/alphamind/alphamind /Users/*/alphamind; do [ -f "$dir/deployment/vps/collect_and_upload.sh" ] && cd "$dir" && exec bash deployment/vps/collect_and_upload.sh >> logs/emissions_cron.log 2>&1; done'\'''
 
-# Create the cron job entry
-CRON_JOB="0 16 * * * cd $PROJECT_ROOT && $PYTHON_PATH scripts/daily_emissions_collection.py >> logs/emissions_cron.log 2>&1"
-
-echo "Setting up daily emissions collection cron job..."
 echo "Cron job: $CRON_JOB"
 
 # Add to crontab (avoid duplicates)
-(crontab -l 2>/dev/null | grep -v "daily_emissions_collection.py"; echo "$CRON_JOB") | crontab -
+(crontab -l 2>/dev/null | grep -v "collect_and_upload.sh\|alphamind-emissions-cron\|daily_emissions_collection.py"; echo "$CRON_JOB") | crontab -
 
 echo "✅ Cron job installed successfully!"
 echo "Emissions will be collected daily at 4 PM UTC (16:00)"
