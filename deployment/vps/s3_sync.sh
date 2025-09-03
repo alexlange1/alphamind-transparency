@@ -58,7 +58,7 @@ log "📦 Preparing data for upload..."
 
 # Copy secure data with proper structure
 mkdir -p "$STAGING_DIR/$S3_PREFIX/$DATE_STR"
-cp -r data/secure/ "$STAGING_DIR/$S3_PREFIX/$DATE_STR/"
+cp -r out/secure/ "$STAGING_DIR/$S3_PREFIX/$DATE_STR/"
 
 # Copy manifests
 mkdir -p "$STAGING_DIR/manifests/$DATE_STR"

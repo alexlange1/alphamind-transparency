@@ -86,7 +86,7 @@ log "🔒 Running secure emissions collection..."
 python3 scripts/daily_emissions_collection.py 2>&1 | tee -a "$LOG_FILE"
 
 # Verify collection succeeded
-LATEST_FILE="data/secure/secure_data/latest_emissions_secure.json"
+LATEST_FILE="out/secure/secure_data/latest_emissions_secure.json"
 if [ ! -f "$LATEST_FILE" ]; then
     log "ERROR: No latest emissions file found at $LATEST_FILE"
     send_discord_notification "ERROR" "❌ Emissions collection failed - no data file generated"
@@ -123,14 +123,30 @@ aws s3 ls "s3://${S3_BUCKET}/emissions/$(date -u '+%Y/%m/%d')/" || {
 log "📋 Updating transparency repository..."
 bash deployment/vps/update_transparency.sh
 
+# Check for TAO20 biweekly publication (every second Sunday)
+log "🔍 Checking for TAO20 biweekly publication..."
+if python3 scripts/tao20_sunday_publisher.py; then
+    log "✅ TAO20 index published successfully"
+    send_discord_notification "SUCCESS" "📈 TAO20 index published successfully on Sunday"
+else
+    # Only log as info if not due, error if actual failure
+    TAO20_EXIT_CODE=$?
+    if [ $TAO20_EXIT_CODE -eq 1 ]; then
+        log "ℹ️ TAO20 publication not due (not Sunday or within 14-day cycle)"
+    else
+        log "⚠️ TAO20 publication check completed with status $TAO20_EXIT_CODE"
+        send_discord_notification "WARNING" "⚠️ TAO20 publication had issues (exit code: $TAO20_EXIT_CODE)"
+    fi
+fi
+
 # Clean up old local files (keep last 7 days)
 log "🧹 Cleaning up old files..."
 find logs/ -name "emissions_*.log" -mtime +7 -delete 2>/dev/null || true
-find data/secure/secure_data/ -name "emissions_secure_*.json" -mtime +7 -delete 2>/dev/null || true
-find data/secure/backups/ -name "emissions_secure_*.json" -mtime +7 -delete 2>/dev/null || true
+find out/secure/secure_data/ -name "emissions_secure_*.json" -mtime +7 -delete 2>/dev/null || true
+find out/secure/backups/ -name "emissions_secure_*.json" -mtime +7 -delete 2>/dev/null || true
 
 # Final status
-TOTAL_SIZE=$(du -sh data/secure/ | cut -f1)
+TOTAL_SIZE=$(du -sh out/secure/ | cut -f1)
 log "✅ Collection completed successfully"
 log "📊 Stats: $SUBNET_COUNT subnets, $TOTAL_SIZE total data"
 
