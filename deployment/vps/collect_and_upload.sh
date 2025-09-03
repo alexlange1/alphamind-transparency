@@ -123,6 +123,22 @@ aws s3 ls "s3://${S3_BUCKET}/emissions/$(date -u '+%Y/%m/%d')/" || {
 log "📋 Updating transparency repository..."
 bash deployment/vps/update_transparency.sh
 
+# Check for TAO20 biweekly publication (every second Sunday)
+log "🔍 Checking for TAO20 biweekly publication..."
+if python3 scripts/tao20_sunday_publisher.py; then
+    log "✅ TAO20 index published successfully"
+    send_discord_notification "SUCCESS" "📈 TAO20 index published successfully on Sunday"
+else
+    # Only log as info if not due, error if actual failure
+    TAO20_EXIT_CODE=$?
+    if [ $TAO20_EXIT_CODE -eq 1 ]; then
+        log "ℹ️ TAO20 publication not due (not Sunday or within 14-day cycle)"
+    else
+        log "⚠️ TAO20 publication check completed with status $TAO20_EXIT_CODE"
+        send_discord_notification "WARNING" "⚠️ TAO20 publication had issues (exit code: $TAO20_EXIT_CODE)"
+    fi
+fi
+
 # Clean up old local files (keep last 7 days)
 log "🧹 Cleaning up old files..."
 find logs/ -name "emissions_*.log" -mtime +7 -delete 2>/dev/null || true

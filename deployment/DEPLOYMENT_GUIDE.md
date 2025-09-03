@@ -130,11 +130,13 @@ sudo -u alphamind /opt/alphamind/deployment/vps/collect_and_upload.sh
 # Check systemd service
 sudo systemctl status alphamind-emissions.service
 
-# Enable and start timer
+# Enable and start timers
 sudo systemctl enable --now alphamind-emissions.timer
+sudo systemctl enable --now alphamind-tao20.timer
 
 # Check timer status
 sudo systemctl list-timers alphamind-emissions.timer
+sudo systemctl list-timers alphamind-tao20.timer
 ```
 
 ### Step 6: Set Up GitHub Verification
@@ -165,6 +167,7 @@ S3_BUCKET=alphamind-emissions-data
 ```bash
 # Check collection status
 journalctl -u alphamind-emissions.service --since today
+journalctl -u alphamind-tao20.service --since today
 
 # View recent logs
 tail -f /opt/alphamind/logs/emissions_*.log
@@ -181,9 +184,11 @@ aws s3 ls s3://alphamind-emissions-data/emissions/$(date -u '+%Y/%m/%d')/
 ```bash
 # Check timer status
 sudo systemctl status alphamind-emissions.timer
+sudo systemctl status alphamind-tao20.timer
 
 # View upcoming runs
 sudo systemctl list-timers alphamind-emissions.timer
+sudo systemctl list-timers alphamind-tao20.timer
 
 # Check disk space
 df -h /opt/alphamind/

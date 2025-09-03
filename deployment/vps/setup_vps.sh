@@ -79,7 +79,7 @@ ufw --force enable
 systemctl enable fail2ban
 systemctl start fail2ban
 
-# Create systemd service and timer files
+# Create systemd service and timer files for daily emissions
 cat > /etc/systemd/system/alphamind-emissions.service << 'EOF'
 [Unit]
 Description=AlphaMind Emissions Collection
@@ -136,8 +136,66 @@ RandomizedDelaySec=300
 WantedBy=timers.target
 EOF
 
+# Create TAO20 biweekly publication service and timer
+cat > /etc/systemd/system/alphamind-tao20.service << 'EOF'
+[Unit]
+Description=AlphaMind TAO20 Biweekly Index Publication
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+User=alphamind
+Group=alphamind
+WorkingDirectory=/opt/alphamind
+Environment=PATH=/opt/alphamind/venv/bin:/usr/local/bin:/usr/bin:/bin
+Environment=PYTHONPATH=/opt/alphamind
+ExecStart=/opt/alphamind/venv/bin/python3 scripts/tao20_sunday_publisher.py
+StandardOutput=journal
+StandardError=journal
+PrivateTmp=yes
+NoNewPrivileges=yes
+UMask=077
+
+# Security hardening
+ProtectSystem=strict
+ProtectHome=yes
+ReadWritePaths=/opt/alphamind/out /opt/alphamind/logs /opt/alphamind/manifests
+ProtectKernelTunables=yes
+ProtectKernelModules=yes
+ProtectControlGroups=yes
+RestrictRealtime=yes
+RestrictNamespaces=yes
+LockPersonality=yes
+MemoryDenyWriteExecute=yes
+RestrictAddressFamilies=AF_INET AF_INET6
+SystemCallFilter=@system-service
+SystemCallErrorNumber=EPERM
+
+[Install]
+WantedBy=multi-user.target
+EOF
+
+cat > /etc/systemd/system/alphamind-tao20.timer << 'EOF'
+[Unit]
+Description=Run AlphaMind TAO20 Index Publication on Sundays
+Requires=alphamind-tao20.service
+
+[Timer]
+# Run every Sunday at 16:05 UTC (5 minutes after emissions collection)
+OnCalendar=Sun *-*-* 16:05:00
+# Run missed jobs after system restart
+Persistent=true
+# Add small random delay to avoid conflicts
+RandomizedDelaySec=60
+
+[Install]
+WantedBy=timers.target
+EOF
+
 # Set proper permissions on systemd files
 chmod 644 /etc/systemd/system/alphamind-emissions.{service,timer}
+chmod 644 /etc/systemd/system/alphamind-tao20.{service,timer}
 
 # Create log rotation config
 cat > /etc/logrotate.d/alphamind << 'EOF'
@@ -157,9 +215,13 @@ echo ""
 echo "📋 Next steps:"
 echo "1. Configure AWS credentials: sudo -u alphamind aws configure"
 echo "2. Set environment variables in /opt/alphamind/secrets/.env"
-echo "3a. Enable and start the systemd timer: systemctl enable --now alphamind-emissions.timer"
+echo "3a. Enable and start the systemd timers:"
+echo "    systemctl enable --now alphamind-emissions.timer"
+echo "    systemctl enable --now alphamind-tao20.timer"
 echo "3b. OR use cron instead: sudo -u alphamind bash /opt/alphamind/scripts/setup_cron.sh"
-echo "4. Check status: systemctl status alphamind-emissions.timer (or crontab -l)"
+echo "4. Check status:"
+echo "    systemctl status alphamind-emissions.timer"
+echo "    systemctl status alphamind-tao20.timer"
 echo ""
 echo "🔐 Security features enabled:"
 echo "  • Dedicated alphamind user with restricted permissions"
@@ -170,4 +232,6 @@ echo "  • Secure umask (077) for all files"
 echo ""
 echo "📊 Monitor with:"
 echo "  • journalctl -u alphamind-emissions.service -f"
+echo "  • journalctl -u alphamind-tao20.service -f"
 echo "  • systemctl list-timers alphamind-emissions.timer"
+echo "  • systemctl list-timers alphamind-tao20.timer"
