@@ -203,7 +203,7 @@ sudo journalctl -u fail2ban --since today
 
 # Check file permissions
 ls -la /opt/alphamind/secrets/
-ls -la /opt/alphamind/data/secure/
+ls -la /opt/alphamind/out/secure/
 ```
 
 ## 🔧 Troubleshooting

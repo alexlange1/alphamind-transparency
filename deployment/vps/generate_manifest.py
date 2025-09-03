@@ -149,7 +149,7 @@ def generate_manifest() -> Dict[str, Any]:
     print("🔐 Generating cryptographic manifest...")
     
     # Collect all file information
-    data_dir = Path("data/secure")
+    data_dir = Path("out/secure")
     files_info = collect_file_hashes(data_dir)
     
     if not files_info:

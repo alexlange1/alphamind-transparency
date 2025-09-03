@@ -55,12 +55,12 @@ pip install -r requirements.txt
 pip install bittensor-cli
 
 # Create necessary directories with secure permissions
-mkdir -p {data,logs,secrets,manifests}
-chmod 700 {data,logs,secrets,manifests}
+mkdir -p {out,logs,secrets,manifests}
+chmod 700 {out,logs,secrets,manifests}
 
 # Create secure directories for emissions data
-mkdir -p data/secure/{secure_data,backups,integrity}
-chmod 700 data/secure data/secure/*
+mkdir -p out/secure/{secure_data,backups,integrity}
+chmod 700 out/secure out/secure/*
 
 # Test btcli installation
 btcli --help > /dev/null && echo "✅ btcli installed successfully"
@@ -103,7 +103,7 @@ UMask=077
 # Security hardening
 ProtectSystem=strict
 ProtectHome=yes
-ReadWritePaths=/opt/alphamind/data /opt/alphamind/logs /opt/alphamind/manifests
+ReadWritePaths=/opt/alphamind/out /opt/alphamind/logs /opt/alphamind/manifests
 ProtectKernelTunables=yes
 ProtectKernelModules=yes
 ProtectControlGroups=yes
