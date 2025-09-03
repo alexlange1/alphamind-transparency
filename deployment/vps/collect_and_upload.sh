@@ -86,7 +86,7 @@ log "🔒 Running secure emissions collection..."
 python3 scripts/daily_emissions_collection.py 2>&1 | tee -a "$LOG_FILE"
 
 # Verify collection succeeded
-LATEST_FILE="data/secure/secure_data/latest_emissions_secure.json"
+LATEST_FILE="out/secure/secure_data/latest_emissions_secure.json"
 if [ ! -f "$LATEST_FILE" ]; then
     log "ERROR: No latest emissions file found at $LATEST_FILE"
     send_discord_notification "ERROR" "❌ Emissions collection failed - no data file generated"
@@ -126,11 +126,11 @@ bash deployment/vps/update_transparency.sh
 # Clean up old local files (keep last 7 days)
 log "🧹 Cleaning up old files..."
 find logs/ -name "emissions_*.log" -mtime +7 -delete 2>/dev/null || true
-find data/secure/secure_data/ -name "emissions_secure_*.json" -mtime +7 -delete 2>/dev/null || true
-find data/secure/backups/ -name "emissions_secure_*.json" -mtime +7 -delete 2>/dev/null || true
+find out/secure/secure_data/ -name "emissions_secure_*.json" -mtime +7 -delete 2>/dev/null || true
+find out/secure/backups/ -name "emissions_secure_*.json" -mtime +7 -delete 2>/dev/null || true
 
 # Final status
-TOTAL_SIZE=$(du -sh data/secure/ | cut -f1)
+TOTAL_SIZE=$(du -sh out/secure/ | cut -f1)
 log "✅ Collection completed successfully"
 log "📊 Stats: $SUBNET_COUNT subnets, $TOTAL_SIZE total data"
 

@@ -1,0 +1,2 @@
+# Fixed crontab - complete VPS workflow including transparency updates
+0 16 * * * cd /Users/alexanderlange/alphamind && bash deployment/vps/collect_and_upload.sh >> logs/emissions_cron.log 2>&1
