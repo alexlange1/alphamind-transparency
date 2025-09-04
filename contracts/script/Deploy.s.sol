@@ -6,7 +6,7 @@ import {Vault} from "../src/Vault.sol";
 import {ValidatorSet} from "../src/ValidatorSet.sol";
 import {Router} from "../src/Router.sol";
 import {OracleAggregator} from "../src/OracleAggregator.sol";
-import {OracleWeighted} from "../src/OracleWeighted.sol";
+// import {OracleWeighted} from "../src/OracleWeighted.sol"; // TODO: Implement for production
 
 contract DeployScript is Script {
     function run() external {

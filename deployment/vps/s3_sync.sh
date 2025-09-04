@@ -81,16 +81,12 @@ log "⬆️  Uploading to S3..."
 # Upload emissions data
 aws s3 sync "$STAGING_DIR/$S3_PREFIX/" "s3://$S3_BUCKET/$S3_PREFIX/" \
     --delete \
-    --exact-timestamps \
-    --server-side-encryption AES256 \
-    --metadata "collection-date=$DATE_STR,upload-time=$TIMESTAMP"
+    --exact-timestamps
 
 # Upload manifests
 aws s3 sync "$STAGING_DIR/manifests/" "s3://$S3_BUCKET/manifests/" \
     --delete \
-    --exact-timestamps \
-    --server-side-encryption AES256 \
-    --metadata "collection-date=$DATE_STR,upload-time=$TIMESTAMP"
+    --exact-timestamps
 
 # Verify upload by listing today's files
 log "🔍 Verifying upload..."

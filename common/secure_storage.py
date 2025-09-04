@@ -354,37 +354,4 @@ def create_secure_storage(storage_dir: Optional[str] = None, secret_key: Optiona
     return SecureEmissionsStorage(Path(storage_dir), secret_key)
 
 
-if __name__ == "__main__":
-    # Test the secure storage system
-    print("Testing Secure Emissions Storage System...")
-    
-    storage = create_secure_storage()
-    
-    # Test data
-    test_emissions = {
-        1: 100.5,
-        2: 75.2,
-        3: 150.8,
-        4: 200.1,
-        5: 50.0
-    }
-    
-    # Store data
-    filename, content_hash = storage.store_emissions_data(test_emissions)
-    print(f"✅ Stored data: {filename}")
-    print(f"✅ Content hash: {content_hash}")
-    
-    # Verify integrity
-    is_valid, message = storage.verify_data_integrity(filename)
-    print(f"✅ Integrity check: {message}")
-    
-    # Load data
-    loaded = storage.load_latest_emissions()
-    if loaded:
-        print(f"✅ Loaded {len(loaded)} subnet emissions (normalized to percentages)")
-        total = sum(loaded.values())
-        print(f"✅ Total percentage: {total:.6f} (should be 1.0)")
-    
-    # Show stats
-    stats = storage.get_storage_stats()
-    print(f"✅ Storage stats: {stats}")
+# Production module - no test code for launch

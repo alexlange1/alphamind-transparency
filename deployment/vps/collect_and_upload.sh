@@ -64,7 +64,12 @@ source venv/bin/activate
 
 # Verify btcli is working
 log "🔍 Verifying btcli connection..."
-timeout 30 btcli --help > /dev/null || {
+# Use gtimeout on macOS (from coreutils) or timeout on Linux
+TIMEOUT_CMD="timeout"
+if command -v gtimeout >/dev/null 2>&1; then
+    TIMEOUT_CMD="gtimeout"
+fi
+$TIMEOUT_CMD 30 btcli --help > /dev/null || {
     log "ERROR: btcli not responding"
     send_discord_notification "ERROR" "❌ btcli not responding or not installed"
     exit 1

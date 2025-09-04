@@ -261,41 +261,4 @@ class CreationFileSerializer:
         logger.info(f"Loaded creation file from {filepath}")
         return creation_file
 
-def create_sample_creation_file(epoch_id: int = 1) -> CreationFile:
-    """Create a sample creation file for testing"""
-    
-    # Sample weights for 20 subnets
-    weights = {
-        1: 0.05,   # 5%
-        2: 0.05,   # 5%
-        3: 0.05,   # 5%
-        4: 0.05,   # 5%
-        5: 0.05,   # 5%
-        6: 0.05,   # 5%
-        7: 0.05,   # 5%
-        8: 0.05,   # 5%
-        9: 0.05,   # 5%
-        10: 0.05,  # 5%
-        11: 0.05,  # 5%
-        12: 0.05,  # 5%
-        13: 0.05,  # 5%
-        14: 0.05,  # 5%
-        15: 0.05,  # 5%
-        16: 0.05,  # 5%
-        17: 0.05,  # 5%
-        18: 0.05,  # 5%
-        19: 0.05,  # 5%
-        20: 0.05   # 5%
-    }
-    
-    # Create epoch manager and publish creation file
-    from .epoch_manager import EpochManager
-    
-    epoch_manager = EpochManager()
-    creation_file = epoch_manager.publish_creation_file(
-        epoch_id=epoch_id,
-        weights=weights,
-        published_by="test_system"
-    )
-    
-    return creation_file
+# Removed sample creation file function - production launch ready

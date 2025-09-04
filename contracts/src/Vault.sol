@@ -6,7 +6,7 @@ import {IValidatorSet} from "./IValidatorSet.sol";
 import {Router} from "./Router.sol";
 import {FeeManager} from "./FeeManager.sol";
 import {NAVOracle} from "./NAVOracle.sol";
-import {ReentrancyGuard} from "./ReentrancyGuard.sol";
+import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/utils/math/Math.sol";
 import "@openzeppelin/contracts/utils/Pausable.sol";

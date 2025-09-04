@@ -1,0 +1,12 @@
+# Minimal Production Requirements - Zero Mock Code
+# Reduced from 15+ fragile dependencies to 4 essential ones
+
+# Core Bittensor integration
+bittensor>=6.0.0
+
+# HTTP client/server
+aiohttp>=3.8.0
+
+# Web3 integration for smart contracts
+web3>=6.0.0
+eth-account>=0.8.0

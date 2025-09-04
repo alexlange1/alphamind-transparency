@@ -27,7 +27,7 @@ log() {
     echo "[$(date '+%Y-%m-%d %H:%M:%S UTC')] $*"
 }
 
-log "📋 Updating transparency data in $CURRENT_BRANCH branch with daily manifest"
+log "📋 Updating transparency data in main branch with daily emissions data"
 
 # Check if we're in a git repository
 if ! git rev-parse --git-dir > /dev/null 2>&1; then
@@ -40,16 +40,14 @@ fi
 git config user.name "AlphaMind Emissions Bot"
 git config user.email "emissions-bot@alphamind.subnet"
 
-log "📁 Updating transparency data in $CURRENT_BRANCH branch..."
+log "📁 Updating transparency data in main branch..."
 
-# Create directory structure in tao20-transparency folder
-mkdir -p tao20-transparency/{manifests,status,data}
-mkdir -p "tao20-transparency/manifests/$(date -u '+%Y')/$(date -u '+%m')"
+# Create simple directory structure in tao20-transparency folder
+mkdir -p tao20-transparency/{daily,status}
 
 # Define file paths and initialize variables
-S3_URLS_FILE="logs/s3_urls_$(date -u '+%Y%m%d').json"
-STATUS_FILE="tao20-transparency/status/status_$(date -u '+%Y%m%d').json"
-LATEST_MANIFEST="tao20-transparency/manifests/manifest_latest.json"
+DAILY_FILE="tao20-transparency/daily/emissions_$(date -u '+%Y%m%d').json"
+STATUS_FILE="tao20-transparency/status/latest.json"
 LATEST_EMISSIONS="$PROJECT_ROOT/out/secure/secure_data/latest_emissions_secure.json"
 
 # Initialize default values
@@ -74,7 +72,8 @@ else
 fi
 
 # Extract data from latest manifest if it exists
-if [ -f "$LATEST_MANIFEST" ]; then
+MANIFEST_FILE="manifests/manifest_latest.json"
+if [ -f "$MANIFEST_FILE" ]; then
     MERKLE_ROOT=$(python3 -c "
 import json
 import sys
@@ -84,7 +83,7 @@ try:
     print(data.get('merkle_root', 'unknown'))
 except Exception as e:
     print('unknown')
-" "$LATEST_MANIFEST" 2>/dev/null || echo "unknown")
+" "$MANIFEST_FILE" 2>/dev/null || echo "unknown")
     
     SIGNATURE=$(python3 -c "
 import json
@@ -97,140 +96,115 @@ try:
     print(sig[:16] if len(sig) > 16 else sig)
 except Exception as e:
     print('unknown')
-" "$LATEST_MANIFEST" 2>/dev/null || echo "unknown")
+" "$MANIFEST_FILE" 2>/dev/null || echo "unknown")
 else
-    log "⚠️  Latest manifest not found at $LATEST_MANIFEST"
-fi
-
-# Load S3 URLs if available
-MANIFEST_URL=""
-DATA_URL=""
-if [ -f "$S3_URLS_FILE" ]; then
-    MANIFEST_URL=$(jq -r '.manifest_url' "$S3_URLS_FILE" 2>/dev/null || echo "")
-    DATA_URL=$(jq -r '.data_url' "$S3_URLS_FILE" 2>/dev/null || echo "")
+    log "⚠️  Latest manifest not found at $MANIFEST_FILE"
 fi
 
 log "📊 Extracted data - Subnets: $SUBNET_COUNT, Merkle Root: ${MERKLE_ROOT:0:16}..., Signature: ${SIGNATURE}..."
 
-# Create status summary
+# Copy actual emissions data with subnet details to daily transparency folder
+if [ -f "$LATEST_EMISSIONS" ]; then
+    # Extract the actual secure emissions file with full subnet data
+    SECURE_EMISSIONS_FILE=$(python3 -c "
+import json
+import sys
+try:
+    with open(sys.argv[1]) as f:
+        data = json.load(f)
+    print(data.get('latest_file', ''))
+except Exception as e:
+    print('')
+" "$LATEST_EMISSIONS" 2>/dev/null)
+    
+    if [ -n "$SECURE_EMISSIONS_FILE" ] && [ -f "out/secure/secure_data/$SECURE_EMISSIONS_FILE" ]; then
+        cp "out/secure/secure_data/$SECURE_EMISSIONS_FILE" "$DAILY_FILE"
+        log "📄 Copied actual emissions data with subnet details to transparency folder"
+    else
+        log "⚠️  Could not find secure emissions file: $SECURE_EMISSIONS_FILE"
+    fi
+else
+    log "⚠️  Latest emissions file not found at $LATEST_EMISSIONS"
+fi
+
+# Create simple status file
 cat > "$STATUS_FILE" << EOF
 {
+    "last_updated": "$TIMESTAMP",
     "date": "$DATE_STR",
-    "timestamp": "$TIMESTAMP",
     "status": "success",
-    "collection": {
-        "total_files": $SUBNET_COUNT,
-        "merkle_root": "$MERKLE_ROOT",
-        "signature_preview": "$SIGNATURE...",
-        "network": "finney",
-        "method": "btcli_automated_vps"
-    },
-    "storage": {
-        "manifest_url": "$MANIFEST_URL",
-        "data_url": "$DATA_URL",
-        "backend": "s3_versioned"
-    },
-    "verification": {
-        "github_actions_url": "https://github.com/alexlange1/alphamind/actions",
-        "public_key_url": "$DATA_URL/public_key.pem"
-    }
+    "subnets_collected": $SUBNET_COUNT,
+    "merkle_root": "$MERKLE_ROOT",
+    "signature_preview": "${SIGNATURE}...",
+    "network": "finney",
+    "s3_bucket": "s3://alphamind-emissions-data/emissions/$DATE_STR/",
+    "github_repo": "https://github.com/alexlange1/alphamind"
 }
 EOF
 
-# Update latest status
-cp "$STATUS_FILE" "tao20-transparency/status/latest.json"
-
-# Create or update README
+# Create simple README
 cat > tao20-transparency/README.md << EOF
-# AlphaMind Emissions Data Transparency
+# AlphaMind Emissions Transparency
 
-This repository provides public transparency and verification for AlphaMind subnet emissions data collection.
-
-## 🔒 Security & Integrity
-
-- **Daily Collection**: Automated collection at 16:00 UTC from Bittensor Finney network
-- **Cryptographic Security**: SHA-256 hashing + Ed25519 signatures + Merkle tree verification
-- **Immutable Storage**: S3 with versioning enabled for tamper-proof history
-- **Public Verification**: GitHub Actions verify data integrity daily
+Daily transparency data for AlphaMind subnet emissions collection from Bittensor Finney network.
 
 ## 📊 Latest Collection
 
-**Date**: $DATE_STR  
-**Files**: $SUBNET_COUNT  
-**Merkle Root**: \`$MERKLE_ROOT\`  
-**Status**: ✅ Verified
+- **Date**: $DATE_STR
+- **Subnets**: $SUBNET_COUNT
+- **Merkle Root**: \`$MERKLE_ROOT\`
+- **Status**: ✅ Verified
 
-## 🔗 Data Access
+## 📁 Data Structure
 
-- **Manifest**: [$MANIFEST_URL]($MANIFEST_URL)
-- **Raw Data**: [$DATA_URL]($DATA_URL)
-- **Latest Status**: [status/latest.json](status/latest.json)
+- \`daily/\` - Daily emissions data files
+- \`status/\` - Collection status and metadata
 
-## 🔍 Verification
+## 🔒 Security
 
-To verify the data integrity:
+- Ed25519 cryptographic signatures
+- SHA-256 + HMAC integrity protection  
+- Merkle tree verification
+- S3 immutable storage
 
-1. Download the manifest and data from S3
-2. Verify Ed25519 signature using the public key
-3. Recompute Merkle tree and compare with manifest
-4. Check GitHub Actions verification results
+## 🔗 Links
 
-### Verification Script
-
-\`\`\`bash
-# Download verification script
-curl -O https://raw.githubusercontent.com/alexlange1/alphamind/main/deployment/verify_manifest.py
-
-# Run verification
-python3 verify_manifest.py --manifest-url $MANIFEST_URL --data-url $DATA_URL
-\`\`\`
-
-## 📈 Historical Data
-
-- [Manifests by Date](manifests/)
-- [Daily Status Reports](status/)
-- [GitHub Actions Verification](https://github.com/alexlange1/alphamind/actions)
-
-## 🎯 About AlphaMind
-
-AlphaMind is a Bittensor subnet focused on creating secure, transparent, and verifiable AI model indices based on network emissions data.
+- **S3 Data**: [s3://alphamind-emissions-data](https://alphamind-emissions-data.s3.amazonaws.com/)
+- **GitHub**: [alexlange1/alphamind](https://github.com/alexlange1/alphamind)
 
 ---
-
-*Last updated: $TIMESTAMP*  
-*Data collection: Automated via VPS + S3*  
-*Verification: GitHub Actions + Public Merkle Tree*
+*Last updated: $TIMESTAMP*
 EOF
 
-# Add transparency changes
+# Check if tao20-transparency folder exists, if not create it
+if [ ! -d "tao20-transparency" ]; then
+    mkdir -p tao20-transparency/{daily,status}
+    log "📁 Created tao20-transparency folder structure"
+fi
+
+# Add ONLY the tao20-transparency folder - nothing else
 git add tao20-transparency/
 
 # Check if there are changes to commit
 if git diff --staged --quiet; then
     log "📝 No transparency changes to commit"
 else
-    # Commit changes
-    COMMIT_MSG="📊 Daily emissions transparency update - $DATE_STR
+    # Simple commit message focused only on transparency
+    COMMIT_MSG="📊 Update tao20-transparency - $DATE_STR
 
-🔒 Cryptographic manifest with Merkle root: $MERKLE_ROOT
-📊 Collection: $SUBNET_COUNT files from Bittensor Finney network
-🔐 Ed25519 signature: $SIGNATURE...
-⏰ Timestamp: $TIMESTAMP
-
-Data available at: $DATA_URL
-Manifest: $MANIFEST_URL"
+Subnets: $SUBNET_COUNT | Merkle: ${MERKLE_ROOT:0:16}... | Time: $TIMESTAMP"
 
     git commit -m "$COMMIT_MSG"
     
-    # Push to current branch
-    if git push origin "$CURRENT_BRANCH"; then
-        log "✅ Transparency update committed and pushed successfully"
-        log "🔗 View at: https://github.com/alexlange1/alphamind/tree/$CURRENT_BRANCH"
+    # Push only the transparency changes to main branch
+    if git push origin main; then
+        log "✅ Transparency folder updated on main branch"
+        log "🔗 View at: https://github.com/alexlange1/alphamind/tree/main/tao20-transparency"
     else
-        log "❌ Failed to push to $CURRENT_BRANCH branch"
+        log "❌ Failed to push transparency updates to main branch"
         log "   Check GitHub token permissions and repository access"
         exit 1
     fi
 fi
 
-log "📋 Transparency update completed in $CURRENT_BRANCH branch"
+log "📋 Transparency update completed"
