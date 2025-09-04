@@ -1,66 +1,408 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.21;
 
-contract TAO20 {
-    string public name = "TAO20 Index";
-    string public symbol = "TAO20";
-    uint8 public immutable decimals = 18;
-    uint256 public totalSupply;
+import "@openzeppelin/contracts/access/Ownable.sol";
+import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
+import "@openzeppelin/contracts/utils/Pausable.sol";
+import "@openzeppelin/contracts/token/ERC20/extensions/ERC20Permit.sol";
+import "@openzeppelin/contracts/utils/math/Math.sol";
 
-    address public minter;
-
-    mapping(address => uint256) public balanceOf;
-    mapping(address => mapping(address => uint256)) public allowance;
-
-    event Transfer(address indexed from, address indexed to, uint256 value);
-    event Approval(address indexed owner, address indexed spender, uint256 value);
-    event MinterChanged(address indexed newMinter);
-
-    modifier onlyMinter() { require(msg.sender == minter, "not minter"); _; }
-
-    constructor(address _minter) { minter = _minter; emit MinterChanged(_minter); }
-
-    function setMinter(address _minter) external onlyMinter { minter = _minter; emit MinterChanged(_minter); }
-
-    function approve(address spender, uint256 amount) external returns (bool) {
-        allowance[msg.sender][spender] = amount;
-        emit Approval(msg.sender, spender, amount);
+/**
+ * @title TAO20
+ * @dev Bulletproof ERC20 token for the TAO20 Index with enterprise-grade security
+ * 
+ * SECURITY FEATURES:
+ * ✅ OpenZeppelin Ownable - Secure admin controls
+ * ✅ ReentrancyGuard - Prevents reentrancy attacks
+ * ✅ Pausable - Emergency stop mechanism
+ * ✅ ERC20Permit - Gasless approvals via signatures
+ * ✅ Maximum supply cap - Prevents unlimited inflation
+ * ✅ Blacklist mechanism - Freeze malicious accounts
+ * ✅ Safe math operations - All arithmetic is overflow/underflow safe
+ * ✅ Comprehensive input validation - Zero address and amount checks
+ * ✅ Detailed events - Full audit trail
+ * ✅ Multi-minter support - Role-based access control
+ */
+contract TAO20 is Ownable, ReentrancyGuard, Pausable, ERC20Permit {
+    
+    // ===================== Constants =====================
+    
+    /// @dev Maximum possible supply: 21 million tokens (matching Bitcoin's cap)
+    uint256 public constant MAX_SUPPLY = 21_000_000 * 1e18;
+    
+    /// @dev Maximum amount that can be minted in a single transaction (anti-spam)
+    uint256 public constant MAX_MINT_AMOUNT = 1_000_000 * 1e18;
+    
+    // ===================== State Variables =====================
+    
+    /// @dev Authorized minters mapping
+    mapping(address => bool) public authorizedMinters;
+    
+    /// @dev Blacklisted addresses (frozen accounts)
+    mapping(address => bool) public blacklisted;
+    
+    /// @dev Total number of authorized minters
+    uint256 public minterCount;
+    
+    // ===================== Events =====================
+    
+    event MinterAuthorized(address indexed minter, bool authorized);
+    event AccountBlacklisted(address indexed account, bool blacklisted);
+    event EmergencyMint(address indexed to, uint256 amount, string reason);
+    event EmergencyBurn(address indexed from, uint256 amount, string reason);
+    
+    // ===================== Errors =====================
+    
+    error TAO20__NotAuthorizedMinter();
+    error TAO20__AccountBlacklisted(address account);
+    error TAO20__ExceedsMaxSupply(uint256 requested, uint256 maxSupply);
+    error TAO20__ExceedsMaxMintAmount(uint256 requested, uint256 maxAmount);
+    error TAO20__ZeroAddress();
+    error TAO20__ZeroAmount();
+    error TAO20__InsufficientBalance(address account, uint256 balance, uint256 required);
+    error TAO20__InsufficientAllowance(address owner, address spender, uint256 allowance, uint256 required);
+    error TAO20__NoMintersAuthorized();
+    
+    // ===================== Modifiers =====================
+    
+    modifier onlyAuthorizedMinter() {
+        if (!authorizedMinters[msg.sender]) revert TAO20__NotAuthorizedMinter();
+        _;
+    }
+    
+    modifier notBlacklisted(address account) {
+        if (blacklisted[account]) revert TAO20__AccountBlacklisted(account);
+        _;
+    }
+    
+    modifier validAddress(address addr) {
+        if (addr == address(0)) revert TAO20__ZeroAddress();
+        _;
+    }
+    
+    modifier validAmount(uint256 amount) {
+        if (amount == 0) revert TAO20__ZeroAmount();
+        _;
+    }
+    
+    // ===================== Constructor =====================
+    
+    constructor(address _initialMinter) 
+        ERC20("TAO20 Index", "TAO20")
+        ERC20Permit("TAO20 Index")
+        Ownable(msg.sender)
+    {
+        if (_initialMinter == address(0)) revert TAO20__ZeroAddress();
+        
+        // Authorize initial minter
+        authorizedMinters[_initialMinter] = true;
+        minterCount = 1;
+        
+        emit MinterAuthorized(_initialMinter, true);
+    }
+    
+    // ===================== Minter Management =====================
+    
+    /**
+     * @dev Authorize or revoke minter privileges
+     * @param minter Address to modify
+     * @param authorized True to authorize, false to revoke
+     */
+    function setMinter(address minter, bool authorized) 
+        external 
+        onlyOwner 
+        validAddress(minter) 
+    {
+        if (authorizedMinters[minter] == authorized) return; // No change needed
+        
+        authorizedMinters[minter] = authorized;
+        
+        if (authorized) {
+            minterCount++;
+        } else {
+            minterCount--;
+            // Ensure at least one minter remains
+            if (minterCount == 0) revert TAO20__NoMintersAuthorized();
+        }
+        
+        emit MinterAuthorized(minter, authorized);
+    }
+    
+    /**
+     * @dev Batch authorize multiple minters (gas efficient)
+     * @param minters Array of addresses to authorize
+     */
+    function authorizeMinters(address[] calldata minters) external onlyOwner {
+        for (uint256 i = 0; i < minters.length; i++) {
+            address minter = minters[i];
+            if (minter == address(0)) revert TAO20__ZeroAddress();
+            
+            if (!authorizedMinters[minter]) {
+                authorizedMinters[minter] = true;
+                minterCount++;
+                emit MinterAuthorized(minter, true);
+            }
+        }
+    }
+    
+    // ===================== Blacklist Management =====================
+    
+    /**
+     * @dev Blacklist or unblacklist an account (emergency measure)
+     * @param account Address to modify
+     * @param _blacklisted True to blacklist, false to unblacklist
+     */
+    function setBlacklisted(address account, bool _blacklisted) 
+        external 
+        onlyOwner 
+        validAddress(account) 
+    {
+        if (blacklisted[account] == _blacklisted) return; // No change needed
+        
+        blacklisted[account] = _blacklisted;
+        emit AccountBlacklisted(account, _blacklisted);
+    }
+    
+    /**
+     * @dev Batch blacklist multiple accounts
+     * @param accounts Array of addresses to blacklist
+     */
+    function blacklistAccounts(address[] calldata accounts) external onlyOwner {
+        for (uint256 i = 0; i < accounts.length; i++) {
+            address account = accounts[i];
+            if (account == address(0)) revert TAO20__ZeroAddress();
+            
+            if (!blacklisted[account]) {
+                blacklisted[account] = true;
+                emit AccountBlacklisted(account, true);
+            }
+        }
+    }
+    
+    // ===================== Core Token Functions =====================
+    
+    /**
+     * @dev Mint tokens to an address (only authorized minters)
+     * @param to Recipient address
+     * @param amount Amount to mint
+     */
+    function mint(address to, uint256 amount) 
+        external 
+        onlyAuthorizedMinter 
+        nonReentrant 
+        whenNotPaused 
+        validAddress(to) 
+        validAmount(amount)
+        notBlacklisted(to)
+    {
+        // Check supply constraints
+        uint256 newTotalSupply = totalSupply() + amount;
+        if (newTotalSupply > MAX_SUPPLY) {
+            revert TAO20__ExceedsMaxSupply(newTotalSupply, MAX_SUPPLY);
+        }
+        
+        // Check single mint limit
+        if (amount > MAX_MINT_AMOUNT) {
+            revert TAO20__ExceedsMaxMintAmount(amount, MAX_MINT_AMOUNT);
+        }
+        
+        _mint(to, amount);
+    }
+    
+    /**
+     * @dev Burn tokens from an address (only authorized minters)
+     * @param from Address to burn from
+     * @param amount Amount to burn
+     */
+    function burn(address from, uint256 amount) 
+        external 
+        onlyAuthorizedMinter 
+        nonReentrant 
+        whenNotPaused 
+        validAddress(from) 
+        validAmount(amount)
+    {
+        uint256 currentBalance = balanceOf(from);
+        if (currentBalance < amount) {
+            revert TAO20__InsufficientBalance(from, currentBalance, amount);
+        }
+        
+        _burn(from, amount);
+    }
+    
+    /**
+     * @dev Emergency mint (owner only, with reason)
+     * @param to Recipient address
+     * @param amount Amount to mint
+     * @param reason Reason for emergency mint
+     */
+    function emergencyMint(address to, uint256 amount, string calldata reason) 
+        external 
+        onlyOwner 
+        validAddress(to) 
+        validAmount(amount)
+        notBlacklisted(to)
+    {
+        uint256 newTotalSupply = totalSupply() + amount;
+        if (newTotalSupply > MAX_SUPPLY) {
+            revert TAO20__ExceedsMaxSupply(newTotalSupply, MAX_SUPPLY);
+        }
+        
+        _mint(to, amount);
+        emit EmergencyMint(to, amount, reason);
+    }
+    
+    /**
+     * @dev Emergency burn (owner only, with reason)
+     * @param from Address to burn from
+     * @param amount Amount to burn
+     * @param reason Reason for emergency burn
+     */
+    function emergencyBurn(address from, uint256 amount, string calldata reason) 
+        external 
+        onlyOwner 
+        validAddress(from) 
+        validAmount(amount)
+    {
+        uint256 currentBalance = balanceOf(from);
+        if (currentBalance < amount) {
+            revert TAO20__InsufficientBalance(from, currentBalance, amount);
+        }
+        
+        _burn(from, amount);
+        emit EmergencyBurn(from, amount, reason);
+    }
+    
+    // ===================== Enhanced Transfer Functions =====================
+    
+    /**
+     * @dev Enhanced transfer with blacklist checks
+     */
+    function transfer(address to, uint256 amount) 
+        public 
+        override 
+        whenNotPaused 
+        notBlacklisted(msg.sender) 
+        notBlacklisted(to) 
+        returns (bool) 
+    {
+        return super.transfer(to, amount);
+    }
+    
+    /**
+     * @dev Enhanced transferFrom with blacklist checks
+     */
+    function transferFrom(address from, address to, uint256 amount) 
+        public 
+        override 
+        whenNotPaused 
+        notBlacklisted(from) 
+        notBlacklisted(to) 
+        notBlacklisted(msg.sender) 
+        returns (bool) 
+    {
+        return super.transferFrom(from, to, amount);
+    }
+    
+    /**
+     * @dev Enhanced approve with blacklist checks
+     */
+    function approve(address spender, uint256 amount) 
+        public 
+        override 
+        whenNotPaused 
+        notBlacklisted(msg.sender) 
+        notBlacklisted(spender) 
+        returns (bool) 
+    {
+        return super.approve(spender, amount);
+    }
+    
+    // ===================== Emergency Controls =====================
+    
+    /**
+     * @dev Pause all token operations (emergency only)
+     */
+    function pause() external onlyOwner {
+        _pause();
+    }
+    
+    /**
+     * @dev Unpause token operations
+     */
+    function unpause() external onlyOwner {
+        _unpause();
+    }
+    
+    // ===================== View Functions =====================
+    
+    /**
+     * @dev Check if an address is an authorized minter
+     */
+    function isMinter(address account) external view returns (bool) {
+        return authorizedMinters[account];
+    }
+    
+    /**
+     * @dev Check if an account is blacklisted
+     */
+    function isBlacklisted(address account) external view returns (bool) {
+        return blacklisted[account];
+    }
+    
+    /**
+     * @dev Get remaining mintable supply
+     */
+    function remainingSupply() external view returns (uint256) {
+        return MAX_SUPPLY - totalSupply();
+    }
+    
+    /**
+     * @dev Check if minting amount would exceed max supply
+     */
+    function canMint(uint256 amount) external view returns (bool) {
+        return totalSupply() + amount <= MAX_SUPPLY;
+    }
+    
+    // ===================== Batch Operations =====================
+    
+    /**
+     * @dev Batch transfer to multiple recipients (gas efficient)
+     * @param recipients Array of recipient addresses
+     * @param amounts Array of amounts to transfer
+     */
+    function batchTransfer(address[] calldata recipients, uint256[] calldata amounts) 
+        external 
+        whenNotPaused 
+        notBlacklisted(msg.sender) 
+        returns (bool) 
+    {
+        require(recipients.length == amounts.length, "TAO20: Arrays length mismatch");
+        require(recipients.length > 0, "TAO20: Empty arrays");
+        
+        uint256 totalAmount = 0;
+        
+        // Calculate total amount needed
+        for (uint256 i = 0; i < amounts.length; i++) {
+            if (amounts[i] == 0) revert TAO20__ZeroAmount();
+            totalAmount += amounts[i];
+        }
+        
+        // Check sender has sufficient balance
+        uint256 senderBalance = balanceOf(msg.sender);
+        if (senderBalance < totalAmount) {
+            revert TAO20__InsufficientBalance(msg.sender, senderBalance, totalAmount);
+        }
+        
+        // Execute transfers
+        for (uint256 i = 0; i < recipients.length; i++) {
+            address recipient = recipients[i];
+            if (recipient == address(0)) revert TAO20__ZeroAddress();
+            if (blacklisted[recipient]) revert TAO20__AccountBlacklisted(recipient);
+            
+            _transfer(msg.sender, recipient, amounts[i]);
+        }
+        
         return true;
-    }
-
-    function transfer(address to, uint256 amount) external returns (bool) {
-        _transfer(msg.sender, to, amount);
-        return true;
-    }
-
-    function transferFrom(address from, address to, uint256 amount) external returns (bool) {
-        uint256 a = allowance[from][msg.sender];
-        require(a >= amount, "insufficient allowance");
-        unchecked { allowance[from][msg.sender] = a - amount; }
-        _transfer(from, to, amount);
-        return true;
-    }
-
-    function _transfer(address from, address to, uint256 amount) internal {
-        require(balanceOf[from] >= amount, "insufficient balance");
-        unchecked { balanceOf[from] -= amount; }
-        balanceOf[to] += amount;
-        emit Transfer(from, to, amount);
-    }
-
-    function mint(address to, uint256 amount) external onlyMinter {
-        require(to != address(0), "mint to zero address");
-        totalSupply += amount;
-        balanceOf[to] += amount;
-        emit Transfer(address(0), to, amount);
-    }
-
-    function burn(address from, uint256 amount) external onlyMinter {
-        require(balanceOf[from] >= amount, "insufficient");
-        unchecked { balanceOf[from] -= amount; }
-        totalSupply -= amount;
-        emit Transfer(from, address(0), amount);
     }
 }
-
-
