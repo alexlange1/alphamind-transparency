@@ -2,72 +2,100 @@
 pragma solidity ^0.8.21;
 
 import "forge-std/Script.sol";
-import {Vault} from "../src/Vault.sol";
-import {TAO20} from "../src/TAO20.sol";
-import {OracleAggregator} from "../src/OracleAggregator.sol";
+import {TAO20Core} from "../src/TAO20Core.sol";
+import {ValidatorSet} from "../src/ValidatorSet.sol";
+import {StakingNAVOracle} from "../src/StakingNAVOracle.sol";
 
 contract InteractScript is Script {
+    
+    TAO20Core public tao20Core;
+    ValidatorSet public validatorSet;
+    StakingNAVOracle public navOracle;
+    
+    function setUp() external {
+        // Load deployed contract addresses from environment or hardcode for testing
+        tao20Core = TAO20Core(vm.envAddress("TAO20_CORE_ADDRESS"));
+        validatorSet = ValidatorSet(vm.envAddress("VALIDATOR_SET_ADDRESS"));
+        navOracle = StakingNAVOracle(vm.envAddress("NAV_ORACLE_ADDRESS"));
+    }
+    
     function run() external {
-        uint256 deployerPrivateKey = vm.envUint("PRIVATE_KEY");
+        uint256 privateKey = vm.envUint("PRIVATE_KEY");
+        vm.startBroadcast(privateKey);
+
+        console.log("=== TAO20 INTERACTION SCRIPT ===");
+        console.log("TAO20Core:", address(tao20Core));
+        console.log("ValidatorSet:", address(validatorSet));
+        console.log("NAVOracle:", address(navOracle));
+
+        // Example: Check current NAV
+        uint256 totalValue = tao20Core.getTotalValue();
+        uint256 totalSupply = tao20Core.tao20Token().totalSupply();
+        uint256 nav = tao20Core.getYieldAdjustedNAV();
         
-        // Get deployed contract addresses from environment or previous deployment
-        address vaultAddr = vm.envAddress("VAULT_ADDRESS");
-        address oracleAddr = vm.envAddress("ORACLE_ADDRESS");
+        console.log("Total Value:", totalValue);
+        console.log("Total Supply:", totalSupply);
+        console.log("Current NAV:", nav);
+
+        // Example: Check subnet staking info
+        for (uint16 i = 1; i <= 5; i++) {
+            (uint256 staked, uint256 yield, uint256 lastUpdate, bytes32 vaultHotkey) = 
+                tao20Core.getSubnetStakingInfo(i);
+            
+            console.log("Subnet", i);
+            console.log("- Staked:", staked);
+            console.log("- Yield:", yield);
+            console.log("- LastUpdate:", lastUpdate);
+        }
+
+        // Example: Compound yield (anyone can call)
+        console.log("Compounding yield...");
+        tao20Core.compoundYield();
+        console.log("Yield compounded successfully");
+
+        vm.stopBroadcast();
+        console.log("==============================");
+    }
+    
+    function testMinting() external {
+        uint256 privateKey = vm.envUint("PRIVATE_KEY");
+        vm.startBroadcast(privateKey);
         
-        Vault vault = Vault(vaultAddr);
-        OracleAggregator oracle = OracleAggregator(oracleAddr);
-        TAO20 token = vault.token();
+        console.log("=== TESTING MINTING FLOW ===");
         
-        vm.startBroadcast(deployerPrivateKey);
+        // This would be called after user deposits to Bittensor substrate
+        // and validators have attested the deposits
         
-        console.log("=== Interacting with deployed contracts ===");
-        console.log("Vault:", address(vault));
-        console.log("Oracle:", address(oracle));
-        console.log("Token:", address(token));
+        // Example mint request structure (for reference)
+        /*
+        TAO20Core.SubstrateDeposit[] memory deposits = new TAO20Core.SubstrateDeposit[](2);
+        deposits[0] = TAO20Core.SubstrateDeposit({
+            blockHash: keccak256("block1"),
+            extrinsicIndex: 1,
+            userSS58: keccak256("user_ss58_key"),
+            netuid: 1,
+            amount: 1000e18,
+            stakingEpoch: block.timestamp,
+            merkleRoot: keccak256("merkle_root")
+        });
         
-        // Set some oracle prices for testing
-        console.log("\n--- Setting Oracle Prices ---");
-        oracle.submit(1, 1.2e18); // Netuid 1: 1.2 TAO per unit
-        oracle.submit(2, 0.8e18); // Netuid 2: 0.8 TAO per unit
-        console.log("Prices submitted to oracle");
+        TAO20Core.MintRequest memory request = TAO20Core.MintRequest({
+            recipient: vm.addr(privateKey),
+            deposits: deposits,
+            merkleProofs: new bytes32[](2),
+            nonce: 0,
+            deadline: block.timestamp + 1 hours
+        });
         
-        // Check prices
-        uint256 price1 = oracle.getPrice(1);
-        uint256 price2 = oracle.getPrice(2);
-        console.log("Price for netuid 1:", price1);
-        console.log("Price for netuid 2:", price2);
+        // User would sign this with their Ed25519 key
+        bytes memory signature = ""; // Ed25519 signature
         
-        // Mint some tokens in-kind
-        console.log("\n--- Minting TAO20 tokens ---");
-        vault.setCompositionToleranceBps(10000); // Allow any composition for testing
+        tao20Core.mintTAO20(request, signature);
+        */
         
-        uint256[] memory netuids = new uint256[](2);
-        uint256[] memory quantities = new uint256[](2);
-        netuids[0] = 1; netuids[1] = 2;
-        quantities[0] = 100e18; quantities[1] = 200e18; // 100 units of netuid 1, 200 units of netuid 2
-        
-        uint256 minted = vault.mintInKind(netuids, quantities, vm.addr(deployerPrivateKey));
-        console.log("Minted TAO20 tokens:", minted);
-        
-        // Check balances
-        uint256 balance = token.balanceOf(vm.addr(deployerPrivateKey));
-        uint256 totalSupply = token.totalSupply();
-        uint256 nav = vault.navTau18();
-        
-        console.log("\n--- Vault Status ---");
-        console.log("Your TAO20 balance:", balance);
-        console.log("Total TAO20 supply:", totalSupply);
-        console.log("NAV per token (TAU):", nav);
-        console.log("Holdings netuid 1:", vault.holdings(1));
-        console.log("Holdings netuid 2:", vault.holdings(2));
-        
-        // Test management fee accrual
-        console.log("\n--- Management Fee Test ---");
-        uint256 mgmtFee = vault.accrueMgmtFee();
-        console.log("Management fee accrued:", mgmtFee);
+        console.log("Note: Minting requires real Bittensor deposits and Ed25519 signatures");
+        console.log("========================");
         
         vm.stopBroadcast();
-        
-        console.log("\n=== Interaction Complete ===");
     }
 }

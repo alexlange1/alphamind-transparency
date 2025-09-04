@@ -22,18 +22,15 @@ interface IStakingV2 {
 }
 
 /**
- * @title Tao20Minter
- * @dev Bulletproof minter for TAO20 index tokens.
- *
- * SECURITY UPGRADES & ANTI-GAMING FEATURES:
- * - Real-time NAV Integration: Uses NAVOracle for precise, un-gameable minting/redemption values.
- * - Anti-Replay: Implemented nonces for all claim and redemption operations.
- * - Time-Lock Delay: Added mandatory delay between queuing and execution to prevent front-running.
- * - Gas Griefing Protection: Batch processing with fixed limits prevents gas-heavy transactions.
- * - Access Control: Strict Ownable and role-based permissions for keepers and validators.
- * - Slippage Protection: Enforces maximum slippage on all DEX swaps.
- * - Reentrancy Guard: Inherited from OpenZeppelin.
- * - Emergency Pause: Pausable for all critical functions.
+ * @title Tao20Minter (LEGACY)
+ * @dev DEPRECATED: Use TAO20Core.sol instead
+ * 
+ * This contract is kept for reference but should not be used.
+ * The new architecture is implemented in TAO20Core.sol with:
+ * - Direct Bittensor staking integration
+ * - Simplified Ed25519 signature verification
+ * - Yield-based NAV calculation
+ * - Clean anti-dilution mechanism
  */
 contract Tao20Minter is ERC20, Ownable, ReentrancyGuard, Pausable {
     using SafeERC20 for IERC20;
