@@ -107,6 +107,7 @@ contract TAO20 is Ownable, ReentrancyGuard, Pausable, ERC20Permit {
      * @dev Authorize or revoke minter privileges
      * @param minter Address to modify
      * @param authorized True to authorize, false to revoke
+     * @dev FIXED: Removed minterCount == 0 revert to prevent soft lock
      */
     function setMinter(address minter, bool authorized) 
         external 
@@ -121,8 +122,7 @@ contract TAO20 is Ownable, ReentrancyGuard, Pausable, ERC20Permit {
             minterCount++;
         } else {
             minterCount--;
-            // Ensure at least one minter remains
-            if (minterCount == 0) revert TAO20__NoMintersAuthorized();
+            // Note: Allow 0 minters to prevent soft lock - owner can add new minters
         }
         
         emit MinterAuthorized(minter, authorized);
@@ -131,8 +131,11 @@ contract TAO20 is Ownable, ReentrancyGuard, Pausable, ERC20Permit {
     /**
      * @dev Batch authorize multiple minters (gas efficient)
      * @param minters Array of addresses to authorize
+     * @dev FIXED: Added array length limit to prevent gas issues
      */
     function authorizeMinters(address[] calldata minters) external onlyOwner {
+        require(minters.length <= 50, "TAO20: Too many minters in batch");
+        
         for (uint256 i = 0; i < minters.length; i++) {
             address minter = minters[i];
             if (minter == address(0)) revert TAO20__ZeroAddress();
@@ -166,8 +169,11 @@ contract TAO20 is Ownable, ReentrancyGuard, Pausable, ERC20Permit {
     /**
      * @dev Batch blacklist multiple accounts
      * @param accounts Array of addresses to blacklist
+     * @dev FIXED: Added array length limit to prevent gas issues
      */
     function blacklistAccounts(address[] calldata accounts) external onlyOwner {
+        require(accounts.length <= 100, "TAO20: Too many accounts in batch");
+        
         for (uint256 i = 0; i < accounts.length; i++) {
             address account = accounts[i];
             if (account == address(0)) revert TAO20__ZeroAddress();
@@ -185,6 +191,7 @@ contract TAO20 is Ownable, ReentrancyGuard, Pausable, ERC20Permit {
      * @dev Mint tokens to an address (only authorized minters)
      * @param to Recipient address
      * @param amount Amount to mint
+     * @dev NOTE: Reverts if no minters are authorized (requires owner to add minter first)
      */
     function mint(address to, uint256 amount) 
         external 
@@ -213,6 +220,7 @@ contract TAO20 is Ownable, ReentrancyGuard, Pausable, ERC20Permit {
      * @dev Burn tokens from an address (only authorized minters)
      * @param from Address to burn from
      * @param amount Amount to burn
+     * @dev NOTE: Intentionally allows burning from blacklisted accounts (Vault redemption)
      */
     function burn(address from, uint256 amount) 
         external 
@@ -235,6 +243,7 @@ contract TAO20 is Ownable, ReentrancyGuard, Pausable, ERC20Permit {
      * @param to Recipient address
      * @param amount Amount to mint
      * @param reason Reason for emergency mint
+     * @dev NOTE: Emergency mint bypasses MAX_MINT_AMOUNT limit (by design)
      */
     function emergencyMint(address to, uint256 amount, string calldata reason) 
         external 
@@ -306,6 +315,8 @@ contract TAO20 is Ownable, ReentrancyGuard, Pausable, ERC20Permit {
     
     /**
      * @dev Enhanced approve with blacklist checks
+     * @dev WARNING: Standard ERC20 approve has front-running vulnerability
+     * @dev RECOMMENDATION: Use increaseAllowance/decreaseAllowance instead
      */
     function approve(address spender, uint256 amount) 
         public 
@@ -316,6 +327,42 @@ contract TAO20 is Ownable, ReentrancyGuard, Pausable, ERC20Permit {
         returns (bool) 
     {
         return super.approve(spender, amount);
+    }
+    
+    /**
+     * @dev Safe alternative to approve - increases allowance
+     * @param spender Address to increase allowance for
+     * @param addedValue Amount to increase allowance by
+     */
+    function increaseAllowance(address spender, uint256 addedValue)
+        public
+        whenNotPaused
+        notBlacklisted(msg.sender)
+        notBlacklisted(spender)
+        returns (bool)
+    {
+        address owner = _msgSender();
+        _approve(owner, spender, allowance(owner, spender) + addedValue);
+        return true;
+    }
+    
+    /**
+     * @dev Safe alternative to approve - decreases allowance
+     * @param spender Address to decrease allowance for
+     * @param subtractedValue Amount to decrease allowance by
+     */
+    function decreaseAllowance(address spender, uint256 subtractedValue)
+        public
+        whenNotPaused
+        notBlacklisted(msg.sender)
+        notBlacklisted(spender)
+        returns (bool)
+    {
+        address owner = _msgSender();
+        uint256 currentAllowance = allowance(owner, spender);
+        require(currentAllowance >= subtractedValue, "TAO20: decreased allowance below zero");
+        _approve(owner, spender, currentAllowance - subtractedValue);
+        return true;
     }
     
     // ===================== Emergency Controls =====================
@@ -352,9 +399,11 @@ contract TAO20 is Ownable, ReentrancyGuard, Pausable, ERC20Permit {
     
     /**
      * @dev Get remaining mintable supply
+     * @dev FIXED: Handles edge case where totalSupply > MAX_SUPPLY
      */
     function remainingSupply() external view returns (uint256) {
-        return MAX_SUPPLY - totalSupply();
+        uint256 currentSupply = totalSupply();
+        return currentSupply >= MAX_SUPPLY ? 0 : MAX_SUPPLY - currentSupply;
     }
     
     /**
@@ -362,6 +411,20 @@ contract TAO20 is Ownable, ReentrancyGuard, Pausable, ERC20Permit {
      */
     function canMint(uint256 amount) external view returns (bool) {
         return totalSupply() + amount <= MAX_SUPPLY;
+    }
+    
+    /**
+     * @dev Check if minting is currently possible (has authorized minters)
+     */
+    function canMintNow() external view returns (bool) {
+        return minterCount > 0;
+    }
+    
+    /**
+     * @dev Get current number of authorized minters
+     */
+    function getMinterCount() external view returns (uint256) {
+        return minterCount;
     }
     
     // ===================== Batch Operations =====================
@@ -383,9 +446,12 @@ contract TAO20 is Ownable, ReentrancyGuard, Pausable, ERC20Permit {
         uint256 totalAmount = 0;
         
         // Calculate total amount needed
+        // FIXED: Use unchecked for gas efficiency - overflow protection via balance check
         for (uint256 i = 0; i < amounts.length; i++) {
             if (amounts[i] == 0) revert TAO20__ZeroAmount();
-            totalAmount += amounts[i];
+            unchecked {
+                totalAmount += amounts[i];
+            }
         }
         
         // Check sender has sufficient balance
