@@ -144,10 +144,17 @@ contract TAO20Core is Ownable, ReentrancyGuard, Pausable {
     ) external nonReentrant whenNotPaused {
         require(block.timestamp <= request.deadline, "Request expired");
         require(request.nonce == userNonces[msg.sender], "Invalid nonce");
+        require(request.deposits.length > 0, "Empty deposits array");
         
-        // Verify Ed25519 signature
+        // Verify all deposits belong to the same user and get the common userSS58
+        bytes32 commonUserSS58 = request.deposits[0].userSS58;
+        for (uint i = 0; i < request.deposits.length; i++) {
+            require(request.deposits[i].userSS58 == commonUserSS58, "All deposits must belong to same user");
+        }
+        
+        // Verify Ed25519 signature with the verified common user key
         bytes32 messageHash = _hashMintRequest(request);
-        require(_verifyEd25519Signature(messageHash, signature, request.deposits[0].userSS58), "Invalid signature");
+        require(_verifyEd25519Signature(messageHash, signature, commonUserSS58), "Invalid signature");
         
         // Increment nonce
         userNonces[msg.sender]++;
