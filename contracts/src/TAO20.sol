@@ -132,6 +132,7 @@ contract TAO20 is Ownable, ReentrancyGuard, Pausable, ERC20Permit {
      * @dev Batch authorize multiple minters (gas efficient)
      * @param minters Array of addresses to authorize
      * @dev FIXED: Added array length limit to prevent gas issues
+     * @dev NOTE: Duplicates in same batch are allowed but ignored (no state change)
      */
     function authorizeMinters(address[] calldata minters) external onlyOwner {
         require(minters.length <= 50, "TAO20: Too many minters in batch");
@@ -145,6 +146,8 @@ contract TAO20 is Ownable, ReentrancyGuard, Pausable, ERC20Permit {
                 minterCount++;
                 emit MinterAuthorized(minter, true);
             }
+            // Note: If minter already authorized, no state change occurs
+            // This prevents minterCount inconsistency from duplicates
         }
     }
     
@@ -266,6 +269,7 @@ contract TAO20 is Ownable, ReentrancyGuard, Pausable, ERC20Permit {
      * @param from Address to burn from
      * @param amount Amount to burn
      * @param reason Reason for emergency burn
+     * @dev NOTE: Can burn from blacklisted accounts (emergency recovery)
      */
     function emergencyBurn(address from, uint256 amount, string calldata reason) 
         external 
@@ -290,6 +294,7 @@ contract TAO20 is Ownable, ReentrancyGuard, Pausable, ERC20Permit {
     function transfer(address to, uint256 amount) 
         public 
         override 
+        nonReentrant
         whenNotPaused 
         notBlacklisted(msg.sender) 
         notBlacklisted(to) 
@@ -304,6 +309,7 @@ contract TAO20 is Ownable, ReentrancyGuard, Pausable, ERC20Permit {
     function transferFrom(address from, address to, uint256 amount) 
         public 
         override 
+        nonReentrant
         whenNotPaused 
         notBlacklisted(from) 
         notBlacklisted(to) 
@@ -342,7 +348,12 @@ contract TAO20 is Ownable, ReentrancyGuard, Pausable, ERC20Permit {
         returns (bool)
     {
         address owner = _msgSender();
-        _approve(owner, spender, allowance(owner, spender) + addedValue);
+        uint256 currentAllowance = allowance(owner, spender);
+        
+        // Check for overflow before adding
+        require(currentAllowance <= type(uint256).max - addedValue, "TAO20: allowance overflow");
+        
+        _approve(owner, spender, currentAllowance + addedValue);
         return true;
     }
     
@@ -436,12 +447,14 @@ contract TAO20 is Ownable, ReentrancyGuard, Pausable, ERC20Permit {
      */
     function batchTransfer(address[] calldata recipients, uint256[] calldata amounts) 
         external 
+        nonReentrant
         whenNotPaused 
         notBlacklisted(msg.sender) 
         returns (bool) 
     {
         require(recipients.length == amounts.length, "TAO20: Arrays length mismatch");
         require(recipients.length > 0, "TAO20: Empty arrays");
+        require(recipients.length <= 200, "TAO20: Too many recipients in batch");
         
         uint256 totalAmount = 0;
         
