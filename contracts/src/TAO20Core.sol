@@ -328,8 +328,12 @@ contract TAO20Core is Ownable, ReentrancyGuard, Pausable {
         
         // Add proportional share of accumulated yield
         uint256 subnetYield = accumulatedYield[deposit.netuid];
-        if (subnetStaked[deposit.netuid] > 0) {
-            uint256 yieldShare = subnetYield * deposit.amount / (subnetStaked[deposit.netuid] / 1e9);
+        uint256 totalStaked = subnetStaked[deposit.netuid];
+        
+        if (totalStaked > 0 && subnetYield > 0) {
+            // Calculate yield share using proper scaling to avoid division by zero
+            // yieldShare = (subnetYield * deposit.amount * 1e9) / totalStaked
+            uint256 yieldShare = (subnetYield * deposit.amount * 1e9) / totalStaked;
             baseValue += yieldShare;
         }
         
@@ -350,6 +354,10 @@ contract TAO20Core is Ownable, ReentrancyGuard, Pausable {
             uint256 yieldAmount = accumulatedYield[netuid];
             totalValue += stakedAmount + yieldAmount;
         }
+        
+        // Handle edge case: if total value is zero but supply > 0, return minimum NAV
+        // This prevents division by zero in mintTAO20 function
+        if (totalValue == 0) return 1; // Minimal NAV to prevent division by zero
         
         return totalValue * 1e18 / totalSupply;
     }
