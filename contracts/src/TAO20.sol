@@ -87,14 +87,14 @@ contract TAO20 is Ownable, ReentrancyGuard, Pausable, ERC20Permit {
     
     // ===================== Constructor =====================
     
-    constructor(address _initialMinter) 
-        ERC20("TAO20 Index", "TAO20")
-        ERC20Permit("TAO20 Index")
+    constructor(address _initialMinter, string memory _name, string memory _symbol) 
+        ERC20(_name, _symbol)
+        ERC20Permit(_name)
         Ownable(msg.sender)
     {
         if (_initialMinter == address(0)) revert TAO20__ZeroAddress();
         
-        // Authorize initial minter
+        // Authorize initial minter (TAO20Core contract)
         authorizedMinters[_initialMinter] = true;
         minterCount = 1;
         
@@ -356,7 +356,7 @@ contract TAO20 is Ownable, ReentrancyGuard, Pausable, ERC20Permit {
         _approve(owner, spender, currentAllowance + addedValue);
         return true;
     }
-    
+
     /**
      * @dev Safe alternative to approve - decreases allowance
      * @param spender Address to decrease allowance for
@@ -375,7 +375,7 @@ contract TAO20 is Ownable, ReentrancyGuard, Pausable, ERC20Permit {
         _approve(owner, spender, currentAllowance - subtractedValue);
         return true;
     }
-    
+
     // ===================== Emergency Controls =====================
     
     /**
