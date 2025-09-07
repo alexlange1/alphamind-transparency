@@ -90,6 +90,12 @@ contract TAO20Core is Ownable, ReentrancyGuard, Pausable {
     
     /// @dev Yield compound frequency (24 hours)
     uint256 public yieldCompoundPeriod = 24 hours;
+    
+    /// @dev Emergency circuit breaker - max daily mint amount
+    uint256 public dailyMintLimit = 10000e18; // 10,000 TAO20 tokens per day
+    
+    /// @dev Track daily minted amounts
+    mapping(uint256 => uint256) public dailyMintedAmount; // day => amount
 
     // ===================== STRUCTS =====================
     
@@ -118,6 +124,8 @@ contract TAO20Core is Ownable, ReentrancyGuard, Pausable {
     event TAO20Minted(address indexed recipient, uint256 amount, uint256 yieldAdjustedNAV);
     event TAO20Redeemed(address indexed user, uint256 tao20Amount, uint256 subnetTokensReturned);
     event SubnetStaked(uint16 indexed netuid, uint256 amount, bytes32 vaultHotkey);
+    event DailyMintLimitUpdated(uint256 oldLimit, uint256 newLimit);
+    event CircuitBreakerTriggered(uint256 attemptedAmount, uint256 dailyLimit, uint256 currentDay);
 
 
     // ===================== CONSTRUCTOR =====================
@@ -192,6 +200,11 @@ contract TAO20Core is Ownable, ReentrancyGuard, Pausable {
         // Calculate yield-adjusted NAV and mint tokens
         uint256 yieldAdjustedNAV = _getYieldAdjustedNAV();
         uint256 tao20Amount = totalValue * 1e18 / yieldAdjustedNAV;
+        
+        // Circuit breaker: Check daily mint limit
+        uint256 currentDay = block.timestamp / 1 days;
+        require(dailyMintedAmount[currentDay] + tao20Amount <= dailyMintLimit, "Daily mint limit exceeded");
+        dailyMintedAmount[currentDay] += tao20Amount;
         
         tao20Token.mint(request.recipient, tao20Amount);
         
@@ -423,11 +436,19 @@ contract TAO20Core is Ownable, ReentrancyGuard, Pausable {
         bytes32 pubkey
     ) internal pure returns (bool) {
         require(signature.length == 64, "Invalid signature length");
+        require(pubkey != bytes32(0), "Invalid pubkey");
+        require(messageHash != bytes32(0), "Invalid message hash");
         
         bytes32 r = bytes32(signature[0:32]);
         bytes32 s = bytes32(signature[32:64]);
         
-        return ED25519.verify(messageHash, pubkey, r, s);
+        // Enhanced precompile safety check
+        // Note: In production environment, consider additional validation
+        try ED25519.verify(messageHash, pubkey, r, s) returns (bool result) {
+            return result;
+        } catch {
+            return false; // Precompile failure - fail safely
+        }
     }
 
     // ===================== ADMIN FUNCTIONS =====================
@@ -442,12 +463,23 @@ contract TAO20Core is Ownable, ReentrancyGuard, Pausable {
     }
 
     function setCompositionTolerance(uint256 _tolerance) external onlyOwner {
+        require(_tolerance >= 50, "Tolerance too low"); // Min 0.5%
         require(_tolerance <= 2000, "Tolerance too high"); // Max 20%
         compositionTolerance = _tolerance;
     }
 
     function setSubnetVaultHotkey(uint16 netuid, bytes32 hotkey) external onlyOwner {
         subnetVaultHotkeys[netuid] = hotkey;
+    }
+    
+    function setDailyMintLimit(uint256 _limit) external onlyOwner {
+        require(_limit >= 1000e18, "Limit too low"); // Min 1,000 tokens
+        require(_limit <= 100000e18, "Limit too high"); // Max 100,000 tokens
+        
+        uint256 oldLimit = dailyMintLimit;
+        dailyMintLimit = _limit;
+        
+        emit DailyMintLimitUpdated(oldLimit, _limit);
     }
 
     function pause() external onlyOwner {

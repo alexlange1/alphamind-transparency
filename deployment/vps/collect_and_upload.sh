@@ -57,10 +57,11 @@ trap 'handle_error $LINENO' ERR
 log "🚀 Starting AlphaMind emissions collection"
 log "Project root: $PROJECT_ROOT"
 log "Python path: $(which python3)"
-log "btcli path: $(which btcli)"
 
-# Activate virtual environment
+# Activate virtual environment first
 source venv/bin/activate
+
+log "btcli path: $(which btcli)"
 
 # Verify btcli is working
 log "🔍 Verifying btcli connection..."
@@ -68,12 +69,27 @@ log "🔍 Verifying btcli connection..."
 TIMEOUT_CMD="timeout"
 if command -v gtimeout >/dev/null 2>&1; then
     TIMEOUT_CMD="gtimeout"
+elif command -v timeout >/dev/null 2>&1; then
+    TIMEOUT_CMD="timeout"
+else
+    log "WARNING: No timeout command found, skipping btcli verification"
+    TIMEOUT_CMD=""
 fi
-$TIMEOUT_CMD 30 btcli --help > /dev/null || {
-    log "ERROR: btcli not responding"
-    send_discord_notification "ERROR" "❌ btcli not responding or not installed"
-    exit 1
-}
+
+if [ -n "$TIMEOUT_CMD" ]; then
+    $TIMEOUT_CMD 30 btcli --help > /dev/null || {
+        log "ERROR: btcli not responding"
+        send_discord_notification "ERROR" "❌ btcli not responding or not installed"
+        exit 1
+    }
+else
+    # Fallback without timeout
+    btcli --help > /dev/null || {
+        log "ERROR: btcli not responding"
+        send_discord_notification "ERROR" "❌ btcli not responding or not installed"
+        exit 1
+    }
+fi
 
 # Set environment variables
 export PYTHONPATH="$PROJECT_ROOT"

@@ -6,9 +6,13 @@ import {IWeightsetRegistry} from "./IWeightsetRegistry.sol";
 
 contract ValidatorSet is IValidatorSet {
     address public admin;
+    address public pendingAdmin; // For 2-step admin transfer
     IWeightsetRegistry public registry;
     mapping(address => bool) public isValidator;
     uint256 public override currentEpochId;
+    
+    uint256 public adminTransferDelay = 2 days; // Minimum delay for admin changes
+    uint256 public pendingAdminTimestamp;
 
     mapping(uint256 => bytes32) public epochWeightHash;
     mapping(uint256 => uint256[]) private _epochNetuids;
@@ -20,6 +24,8 @@ contract ValidatorSet is IValidatorSet {
     event ValidatorChanged(address indexed validator, bool isValidator);
     event FirstSeenChanged(uint256 indexed netuid, uint256 timestamp);
     event EligibilityOverrideChanged(uint256 indexed netuid, bool isEligible);
+    event AdminTransferInitiated(address indexed currentAdmin, address indexed pendingAdmin);
+    event AdminTransferCompleted(address indexed oldAdmin, address indexed newAdmin);
 
     modifier onlyAdmin() { require(msg.sender == admin, "not admin"); _; }
     modifier onlyValidator() { require(isValidator[msg.sender], "not validator"); _; }
@@ -79,6 +85,35 @@ contract ValidatorSet is IValidatorSet {
     
     function getWeightsHash(uint256 epochId) external view returns (bytes32) {
         return epochWeightHash[epochId];
+    }
+    
+    // ===================== ADMIN TRANSFER FUNCTIONS =====================
+    
+    function initiateAdminTransfer(address newAdmin) external onlyAdmin {
+        require(newAdmin != address(0), "Invalid admin address");
+        require(newAdmin != admin, "Same admin");
+        
+        pendingAdmin = newAdmin;
+        pendingAdminTimestamp = block.timestamp;
+        
+        emit AdminTransferInitiated(admin, newAdmin);
+    }
+    
+    function completeAdminTransfer() external {
+        require(msg.sender == pendingAdmin, "Not pending admin");
+        require(block.timestamp >= pendingAdminTimestamp + adminTransferDelay, "Transfer delay not met");
+        
+        address oldAdmin = admin;
+        admin = pendingAdmin;
+        pendingAdmin = address(0);
+        pendingAdminTimestamp = 0;
+        
+        emit AdminTransferCompleted(oldAdmin, admin);
+    }
+    
+    function cancelAdminTransfer() external onlyAdmin {
+        pendingAdmin = address(0);
+        pendingAdminTimestamp = 0;
     }
 }
 
