@@ -1,2 +1,0 @@
-# Fixed crontab - includes AM_BTCLI environment variable for proper btcli path
-0 16 * * * cd /Users/alexanderlange/alphamind && AM_BTCLI=/Users/alexanderlange/alphamind/venv/bin/btcli /Users/alexanderlange/alphamind/venv/bin/python3 scripts/daily_emissions_collection.py >> logs/emissions_cron.log 2>&1

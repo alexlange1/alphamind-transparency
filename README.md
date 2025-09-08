@@ -1,139 +1,230 @@
-<br>
+# 🚀 TAO20 - Decentralized Bittensor Subnet Index
 
-<p align="center">
-  <img src="logo.png" alt="ALPHAMIND Logo" width="500">
-</p>
+**The first decentralized index token for the Bittensor ecosystem, providing diversified exposure to the top 20 subnets through a single, liquid ERC-20 token.**
 
-<br>
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Solidity](https://img.shields.io/badge/Solidity-0.8.21-blue)](https://soliditylang.org/)
+[![Foundry](https://img.shields.io/badge/Built%20with-Foundry-FFDB1C.svg)](https://getfoundry.sh/)
 
-<h1 align="center">TAO20: The Bittensor Index Fund</h1>
+## 🎯 **What is TAO20?**
 
-**TAO20 is a decentralized, un-gameable index fund for the Bittensor ecosystem, providing diversified exposure to the entire subnet economy through a single, powerful ERC-20 token.**
+TAO20 is a revolutionary decentralized index token that:
+
+- **🌟 Tracks Top 20 Subnets**: Automatically follows the best-performing Bittensor subnets
+- **💰 Provides Instant Liquidity**: Trade subnet exposure without managing 20 individual positions
+- **🔗 Bridges Ecosystems**: Connects Bittensor Substrate with BEVM for DeFi compatibility
+- **⚡ Generates Yield**: Underlying assets automatically staked for additional returns
+- **🎯 Market-Driven Pricing**: Free-floating price discovery based on real asset values
+
+## ✨ **Key Features**
+
+### 🏗️ **Architecture Excellence**
+- **Oracle-Free Design**: No external dependencies that can be manipulated
+- **Cross-Chain Integration**: Seamless Substrate ↔ BEVM asset bridging
+- **Immutable Contracts**: No admin controls or upgrade mechanisms
+- **Market-Based NAV**: Real-time valuation from underlying assets
+
+### 🔒 **Security First**
+- **Ed25519 Verification**: Cryptographic proof of cross-chain deposits
+- **Audit-Ready Code**: Clean, well-documented smart contracts
+- **Decentralized Operation**: No single points of failure
+- **Transparent Logic**: Open-source NAV calculation
+
+### ⚡ **Performance Optimized**
+- **Gas Efficient**: Optimized smart contract operations
+- **Fast Settlement**: Sub-second transaction confirmation
+- **Scalable Design**: Supports high transaction volumes
+- **Low Fees**: Minimal operational overhead
+
+## 🏗️ **System Architecture**
+
+```mermaid
+graph TB
+    subgraph "Bittensor Substrate"
+        A[Subnet Tokens] --> B[Substrate Vault]
+        B --> C[Staking & Yield]
+    end
+    
+    subgraph "BEVM (EVM Chain)"
+        D[Smart Contracts] --> E[TAO20 Token]
+        D --> F[NAV Calculator]
+        D --> G[Vault Manager]
+    end
+    
+    subgraph "Bittensor Network"
+        H[Miners] --> I[Validators]
+        I --> J[Performance Scoring]
+    end
+    
+    B <--> D
+    H --> D
+    I --> D
+```
+
+## 🚀 **Quick Start**
+
+### **For Users**
+```bash
+# 1. Get TAO20 tokens by depositing subnet tokens
+# 2. Enjoy diversified Bittensor exposure
+# 3. Earn yield from automatic staking
+# 4. Trade on any DeFi protocol
+```
+
+### **For Developers**
+```bash
+# Clone the repository
+git clone https://github.com/yourusername/alphamind
+cd alphamind
+
+# Install dependencies
+make install
+
+# Run local development
+make local-dev
+
+# Deploy to testnet
+make deploy-testnet
+```
+
+### **For Miners & Validators**
+```bash
+# Set up miner (processes mint/redeem requests)
+cd core/neurons/miner
+python setup.py install
+
+# Set up validator (scores miner performance)
+cd core/neurons/validator  
+python setup.py install
+```
+
+## 📊 **How It Works**
+
+### **🔄 For Users**
+
+**Minting TAO20:**
+1. Deposit subnet tokens to Substrate vault
+2. Prove ownership with Ed25519 signature
+3. Receive TAO20 tokens based on current NAV
+4. Your tokens automatically earn staking yield
+
+**Redeeming TAO20:**
+1. Burn TAO20 tokens through smart contract
+2. Receive proportional subnet tokens back
+3. Tokens transferred to your Substrate address
+
+### **⛏️ For Miners**
+- **Focus**: Process mint/redeem requests efficiently
+- **Earnings**: Collect fees from successful operations
+- **Requirements**: Reliable infrastructure, fast response times
+
+### **🏛️ For Validators**
+- **Focus**: Score miner performance fairly
+- **Earnings**: Bittensor emission rewards
+- **Requirements**: Monitor system, evaluate metrics
+
+## 🛠️ **Technology Stack**
+
+| Component | Technology | Purpose |
+|-----------|------------|---------|
+| **Smart Contracts** | Solidity 0.8.21 | Core logic and token management |
+| **Development** | Foundry | Contract development and testing |
+| **Cross-Chain** | BEVM Precompiles | Bittensor ↔ BEVM integration |
+| **Backend** | Python 3.9+ | Miner/Validator implementation |
+| **Blockchain** | BEVM | EVM-compatible execution layer |
+| **Asset Custody** | Bittensor Substrate | Secure subnet token storage |
+
+## 📚 **Documentation**
+
+### **🎯 Quick Links**
+- [📐 Architecture Overview](docs/architecture/overview.md)
+- [🚀 Deployment Guide](docs/deployment/testnet-guide.md)
+- [👥 User Guide](docs/user/getting-started.md)
+- [🔧 API Documentation](docs/api/contracts.md)
+
+### **🧑‍💻 For Developers**
+- [🏠 Local Setup](docs/deployment/local-setup.md)
+- [🧪 Testing Guide](docs/api/testing.md)
+- [🔒 Security Model](docs/architecture/security.md)
+- [🔗 Integration Examples](docs/api/integration.md)
+
+### **🎯 For Users**
+- [💰 Minting Guide](docs/user/minting-guide.md)
+- [🔄 Redemption Guide](docs/user/redemption-guide.md)
+- [❓ FAQ](docs/user/faq.md)
+
+## 🎯 **Project Status**
+
+### **✅ Completed**
+- Smart contract architecture and implementation
+- Cross-chain integration with Bittensor precompiles
+- Oracle-free NAV calculation system
+- Comprehensive testing suite (15/15 tests passing)
+- Python integration for miners and validators
+- Local development environment
+- Security audit preparation
+
+### **🔄 In Progress**
+- BEVM testnet deployment and validation
+- Real precompile integration testing
+- Documentation finalization
+- Community feedback integration
+
+### **📋 Roadmap**
+- **Q4 2024**: Testnet launch and private testing
+- **Q1 2025**: Security audit and public testing
+- **Q2 2025**: Mainnet launch and ecosystem integration
+- **Q3 2025**: Advanced features and governance
+
+## 🤝 **Contributing**
+
+We welcome contributions from the community! Please see our [Contributing Guide](CONTRIBUTING.md) for details.
+
+### **Ways to Contribute**
+- 🐛 Report bugs and suggest improvements
+- 📖 Improve documentation
+- 🔧 Submit code improvements
+- 🧪 Help with testing and QA
+- 💡 Propose new features
+
+## 🔒 **Security**
+
+Security is our top priority. The TAO20 system includes:
+
+- **Immutable smart contracts** with no admin privileges
+- **Oracle-free design** eliminating external manipulation
+- **Cross-chain cryptographic verification**
+- **Comprehensive testing** and audit preparation
+
+For security issues, please email: security@tao20.com
+
+## 📄 **License**
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## 🌟 **Community & Support**
+
+### **Connect With Us**
+- 💬 **Discord**: [Join our community](https://discord.gg/tao20)
+- 🐦 **Twitter**: [@TAO20Official](https://twitter.com/TAO20Official)
+- 📧 **Email**: team@tao20.com
+- 🐛 **Issues**: [GitHub Issues](https://github.com/yourusername/alphamind/issues)
+
+### **Stay Updated**
+- ⭐ Star this repository for updates
+- 👀 Watch for releases and announcements
+- 🔔 Follow us on social media
 
 ---
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Discord](https://img.shields.io/discord/YOUR_DISCORD_INVITE_ID?label=Join%20Community)](https://discord.gg/YOUR_DISCORD_INVITE)
+**🎉 Welcome to the future of decentralized subnet indexing! Together, we're building the infrastructure for the Bittensor ecosystem.**
 
-## 🎯 Overview
+---
 
-The TAO20 subnet introduces a sophisticated, ETF-style financial instrument to the Bittensor network. It allows anyone to invest in the collective intelligence and performance of all 20 subnets without needing to individually stake, trade, or manage multiple positions.
+<div align="center">
 
-Our mission is to provide a **transparent, secure, and fully automated** on-chain index fund that is resistant to manipulation and reflects the true economic value of the Bittensor ecosystem.
+**Built with ❤️ for the Bittensor community**
 
-## ✨ Key Features
+[Documentation](docs/) • [Architecture](docs/architecture/overview.md) • [Deployment](docs/deployment/testnet-guide.md) • [Community](https://discord.gg/tao20)
 
-- **🏛️ Professional ETF-Grade Architecture**: A decentralized, in-kind creation and redemption process inspired by real-world financial systems.
-- **💰 Sophisticated Incentive Mechanism**: A multi-tiered reward system for miners (Authorized Participants) and validators that encourages deep liquidity and accurate NAV reporting.
-- **🛡️ Bulletproof Smart Contracts**: Meticulously hardened contracts with real-time NAV integration, anti-replay protection, and emergency circuit breakers.
-- **🤖 Fully Automated Portfolio Management**: An un-gameable, deterministic algorithm that rebalances the index portfolio based on real-time subnet emissions and performance.
-- **🌐 Real-Time NAV Calculation**: Millisecond-precision Net Asset Value (NAV) calculation for exact, transparent pricing of all minting and redemption operations.
-
-## 🏗️ Architecture Overview
-
-The TAO20 subnet operates on a unique, three-part architecture that separates the roles of liquidity provision, validation, and on-chain asset management.
-
-```mermaid
-graph TD
-    subgraph "Off-Chain Neurons"
-        A[Miners - Authorized Participants]
-        B[Validators - NAV Attestors]
-    end
-
-    subgraph "On-Chain Smart Contracts (BEVM)"
-        C[Vault Contract]
-        D[TAO20 ERC-20 Token]
-        E[NAV Oracle]
-        F[Minter Contract]
-    end
-
-    subgraph "Automated Systems"
-        G[Portfolio Weighting System]
-    end
-
-    A -- "Deliver Asset Baskets" --> C
-    C -- "Mints/Burns TAO20" --> D
-    B -- "Monitor Deliveries & Report NAV" --> E
-    E -- "Provides Real-Time NAV" --> F
-    F -- "Executes Mint/Redeem with Exact NAV" --> D
-    G -- "Publishes Optimal Weights" --> C
-```
-
-- **Miners (Authorized Participants)**: Source and deliver baskets of the 20 underlying subnet tokens to the Vault.
-- **Validators**: Monitor these deliveries, calculate the exact NAV at the time of receipt, and provide cryptographic attestations.
-- **Vault Contract**: Securely holds the underlying assets.
-- **TAO20 ERC-20 Token**: Represents a share in the Vault's holdings.
-- **NAV Oracle**: Provides real-time, manipulation-resistant NAV data to all other contracts.
-- **Portfolio Weighting System**: An automated off-chain system that calculates and publishes the optimal portfolio weights for the index.
-
-## 🚀 Getting Started
-
-### Prerequisites
-
-- **Python 3.8+**
-- **Node.js & npm** (for smart contract development)
-- **Foundry** (for smart contract testing and deployment)
-- **Bittensor (`btcli`)**
-
-### 1. Clone the Repository
-
-```bash
-git clone https://github.com/alphamind-project/alphamind.git
-cd alphamind
-```
-
-### 2. Install Dependencies
-
-```bash
-# Install Python dependencies
-pip install -r requirements.txt
-
-# Install Node.js dependencies for smart contracts
-cd contracts
-npm install
-```
-
-### 3. Configure Your Environment
-
-Copy the example environment file and fill in your details:
-
-```bash
-cp env.example .env
-```
-
-You will need to provide:
-- `TAO20_WALLET_PATH`: Path to your Bittensor wallet.
-- `TAO20_SOURCE_SS58`: Your Bittensor hotkey SS58 address.
-- `TAO20_EVM_ADDR`: Your Ethereum/BEVM address for receiving TAO20 tokens.
-- `BEVM_RPC_URL`: RPC URL for the BEVM network.
-
-### 4. Running as a Miner or Validator
-
-For detailed instructions on running a miner or validator neuron, please see our comprehensive **[User Guide](docs/USER_GUIDE.md)**.
-
-```bash
-# Example: Start a miner
-python neurons/miner.py --wallet.name <your_wallet> --wallet.hotkey <your_hotkey>
-
-# Example: Start a validator
-python neurons/validator.py --wallet.name <your_wallet> --wallet.hotkey <your_hotkey>
-```
-
-## 📚 Documentation
-
-Our documentation provides a deep dive into the architecture, core concepts, and security of the TAO20 subnet.
-
-- **[📄 ARCHITECTURE.md](docs/ARCHITECTURE.md)**: A detailed overview of the entire system architecture.
-- **[🧠 CORE_CONCEPTS](docs/CORE_CONCEPTS/)**: In-depth explanations of our key innovations:
-  - **[Automated Portfolio Weighting](docs/CORE_CONCEPTS/AUTOMATED_PORTFOLIO_WEIGHTING.md)**
-  - **[Real-Time NAV System](docs/CORE_CONCEPTS/REALTIME_NAV_SYSTEM.md)**
-- **[🛡️ SMART_CONTRACTS.md](docs/SMART_CONTRACTS.md)**: A security-focused review of our bulletproof smart contracts.
-- **[ GUIDE.md](docs/USER_GUIDE.md)**: A complete guide to setting up and running a miner or validator.
-
-## 🤝 Contributing
-
-We welcome contributions from the community! If you'd like to contribute, please read our [CONTRIBUTING.md](CONTRIBUTING.md) file for details on our code of conduct and the process for submitting pull requests.
-
-## 📄 License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+</div>
