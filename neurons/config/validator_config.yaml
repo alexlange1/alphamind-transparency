@@ -1,0 +1,131 @@
+# TAO20 Enhanced Validator Configuration
+# Configuration for TAO20 Consensus Validator (NAV Attestor)
+
+# Bittensor Network Configuration
+bittensor:
+  network: "finney"  # or "test" for testnet
+  netuid: 20
+  wallet:
+    name: "validator_wallet"
+    hotkey: "validator_hotkey"
+    path: "~/.bittensor/wallets"
+
+# Contract and Network Configuration
+contracts:
+  tao20_address: "0x1234567890123456789012345678901234567890"
+  vault_address: "0x2345678901234567890123456789012345678901"
+  nav_oracle_address: "0x3456789012345678901234567890123456789012"
+  web3_provider: "https://mainnet.bevm.io"
+
+# Consensus Configuration
+consensus:
+  stake_requirement: 1000000000000  # 1000 TAO in RAO
+  deviation_threshold: 0.05         # 5% max deviation
+  severe_deviation_threshold: 0.15  # 15% severe deviation
+  min_validators_for_consensus: 3
+  consensus_agreement_threshold: 0.67  # 67% agreement required
+
+# Slashing Configuration
+slashing:
+  minor_slash_rate: 0.01      # 1% for minor violations
+  moderate_slash_rate: 0.05   # 5% for moderate violations
+  severe_slash_rate: 0.15     # 15% for severe violations
+  critical_slash_rate: 0.5    # 50% for critical violations
+  
+# Volume Tracking Configuration
+volume_tracking:
+  mint_bonus_multiplier: 1.10  # 10% bonus for minting
+  redeem_multiplier: 1.00      # No bonus for redeeming
+  epoch_duration: 3600         # 1 hour epochs
+  activity_window: 86400       # 24 hour activity window
+
+# Reward System Configuration
+rewards:
+  top_miner_count: 10          # Top 10 miners get bonuses
+  base_reward_pool: 0.7        # 70% for base rewards
+  tier_bonus_pool: 0.25        # 25% for tier bonuses
+  validator_pool: 0.05         # 5% for validators
+  
+  # Performance weights
+  volume_weight: 0.7           # 70% weight for volume
+  frequency_weight: 0.2        # 20% weight for frequency
+  consistency_weight: 0.1      # 10% weight for consistency
+  
+  # Tier bonus distribution
+  tier_bonuses:
+    diamond: 0.40              # 40% of tier bonus (Rank 1)
+    platinum: 0.25             # 25% of tier bonus (Rank 2)
+    gold: 0.20                 # 20% of tier bonus (Ranks 3-5)
+    silver: 0.10               # 10% of tier bonus (Ranks 6-10)
+    bronze: 0.05               # 5% of tier bonus (Ranks 11-20)
+
+# Event Monitoring Configuration
+monitoring:
+  update_interval: 10          # 10 seconds
+  weight_update_interval: 300  # 5 minutes
+  event_batch_size: 100
+  max_event_history: 10000
+  
+# NAV Attestation Configuration
+nav_attestation:
+  attestation_interval: 60     # 1 minute
+  price_update_frequency: 30   # 30 seconds
+  staleness_threshold: 300     # 5 minutes
+  confidence_threshold: 0.8    # 80% confidence required
+
+# Anti-Gaming Measures
+anti_gaming:
+  min_transaction_size: 10000000000000000    # 0.01 TAO minimum
+  max_transaction_frequency: 10              # 10 tx per minute max
+  suspicious_pattern_threshold: 5
+  volume_spike_threshold: 10.0               # 10x normal volume
+  
+# Logging Configuration
+logging:
+  level: "INFO"
+  file: "logs/validator.log"
+  max_file_size: "100MB"
+  backup_count: 10
+  format: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+  
+  # Component-specific logging
+  components:
+    consensus: "DEBUG"
+    slashing: "INFO"
+    rewards: "INFO"
+    monitoring: "INFO"
+
+# API Configuration
+api:
+  enabled: true
+  port: 8081
+  host: "0.0.0.0"
+  endpoints:
+    - "/status"
+    - "/consensus"
+    - "/rankings"
+    - "/slashing"
+    - "/nav"
+    - "/rewards"
+    
+# Database Configuration (for persistent storage)
+database:
+  enabled: true
+  type: "sqlite"  # or "postgresql"
+  path: "data/validator.db"
+  backup_interval: 3600  # 1 hour
+  retention_days: 90
+
+# Security Configuration
+security:
+  rate_limiting:
+    enabled: true
+    requests_per_minute: 60
+  
+  authentication:
+    api_key_required: true
+    api_key: "${TAO20_VALIDATOR_API_KEY}"
+    
+  encryption:
+    enabled: true
+    key_rotation_interval: 86400  # 24 hours
