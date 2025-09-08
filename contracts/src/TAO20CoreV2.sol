@@ -4,7 +4,7 @@ pragma solidity ^0.8.21;
 import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 import "@openzeppelin/contracts/utils/math/Math.sol";
 import "./TAO20V2.sol";
-import "./NAVOracle.sol";
+import "./StakingNAVOracle.sol";
 import "./StakingManager.sol";
 
 // ===================== INTERFACES =====================
@@ -45,7 +45,7 @@ contract TAO20CoreV2 is ReentrancyGuard {
     // ===================== CORE CONTRACTS =====================
     
     TAO20V2 public immutable tao20Token;
-    NAVOracle public immutable navOracle;
+    StakingNAVOracle public immutable navOracle;
     StakingManager public immutable stakingManager;
     
     // ===================== STATE VARIABLES =====================
@@ -117,7 +117,7 @@ contract TAO20CoreV2 is ReentrancyGuard {
         string memory _tokenName,
         string memory _tokenSymbol
     ) {
-        navOracle = NAVOracle(_navOracle);
+        navOracle = StakingNAVOracle(_navOracle);
         stakingManager = StakingManager(_stakingManager);
         tao20Token = new TAO20V2(_tokenName, _tokenSymbol);
         
@@ -181,7 +181,10 @@ contract TAO20CoreV2 is ReentrancyGuard {
         stakingManager.stakeForSubnet(request.deposit.netuid, request.deposit.amount);
         
         // Get current NAV from oracle
-        uint256 currentNAV = navOracle.getCurrentNAV();
+        uint256 totalStaked = stakingManager.getTotalStaked();
+        uint256 totalYield = stakingManager.getTotalYield();
+        uint256 totalSupply = tao20Token.totalSupply();
+        uint256 currentNAV = navOracle.getCurrentNAV(totalStaked, totalYield, totalSupply);
         
         // Calculate TAO20 tokens to mint (18 decimals)
         // TAO20_amount = deposit_amount * 1e18 / NAV
@@ -209,7 +212,10 @@ contract TAO20CoreV2 is ReentrancyGuard {
         if (tao20Token.balanceOf(msg.sender) < amount) revert InsufficientBalance();
         
         // Get current NAV from oracle
-        uint256 currentNAV = navOracle.getCurrentNAV();
+        uint256 totalStaked = stakingManager.getTotalStaked();
+        uint256 totalYield = stakingManager.getTotalYield();
+        uint256 totalSupply = tao20Token.totalSupply();
+        uint256 currentNAV = navOracle.getCurrentNAV(totalStaked, totalYield, totalSupply);
         
         // Calculate total value to redeem
         // total_value = TAO20_amount * NAV / 1e18
@@ -297,7 +303,10 @@ contract TAO20CoreV2 is ReentrancyGuard {
      * @dev Get current NAV from oracle
      */
     function getCurrentNAV() external view returns (uint256) {
-        return navOracle.getCurrentNAV();
+        uint256 totalStaked = stakingManager.getTotalStaked();
+        uint256 totalYield = stakingManager.getTotalYield();
+        uint256 totalSupply = tao20Token.totalSupply();
+        return navOracle.getCurrentNAV(totalStaked, totalYield, totalSupply);
     }
 
     /**
