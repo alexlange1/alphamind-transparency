@@ -1,143 +1,49 @@
-[
-  {
-    "type": "constructor",
-    "inputs": [
-      {"name": "_stakingManager", "type": "address"}
-    ]
-  },
-  {
-    "type": "function",
-    "name": "getCurrentNAV",
-    "inputs": [],
-    "outputs": [
-      {"name": "", "type": "uint256"}
-    ],
-    "stateMutability": "view"
-  },
-  {
-    "type": "function",
-    "name": "calculateRealTimeNAV",
-    "inputs": [
-      {"name": "totalSupply", "type": "uint256"}
-    ],
-    "outputs": [
-      {"name": "", "type": "uint256"}
-    ],
-    "stateMutability": "nonpayable"
-  },
-  {
-    "type": "function",
-    "name": "activateEmissionWeighting",
-    "inputs": [],
-    "outputs": [],
-    "stateMutability": "nonpayable"
-  },
-  {
-    "type": "function",
-    "name": "deactivateEmissionWeighting",
-    "inputs": [],
-    "outputs": [],
-    "stateMutability": "nonpayable"
-  },
-  {
-    "type": "function",
-    "name": "getNAVData",
-    "inputs": [],
-    "outputs": [
-      {"name": "currentNAV", "type": "uint256"},
-      {"name": "totalValue", "type": "uint256"},
-      {"name": "totalEmissions", "type": "uint256"},
-      {"name": "totalRewards", "type": "uint256"},
-      {"name": "isEmissionWeighted", "type": "bool"},
-      {"name": "lastUpdate", "type": "uint256"}
-    ],
-    "stateMutability": "view"
-  },
-  {
-    "type": "function",
-    "name": "needsNAVUpdate",
-    "inputs": [],
-    "outputs": [
-      {"name": "", "type": "bool"}
-    ],
-    "stateMutability": "view"
-  },
-  {
-    "type": "function",
-    "name": "getPhaseInfo",
-    "inputs": [],
-    "outputs": [
-      {"name": "isPhase2Active", "type": "bool"},
-      {"name": "currentNAV", "type": "uint256"},
-      {"name": "lastUpdate", "type": "uint256"},
-      {"name": "nextUpdateDue", "type": "uint256"}
-    ],
-    "stateMutability": "view"
-  },
-  {
-    "type": "function",
-    "name": "updateNAV",
-    "inputs": [
-      {"name": "totalSupply", "type": "uint256"}
-    ],
-    "outputs": [
-      {"name": "", "type": "uint256"}
-    ],
-    "stateMutability": "nonpayable"
-  },
-  {
-    "type": "function",
-    "name": "emissionWeightingActive",
-    "inputs": [],
-    "outputs": [
-      {"name": "", "type": "bool"}
-    ],
-    "stateMutability": "view"
-  },
-  {
-    "type": "function",
-    "name": "lastNAVUpdate",
-    "inputs": [],
-    "outputs": [
-      {"name": "", "type": "uint256"}
-    ],
-    "stateMutability": "view"
-  },
-  {
-    "type": "function",
-    "name": "cachedNAV",
-    "inputs": [],
-    "outputs": [
-      {"name": "", "type": "uint256"}
-    ],
-    "stateMutability": "view"
-  },
-  {
-    "type": "event",
-    "name": "NAVCalculated",
-    "inputs": [
-      {"name": "nav", "type": "uint256", "indexed": true},
-      {"name": "totalValue", "type": "uint256", "indexed": false},
-      {"name": "totalSupply", "type": "uint256", "indexed": false},
-      {"name": "timestamp", "type": "uint256", "indexed": false},
-      {"name": "emissionWeighted", "type": "bool", "indexed": false}
-    ]
-  },
-  {
-    "type": "event",
-    "name": "PhaseTransition",
-    "inputs": [
-      {"name": "emissionWeightingActive", "type": "bool", "indexed": false},
-      {"name": "timestamp", "type": "uint256", "indexed": false}
-    ]
-  },
-  {
-    "type": "event",
-    "name": "EmissionDataFetched",
-    "inputs": [
-      {"name": "netuid", "type": "uint16", "indexed": true},
-      {"name": "emission", "type": "uint256", "indexed": false},
-      {"name": "timestamp", "type": "uint256", "indexed": false}
-    ]
-  }
-]
+
+╭-------------+--------------------------------------------------------------------------+--------------------------------------------------------------------╮
+| Type        | Signature                                                                | Selector                                                           |
++=============================================================================================================================================================+
+| event       | EmissionDataFetched(uint16,uint256,uint256)                              | 0x889b3c53c4d9c3fa635bce5baf30d544102c82d287f126da779bceb8cf3e239d |
+|-------------+--------------------------------------------------------------------------+--------------------------------------------------------------------|
+| event       | NAVCalculated(uint256,uint256,uint256,uint256,bool)                      | 0x1ebd7adcaa29db5f900b66711c3eae106424ab26f26b6a2adb4932d57d1ab72a |
+|-------------+--------------------------------------------------------------------------+--------------------------------------------------------------------|
+| event       | PhaseTransition(bool,uint256)                                            | 0x1511f5af2a356c883e92e5be6360abe0373322fb9494716fdd605263d48e21e0 |
+|-------------+--------------------------------------------------------------------------+--------------------------------------------------------------------|
+| error       | InvalidNetuid()                                                          | 0xd1474d86                                                         |
+|-------------+--------------------------------------------------------------------------+--------------------------------------------------------------------|
+| error       | InvalidTotalSupply()                                                     | 0x34bbd585                                                         |
+|-------------+--------------------------------------------------------------------------+--------------------------------------------------------------------|
+| error       | PrecompileCallFailed()                                                   | 0xfd23ff64                                                         |
+|-------------+--------------------------------------------------------------------------+--------------------------------------------------------------------|
+| error       | UnauthorizedCaller()                                                     | 0x5c427cd9                                                         |
+|-------------+--------------------------------------------------------------------------+--------------------------------------------------------------------|
+| function    | INITIAL_NAV() view returns (uint256)                                     | 0x73bb610a                                                         |
+|-------------+--------------------------------------------------------------------------+--------------------------------------------------------------------|
+| function    | NAV_UPDATE_FREQUENCY() view returns (uint256)                            | 0xeee62fea                                                         |
+|-------------+--------------------------------------------------------------------------+--------------------------------------------------------------------|
+| function    | activateEmissionWeighting() nonpayable                                   | 0x4c0d5387                                                         |
+|-------------+--------------------------------------------------------------------------+--------------------------------------------------------------------|
+| function    | cachedNAV() view returns (uint256)                                       | 0xcff27bd7                                                         |
+|-------------+--------------------------------------------------------------------------+--------------------------------------------------------------------|
+| function    | calculateRealTimeNAV(uint256) nonpayable returns (uint256)               | 0xa5327ee0                                                         |
+|-------------+--------------------------------------------------------------------------+--------------------------------------------------------------------|
+| function    | deactivateEmissionWeighting() nonpayable                                 | 0xfc38d1ab                                                         |
+|-------------+--------------------------------------------------------------------------+--------------------------------------------------------------------|
+| function    | emissionWeightingActive() view returns (bool)                            | 0xefec9d86                                                         |
+|-------------+--------------------------------------------------------------------------+--------------------------------------------------------------------|
+| function    | getCurrentNAV() view returns (uint256)                                   | 0x693de592                                                         |
+|-------------+--------------------------------------------------------------------------+--------------------------------------------------------------------|
+| function    | getNAVData() view returns (uint256,uint256,uint256,uint256,bool,uint256) | 0xfba8162d                                                         |
+|-------------+--------------------------------------------------------------------------+--------------------------------------------------------------------|
+| function    | getPhaseInfo() view returns (bool,uint256,uint256,uint256)               | 0xa6f8e722                                                         |
+|-------------+--------------------------------------------------------------------------+--------------------------------------------------------------------|
+| function    | lastNAVUpdate() view returns (uint256)                                   | 0x8687098b                                                         |
+|-------------+--------------------------------------------------------------------------+--------------------------------------------------------------------|
+| function    | needsNAVUpdate() view returns (bool)                                     | 0xc9379c6d                                                         |
+|-------------+--------------------------------------------------------------------------+--------------------------------------------------------------------|
+| function    | stakingManager() view returns (StakingManager)                           | 0x22828cc2                                                         |
+|-------------+--------------------------------------------------------------------------+--------------------------------------------------------------------|
+| function    | updateNAV(uint256) nonpayable returns (uint256)                          | 0x0cb1982b                                                         |
+|-------------+--------------------------------------------------------------------------+--------------------------------------------------------------------|
+| constructor | constructor(address) nonpayable                                          |                                                                    |
+╰-------------+--------------------------------------------------------------------------+--------------------------------------------------------------------╯
+

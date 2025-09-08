@@ -310,7 +310,9 @@ contract TAO20CoreV2Enhanced is ReentrancyGuard {
         stakingManager.compoundAllAlphaYield();
         
         // Get updated NAV after compounding
-        uint256 newNAV = navOracle.getCurrentNAV().navPerToken;
+        uint256 totalValue = stakingManager.getTotalValueLocked();
+        uint256 totalSupply = tao20Token.totalSupply();
+        uint256 newNAV = navOracle.getCurrentNAV(totalValue, 0, totalSupply); // No separate yield tracking in SubnetStakingManager
         
         // Emit events for each subnet that was compounded
         uint16[] memory netuidsNeedingCompound = stakingManager.getSubnetsNeedingCompound();
@@ -328,7 +330,10 @@ contract TAO20CoreV2Enhanced is ReentrancyGuard {
     function compoundSubnetYield(uint16 netuid) external nonReentrant {
         stakingManager.compoundSubnetAlphaYield(netuid);
         
-        uint256 newNAV = navOracle.getCurrentNAV().navPerToken;
+        // Get updated NAV after compounding  
+        uint256 totalValue = stakingManager.getTotalValueLocked();
+        uint256 totalSupply = tao20Token.totalSupply();
+        uint256 newNAV = navOracle.getCurrentNAV(totalValue, 0, totalSupply);
         (, uint256 rewards,,,, ) = stakingManager.getSubnetInfo(netuid);
         
         emit YieldCompounded(netuid, rewards, newNAV);
@@ -404,10 +409,9 @@ contract TAO20CoreV2Enhanced is ReentrancyGuard {
      * @dev Get current NAV from oracle
      */
     function _getCurrentNAV() internal view returns (uint256) {
-        uint256 totalStaked = stakingManager.getTotalStaked();
-        uint256 totalYield = stakingManager.getTotalYield();
+        uint256 totalValue = stakingManager.getTotalValueLocked();
         uint256 totalSupply = tao20Token.totalSupply();
-        return navOracle.getCurrentNAV(totalStaked, totalYield, totalSupply);
+        return navOracle.getCurrentNAV(totalValue, 0, totalSupply);
     }
     
     /**
@@ -438,7 +442,7 @@ contract TAO20CoreV2Enhanced is ReentrancyGuard {
      */
     function _getSubnetTokenValueInTAO(uint16 netuid, uint256 subnetTokenAmount) internal view returns (uint256) {
         // Get subnet token price from oracle
-        uint256 subnetTokenPriceInTAO = navOracle.getNAVForSubnet(netuid);
+        uint256 subnetTokenPriceInTAO = navOracle.getSubnetPrice(netuid);
         
         // Convert subnet token amount to TAO equivalent
         return (subnetTokenAmount * subnetTokenPriceInTAO) / 1e18;
@@ -450,7 +454,9 @@ contract TAO20CoreV2Enhanced is ReentrancyGuard {
      * @dev Get current NAV from oracle
      */
     function getCurrentNAV() external view returns (uint256) {
-        return navOracle.getCurrentNAV().navPerToken;
+        uint256 totalValue = stakingManager.getTotalValueLocked();
+        uint256 totalSupply = tao20Token.totalSupply();
+        return navOracle.getCurrentNAV(totalValue, 0, totalSupply);
     }
 
     /**

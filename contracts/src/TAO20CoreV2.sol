@@ -182,9 +182,9 @@ contract TAO20CoreV2 is ReentrancyGuard {
         
         // Get current NAV from oracle
         uint256 totalStaked = stakingManager.getTotalStaked();
-        uint256 totalYield = stakingManager.getTotalYield();
+        uint256 totalValue = stakingManager.getTotalValue();
         uint256 totalSupply = tao20Token.totalSupply();
-        uint256 currentNAV = navOracle.getCurrentNAV(totalStaked, totalYield, totalSupply);
+        uint256 currentNAV = navOracle.getCurrentNAV(totalStaked, totalValue, totalSupply);
         
         // Calculate TAO20 tokens to mint (18 decimals)
         // TAO20_amount = deposit_amount * 1e18 / NAV
@@ -213,13 +213,13 @@ contract TAO20CoreV2 is ReentrancyGuard {
         
         // Get current NAV from oracle
         uint256 totalStaked = stakingManager.getTotalStaked();
-        uint256 totalYield = stakingManager.getTotalYield();
+        uint256 totalValue = stakingManager.getTotalValue();
         uint256 totalSupply = tao20Token.totalSupply();
-        uint256 currentNAV = navOracle.getCurrentNAV(totalStaked, totalYield, totalSupply);
+        uint256 currentNAV = navOracle.getCurrentNAV(totalStaked, totalValue, totalSupply);
         
         // Calculate total value to redeem
         // total_value = TAO20_amount * NAV / 1e18
-        uint256 totalValue = (amount * currentNAV) / 1e18;
+        uint256 redeemValue = (amount * currentNAV) / 1e18;
         
         // Burn TAO20 tokens first
         tao20Token.burn(msg.sender, amount);
@@ -229,14 +229,14 @@ contract TAO20CoreV2 is ReentrancyGuard {
         
         // Unstake proportionally and transfer to user
         for (uint i = 0; i < netuids.length; i++) {
-            uint256 subnetValue = (totalValue * weights[i]) / 10000; // weights in basis points
+            uint256 subnetValue = (redeemValue * weights[i]) / 10000; // weights in basis points
             
             if (subnetValue > 0) {
                 stakingManager.unstakeAndTransfer(netuids[i], subnetValue, msg.sender);
             }
         }
         
-        emit TAO20Redeemed(msg.sender, amount, totalValue, currentNAV);
+        emit TAO20Redeemed(msg.sender, amount, redeemValue, currentNAV);
     }
 
     // ===================== INTERNAL FUNCTIONS =====================
@@ -304,9 +304,9 @@ contract TAO20CoreV2 is ReentrancyGuard {
      */
     function getCurrentNAV() external view returns (uint256) {
         uint256 totalStaked = stakingManager.getTotalStaked();
-        uint256 totalYield = stakingManager.getTotalYield();
+        uint256 totalValue = stakingManager.getTotalValue();
         uint256 totalSupply = tao20Token.totalSupply();
-        return navOracle.getCurrentNAV(totalStaked, totalYield, totalSupply);
+        return navOracle.getCurrentNAV(totalStaked, totalValue, totalSupply);
     }
 
     /**
