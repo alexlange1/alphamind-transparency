@@ -59,7 +59,7 @@ log "Project root: $PROJECT_ROOT"
 log "Python path: $(which python3)"
 
 # Activate virtual environment first
-source venv/bin/activate
+source /opt/alphamind/venv/bin/activate
 
 log "btcli path: $(which btcli)"
 
@@ -95,6 +95,10 @@ fi
 export PYTHONPATH="$PROJECT_ROOT"
 export BITTENSOR_NETWORK="${BITTENSOR_NETWORK:-finney}"
 export ALPHAMIND_SECRET_KEY="${ALPHAMIND_SECRET_KEY:-}"
+export AWS_ACCESS_KEY_ID
+export AWS_SECRET_ACCESS_KEY
+export AWS_DEFAULT_REGION
+export S3_BUCKET
 
 # Create timestamp for this collection
 TIMESTAMP=$(date -u '+%Y-%m-%dT%H:%M:%SZ')
@@ -140,9 +144,9 @@ aws s3 ls "s3://${S3_BUCKET}/emissions/$(date -u '+%Y/%m/%d')/" || {
     exit 1
 }
 
-# Update transparency repo
-log "📋 Updating transparency repository..."
-bash deployment/vps/update_transparency.sh
+# Update dedicated transparency repo
+log "📋 Updating dedicated transparency repository..."
+bash deployment/vps/update_transparency_dedicated.sh
 
 # Check for TAO20 biweekly publication (every second Sunday)
 log "🔍 Checking for TAO20 biweekly publication..."
