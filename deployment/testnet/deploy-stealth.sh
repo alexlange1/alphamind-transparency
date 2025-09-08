@@ -36,11 +36,14 @@ echo "🔐 Deployer: $DEPLOYER_ADDRESS"
 # Check balance
 BALANCE=$(cast balance $DEPLOYER_ADDRESS --rpc-url $TESTNET_RPC_URL)
 BALANCE_ETH=$(cast to-unit $BALANCE ether)
-echo "💰 Balance: $BALANCE_ETH BTC"
+echo "💰 Balance: $BALANCE_ETH TAO"
 
 if (( $(echo "$BALANCE_ETH < 0.01" | bc -l) )); then
-    echo "⚠️  Warning: Low balance. You may need more testnet BTC."
-    echo "💡 Get testnet BTC from BEVM faucet: https://scan-testnet.bevm.io/faucet"
+    echo "⚠️  Warning: Low balance. You may need more testnet TAO."
+    echo "💡 Get testnet TAO via:"
+    echo "   - Bittensor community Discord"
+    echo "   - BTCLI Live Coding Playground"
+    echo "   - Community faucet requests"
     read -p "Continue anyway? (y/N): " -n 1 -r
     echo
     if [[ ! $REPLY =~ ^[Yy]$ ]]; then

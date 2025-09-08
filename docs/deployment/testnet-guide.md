@@ -37,20 +37,36 @@ Seed Phrase: wild fruit parade health strong raise funny dust rotate zone scout 
 
 ## 💰 **Funding Your Testnet Wallet**
 
-### **Step 1: Get Testnet BTC**
-1. Visit BEVM Testnet Faucet: https://scan-testnet.bevm.io/faucet
-2. Enter your deployer address: `0xEb762Ce2c1268362feDFAEFDe5eE32Cc5351FA29`
-3. Request testnet BTC (usually 0.1 BTC per request)
-4. Wait for confirmation (usually 1-2 minutes)
+### **Step 1: Get Testnet TAO**
+
+**Bittensor EVM Testnet requires TAO for gas fees. Request testnet TAO via:**
+
+**Method 1: Bittensor Community Discord**
+- Join the official Bittensor Discord
+- Request testnet TAO in the developer channel
+- Provide your address: `0xEb762Ce2c1268362feDFAEFDe5eE32Cc5351FA29`
+
+**Method 2: BTCLI Live Coding Playground**
+- Access the BTCLI playground environment
+- Use built-in testnet funding tools
+
+**Method 3: Community Request Template**
+```
+Hi! I'm developing TAO20 on Bittensor EVM testnet.
+EVM Address: 0xEb762Ce2c1268362feDFAEFDe5eE32Cc5351FA29
+Network: Chain ID 945
+Purpose: Smart contract testing
+Amount: 1-2 testnet TAO
+```
 
 ### **Step 2: Verify Balance**
 ```bash
 cast balance 0xEb762Ce2c1268362feDFAEFDe5eE32Cc5351FA29 \
-  --rpc-url https://testnet-rpc.bevm.io
+  --rpc-url https://test.chain.opentensor.ai
 ```
 
-**Minimum Required**: 0.05 BTC for deployment
-**Recommended**: 0.1 BTC for safety margin
+**Minimum Required**: 0.1 TAO for deployment
+**Recommended**: 0.5 TAO for safety margin
 
 ---
 
@@ -71,8 +87,8 @@ Add your settings:
 ```bash
 # 🕵️ TAO20 Stealth Testnet Configuration
 TESTNET_PRIVATE_KEY=19299f620e8d00e88ec5e48ab48ed4d53c1a0c674909c1e52b427194b7b2519d
-TESTNET_RPC_URL=https://testnet-rpc.bevm.io
-TESTNET_CHAIN_ID=1501
+TESTNET_RPC_URL=https://test.chain.opentensor.ai
+TESTNET_CHAIN_ID=945
 
 # Privacy Settings
 ENABLE_SOURCE_VERIFICATION=false
@@ -140,7 +156,7 @@ cast code <TAO20_CORE_ADDRESS> --rpc-url https://testnet-rpc.bevm.io
 ### **Step 3: Test Basic Functionality**
 ```bash
 # Check if contracts are responding
-cast call <TAO20_CORE_ADDRESS> "getCurrentNAV()" --rpc-url https://testnet-rpc.bevm.io
+cast call <TAO20_CORE_ADDRESS> "getCurrentNAV()" --rpc-url https://test.chain.opentensor.ai
 
 # Should return a number (NAV in wei)
 ```
@@ -150,7 +166,7 @@ cast call <TAO20_CORE_ADDRESS> "getCurrentNAV()" --rpc-url https://testnet-rpc.b
 ## 🔍 **Privacy Verification**
 
 ### **Step 1: Check Block Explorer**
-Visit: https://scan-testnet.bevm.io/address/<CONTRACT_ADDRESS>
+Visit: https://test.chain.opentensor.ai/address/<CONTRACT_ADDRESS> (if block explorer available)
 
 **What You Should See:**
 - ✅ Contract address exists

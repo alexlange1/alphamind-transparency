@@ -129,9 +129,9 @@ python setup.py install
 |-----------|------------|---------|
 | **Smart Contracts** | Solidity 0.8.21 | Core logic and token management |
 | **Development** | Foundry | Contract development and testing |
-| **Cross-Chain** | BEVM Precompiles | Bittensor ↔ BEVM integration |
+| **Cross-Chain** | Bittensor Precompiles | Substrate ↔ EVM integration |
 | **Backend** | Python 3.9+ | Miner/Validator implementation |
-| **Blockchain** | BEVM | EVM-compatible execution layer |
+| **Blockchain** | Bittensor EVM | EVM-compatible layer on Bittensor |
 | **Asset Custody** | Bittensor Substrate | Secure subnet token storage |
 
 ## 📚 **Documentation**
