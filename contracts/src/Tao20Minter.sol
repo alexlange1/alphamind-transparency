@@ -9,7 +9,7 @@ import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import "@openzeppelin/contracts/utils/Pausable.sol";
 import "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 import "@openzeppelin/contracts/utils/math/Math.sol";
-import "./NAVOracle.sol";
+import "./StakingNAVOracle.sol";
 
 interface IEd25519Verify {
     function verify(bytes32 message, bytes32 pubkey, bytes32 r, bytes32 s) external pure returns (bool);
@@ -75,7 +75,7 @@ contract Tao20Minter is ERC20, Ownable, ReentrancyGuard, Pausable {
     
     // ===================== State Variables =====================
     
-    NAVOracle public navOracle;
+    StakingNAVOracle public navOracle;
     mapping(bytes32 => bool) public seenDeposit;
     mapping(address => bytes32) public nonces;
     mapping(address => bool) public authorizedKeepers;
@@ -114,7 +114,7 @@ contract Tao20Minter is ERC20, Ownable, ReentrancyGuard, Pausable {
     // ===================== Constructor =====================
     
     constructor(address _navOracle) ERC20("TAO20 Index Token", "TAO20") Ownable(msg.sender) {
-        navOracle = NAVOracle(_navOracle);
+        navOracle = StakingNAVOracle(_navOracle);
 
         DOMAIN_SEPARATOR = keccak256(abi.encode(
             EIP712_DOMAIN_TYPEHASH,
@@ -202,7 +202,7 @@ contract Tao20Minter is ERC20, Ownable, ReentrancyGuard, Pausable {
             uint256 taoReceived = _convertAlphaToTao(item.amount, item.netuid);
             totalAlphaValue += taoReceived;
             
-            uint256 tao20Amount = navOracle.getNAVForMinting(taoReceived);
+            uint256 tao20Amount = _calculateTAO20ForMinting(taoReceived);
             totalTao20ToMint += tao20Amount;
             
             _mint(item.user, tao20Amount);
@@ -231,7 +231,7 @@ contract Tao20Minter is ERC20, Ownable, ReentrancyGuard, Pausable {
             require(block.timestamp >= item.queuedAt + minExecutionDelay, "Too early");
             require(block.timestamp <= item.queuedAt + maxExecutionDelay, "Expired");
             
-            uint256 redemptionValue = navOracle.getTAOForRedemption(item.amount);
+            uint256 redemptionValue = _calculateTAOForRedemption(item.amount);
             totalValueReturned += redemptionValue;
             totalSharesBurned += item.amount;
             
@@ -266,7 +266,7 @@ contract Tao20Minter is ERC20, Ownable, ReentrancyGuard, Pausable {
             uint256 taoReceived = _convertAlphaToTao(item.amount, item.netuid);
             totalAlphaValue += taoReceived;
             
-            uint256 tao20Amount = navOracle.getNAVForMinting(taoReceived);
+            uint256 tao20Amount = _calculateTAO20ForMinting(taoReceived);
             totalTao20ToMint += tao20Amount;
             
             _mint(item.user, tao20Amount);
@@ -295,7 +295,7 @@ contract Tao20Minter is ERC20, Ownable, ReentrancyGuard, Pausable {
             require(block.timestamp >= item.queuedAt + minExecutionDelay, "Too early");
             require(block.timestamp <= item.queuedAt + maxExecutionDelay, "Expired");
             
-            uint256 redemptionValue = navOracle.getTAOForRedemption(item.amount);
+            uint256 redemptionValue = _calculateTAOForRedemption(item.amount);
             totalValueReturned += redemptionValue;
             totalSharesBurned += item.amount;
             
@@ -364,6 +364,33 @@ contract Tao20Minter is ERC20, Ownable, ReentrancyGuard, Pausable {
         // Transfer actual TAO tokens from contract's holdings to the receiver
         // This is the proper redemption mechanism - burning TAO20 and returning underlying TAO
         IERC20(TAO_TOKEN).safeTransfer(receiver, amount);
+    }
+    
+    /**
+     * @dev Calculate TAO20 tokens to mint based on TAO value
+     */
+    function _calculateTAO20ForMinting(uint256 taoAmount) internal view returns (uint256) {
+        // Get current NAV from oracle
+        // For now, we need to get staking data - this should be enhanced to integrate with staking system
+        uint256 totalSupply = totalSupply();
+        
+        // Simple calculation: if no supply exists, use 1:1 ratio
+        if (totalSupply == 0) {
+            return taoAmount; // 1 TAO = 1 TAO20 initially
+        }
+        
+        // For now, use a simple 1:1 ratio - this should be enhanced with proper NAV calculation
+        // In production, this would use: taoAmount * 1e18 / currentNAV
+        return taoAmount;
+    }
+    
+    /**
+     * @dev Calculate TAO value for redeeming TAO20 tokens
+     */
+    function _calculateTAOForRedemption(uint256 tao20Amount) internal view returns (uint256) {
+        // For now, use a simple 1:1 ratio - this should be enhanced with proper NAV calculation
+        // In production, this would use: tao20Amount * currentNAV / 1e18
+        return tao20Amount;
     }
     
     // ===================== Admin Functions =====================

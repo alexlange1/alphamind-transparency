@@ -3,99 +3,57 @@ pragma solidity ^0.8.21;
 
 /**
  * @title INAVOracle
- * @dev Interface for the NAV Oracle
+ * @dev Interface for automated NAV Oracle (no validator involvement)
  */
 interface INAVOracle {
     
-    // ===================== STRUCTS =====================
-    
-    struct NAVSubmission {
-        address validator;
-        uint256 nav;
-        uint256 timestamp;
-        uint256 stake;
-        bytes signature;
-    }
-    
-    struct ConsensusResult {
-        uint256 nav;
-        uint256 timestamp;
-        uint256 participatingStake;
-        uint256 totalValidators;
-    }
-    
     // ===================== EVENTS =====================
     
-    event ValidatorRegistered(address indexed validator, uint256 stake);
-    event ValidatorStakeUpdated(address indexed validator, uint256 oldStake, uint256 newStake);
-    event ValidatorRemoved(address indexed validator);
-    event NAVSubmitted(address indexed validator, uint256 nav, uint256 timestamp, uint256 epoch);
-    event NAVUpdated(uint256 oldNAV, uint256 newNAV, uint256 timestamp, uint256 epoch);
-    event EpochAdvanced(uint256 oldEpoch, uint256 newEpoch);
+    event NAVUpdated(uint256 newNAV, uint256 timestamp);
+    event SubnetPriceUpdated(uint16 indexed netuid, uint256 newPrice, uint256 timestamp);
     
     // ===================== ERRORS =====================
     
-    error InvalidValidator();
-    error InsufficientStake();
     error InvalidNAV();
-    error InvalidSignature();
-    error InvalidNonce();
-    error DeviationTooHigh();
-    error InsufficientValidators();
     error NAVTooStale();
-    error EpochNotReady();
-    error ZeroStake();
+    error ZeroSupply();
     
     // ===================== FUNCTIONS =====================
     
     /**
-     * @dev Register a new validator with stake
-     */
-    function registerValidator(address validator, uint256 stake) external;
-    
-    /**
-     * @dev Update validator stake
-     */
-    function updateValidatorStake(address validator, uint256 newStake) external;
-    
-    /**
-     * @dev Submit NAV calculation with signature
-     */
-    function submitNAV(uint256 nav, uint256 timestamp, bytes calldata signature) external;
-    
-    /**
-     * @dev Get current NAV with staleness check
+     * @dev Get current NAV per token
+     * @return NAV in 18 decimals (1e18 = 1.0)
      */
     function getCurrentNAV() external view returns (uint256);
     
     /**
-     * @dev Get NAV without staleness check
+     * @dev Get NAV calculation based on staking data
+     * @param totalStaked Total amount staked across all subnets
+     * @param totalYield Total accumulated yield
+     * @param totalSupply Total TAO20 token supply
+     * @return NAV in 18 decimals
      */
-    function getLatestNAV() external view returns (uint256 nav, uint256 timestamp, bool isStale);
+    function getCurrentNAV(
+        uint256 totalStaked,
+        uint256 totalYield,
+        uint256 totalSupply
+    ) external view returns (uint256);
     
     /**
-     * @dev Get validator information
+     * @dev Get base price for a subnet token
+     * @param netuid Subnet ID
+     * @return Price in 18 decimals
      */
-    function getValidatorInfo(address validator) external view returns (
-        uint256 stake,
-        uint256 nonce,
-        bool isActive
-    );
+    function getSubnetPrice(uint16 netuid) external view returns (uint256);
     
     /**
-     * @dev Get current epoch submissions
+     * @dev Get weighted portfolio value
+     * @param amounts Array of subnet token amounts
+     * @param netuids Array of subnet IDs
+     * @return Total weighted value
      */
-    function getEpochSubmissions(uint256 epoch) external view returns (NAVSubmission[] memory);
-    
-    /**
-     * @dev Get oracle status
-     */
-    function getOracleStatus() external view returns (
-        uint256 nav,
-        uint256 lastUpdate,
-        uint256 epoch,
-        uint256 validatorCount,
-        uint256 totalStakeAmount,
-        bool isStale
-    );
+    function getWeightedValue(
+        uint256[] calldata amounts,
+        uint16[] calldata netuids
+    ) external view returns (uint256);
 }

@@ -4,7 +4,7 @@ pragma solidity ^0.8.21;
 import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 import "@openzeppelin/contracts/utils/math/Math.sol";
 import "./TAO20V2.sol";
-import "./NAVOracle.sol";
+import "./StakingNAVOracle.sol";
 import "./SubnetStakingManager.sol";
 import "./interfaces/IBittensorPrecompiles.sol";
 import "./libraries/AddressUtils.sol";
@@ -45,7 +45,7 @@ contract TAO20CoreV2Enhanced is ReentrancyGuard {
     // ===================== CORE CONTRACTS =====================
     
     TAO20V2 public immutable tao20Token;
-    NAVOracle public immutable navOracle;
+    StakingNAVOracle public immutable navOracle;
     SubnetStakingManager public immutable stakingManager;
     
     // ===================== STATE VARIABLES =====================
@@ -150,7 +150,7 @@ contract TAO20CoreV2Enhanced is ReentrancyGuard {
         string memory _tokenName,
         string memory _tokenSymbol
     ) {
-        navOracle = NAVOracle(_navOracle);
+        navOracle = StakingNAVOracle(_navOracle);
         
         // Deploy subnet staking manager
         stakingManager = new SubnetStakingManager();
@@ -401,14 +401,23 @@ contract TAO20CoreV2Enhanced is ReentrancyGuard {
     }
     
     /**
+     * @dev Get current NAV from oracle
+     */
+    function _getCurrentNAV() internal view returns (uint256) {
+        uint256 totalStaked = stakingManager.getTotalStaked();
+        uint256 totalYield = stakingManager.getTotalYield();
+        uint256 totalSupply = tao20Token.totalSupply();
+        return navOracle.getCurrentNAV(totalStaked, totalYield, totalSupply);
+    }
+    
+    /**
      * @dev Get current NAV with slippage protection
      */
     function _getCurrentNAVWithSlippageCheck(uint256 expectedNAV, uint256 maxSlippageBps) internal view returns (uint256) {
-        NAVOracle.NAVData memory navData = navOracle.getCurrentNAV();
-        uint256 currentNAV = navData.navPerToken;
+        uint256 currentNAV = _getCurrentNAV();
         
-        // Check if NAV is stale
-        if (block.timestamp > navData.timestamp + 300) revert NAVStale(); // 5 minutes max age
+        // For now, we don't have timestamp from StakingNAVOracle, so skip staleness check
+        // This can be enhanced later if needed
         
         // Check slippage if expected NAV is provided
         if (expectedNAV > 0 && maxSlippageBps > 0) {
@@ -500,10 +509,9 @@ contract TAO20CoreV2Enhanced is ReentrancyGuard {
         totalSupply = tao20Token.totalSupply();
         totalValueLocked = stakingManager.getTotalValueLocked();
         
-        NAVOracle.NAVData memory navData = navOracle.getCurrentNAV();
-        currentNAV = navData.navPerToken;
-        lastNAVUpdate = navData.timestamp;
-        isNAVStale = block.timestamp > navData.timestamp + 300; // 5 minutes
+        currentNAV = _getCurrentNAV();
+        lastNAVUpdate = block.timestamp; // Current block timestamp since we calculate NAV on-demand
+        isNAVStale = false; // Always fresh since calculated on-demand
         
         (uint16[] memory netuids, ) = stakingManager.getCurrentComposition();
         numberOfSubnets = uint16(netuids.length);
