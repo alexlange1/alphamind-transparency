@@ -143,7 +143,7 @@ contract NAVOracleWithSlashing is ReentrancyGuard {
     
     error InsufficientStake();
     error ValidatorNotActive();
-    error ValidatorSlashed();
+    error ValidatorIsSlashed();
     error InvalidNAV();
     error InvalidSignature();
     error InvalidNonce();
@@ -225,7 +225,7 @@ contract NAVOracleWithSlashing is ReentrancyGuard {
         ValidatorInfo storage validator = validators[msg.sender];
         
         if (!validator.isActive) revert ValidatorNotActive();
-        if (validator.isSlashed) revert ValidatorSlashed();
+        if (validator.isSlashed) revert ValidatorIsSlashed();
         if (nav == 0) revert InvalidNAV();
         if (timestamp > block.timestamp) revert InvalidNAV();
         if (block.timestamp - timestamp > 300) revert InvalidNAV(); // Max 5 minutes old
@@ -383,7 +383,7 @@ contract NAVOracleWithSlashing is ReentrancyGuard {
      */
     function _validateNAVCalculation(uint256 nav, uint256[] memory subnetPrices) internal view returns (bool) {
         // Get current portfolio composition
-        (uint16[] memory netuids, uint256[] memory weights) = stakingManager.getCurrentComposition();
+        (uint16[] memory netuids, ) = stakingManager.getCurrentComposition();
         
         uint256 calculatedValue = 0;
         
@@ -431,13 +431,85 @@ contract NAVOracleWithSlashing is ReentrancyGuard {
     
     function _calculateStakeWeightedMedian(NAVSubmission[] memory submissions) 
         internal 
-        pure 
+        view 
         returns (ConsensusResult memory) 
     {
-        // Implementation similar to original NAVOracle but with slashing consideration
-        // ... (implementation details)
+        uint256 length = submissions.length;
+        if (length == 0) {
+            return ConsensusResult(0, 0, 0, 0, 0);
+        }
         
-        return ConsensusResult(0, 0, 0, 0, 0); // Placeholder
+        // Create arrays for sorting and calculations
+        uint256[] memory navValues = new uint256[](length);
+        uint256[] memory stakes = new uint256[](length);
+        uint256 totalStake = 0;
+        uint256 validSubmissions = 0;
+        
+        // Extract valid NAV values and stakes
+        for (uint i = 0; i < length; i++) {
+            if (submissions[i].isValid && submissions[i].nav > 0) {
+                navValues[validSubmissions] = submissions[i].nav;
+                stakes[validSubmissions] = submissions[i].stake;
+                totalStake += submissions[i].stake;
+                validSubmissions++;
+            }
+        }
+        
+        if (validSubmissions == 0) {
+            return ConsensusResult(0, 0, 0, 0, 0);
+        }
+        
+        // Sort NAV values along with their corresponding stakes (bubble sort for simplicity)
+        for (uint i = 0; i < validSubmissions - 1; i++) {
+            for (uint j = 0; j < validSubmissions - i - 1; j++) {
+                if (navValues[j] > navValues[j + 1]) {
+                    // Swap NAV values
+                    uint256 tempNav = navValues[j];
+                    navValues[j] = navValues[j + 1];
+                    navValues[j + 1] = tempNav;
+                    
+                    // Swap corresponding stakes
+                    uint256 tempStake = stakes[j];
+                    stakes[j] = stakes[j + 1];
+                    stakes[j + 1] = tempStake;
+                }
+            }
+        }
+        
+        // Calculate stake-weighted median
+        uint256 medianNAV;
+        uint256 halfStake = totalStake / 2;
+        uint256 cumulativeStake = 0;
+        
+        for (uint i = 0; i < validSubmissions; i++) {
+            cumulativeStake += stakes[i];
+            if (cumulativeStake >= halfStake) {
+                medianNAV = navValues[i];
+                break;
+            }
+        }
+        
+        // Count deviations from median (for slashing purposes)
+        uint256 deviationCount = 0;
+        uint256 maxDeviation = (medianNAV * MAX_DEVIATION_BPS) / 10000;
+        
+        for (uint i = 0; i < validSubmissions; i++) {
+            uint256 deviation = navValues[i] > medianNAV ? 
+                navValues[i] - medianNAV : 
+                medianNAV - navValues[i];
+                
+            if (deviation > maxDeviation) {
+                deviationCount++;
+            }
+        }
+        
+        return ConsensusResult({
+            nav: medianNAV,
+            timestamp: block.timestamp,
+            participatingStake: totalStake,
+            totalValidators: validSubmissions,
+            deviationCount: deviationCount
+        });
     }
     
     function _advanceEpoch() internal {

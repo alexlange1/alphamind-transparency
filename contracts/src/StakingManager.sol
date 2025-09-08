@@ -23,7 +23,7 @@ interface ITAOTransfer {
  * @dev Manages automatic staking of deposited TAO across Bittensor subnets
  * 
  * PURPOSE:
- * - Automatically stake deposited TAO to earn yield
+ * - Automatically stake TAO tokens to earn yield on Bittensor subnets
  * - Manage validator selection per subnet
  * - Handle proportional unstaking for redemptions
  * - Track staking rewards and compound yield
@@ -71,7 +71,7 @@ contract StakingManager is ReentrancyGuard {
     uint256 public constant YIELD_COMPOUND_PERIOD = 24 hours;
     
     /// @dev Minimum staking amount (0.001 TAO)
-    uint256 public constant MIN_STAKE_AMOUNT = 1e6; // 1e9 RAO = 1 TAO, so 1e6 = 0.001 TAO
+    uint256 public constant MIN_STAKE_AMOUNT = 1e6; // 1e9 RAO = 1 TAO, so 1e6 RAO = 0.001 TAO
     
     /// @dev Total staked across all subnets
     uint256 public totalStaked;
@@ -113,12 +113,12 @@ contract StakingManager is ReentrancyGuard {
     // ===================== STAKING FUNCTIONS =====================
     
     /**
-     * @dev Stake subnet tokens for a specific subnet using default validator
+     * @dev Stake TAO tokens for a specific subnet using default validator
      * @param netuid Subnet ID  
-     * @param amount Amount of subnet tokens to stake (in subnet token base units)
+     * @param amount Amount of TAO tokens to stake (in TAO base units)
      * 
-     * NOTE: This stakes the actual subnet tokens (Alpha tokens) that users deposited,
-     * not TAO tokens. Each subnet has its own native token that gets staked.
+     * NOTE: This stakes TAO tokens to earn yield on the specified subnet.
+     * The amount is converted to RAO for the Bittensor staking precompile.
      */
     function stakeForSubnet(uint16 netuid, uint256 amount) 
         external 
@@ -130,7 +130,7 @@ contract StakingManager is ReentrancyGuard {
         bytes32 validator = defaultValidators[netuid];
         if (validator == bytes32(0)) revert InvalidValidator();
         
-        // Convert to RAO (1 TAO = 1e9 RAO)
+        // Convert TAO to RAO (1 TAO = 1e9 RAO)
         uint256 amountRao = amount * 1e9;
         
         // Stake via precompile
@@ -144,10 +144,10 @@ contract StakingManager is ReentrancyGuard {
     }
     
     /**
-     * @dev Unstake and transfer TAO to recipient
+     * @dev Unstake TAO tokens and transfer to recipient
      * @param netuid Subnet ID
-     * @param amount Amount to unstake (in TAO base units)
-     * @param recipient Address to receive unstaked TAO
+     * @param amount Amount of TAO tokens to unstake (in TAO base units)
+     * @param recipient Address to receive unstaked TAO tokens
      */
     function unstakeAndTransfer(uint16 netuid, uint256 amount, address recipient) 
         external 
@@ -160,7 +160,7 @@ contract StakingManager is ReentrancyGuard {
         bytes32 validator = defaultValidators[netuid];
         if (validator == bytes32(0)) revert InvalidValidator();
         
-        // Convert to RAO
+        // Convert TAO to RAO (1 TAO = 1e9 RAO)
         uint256 amountRao = amount * 1e9;
         
         // Unstake via precompile
@@ -170,7 +170,7 @@ contract StakingManager is ReentrancyGuard {
         subnetStaked[netuid] -= amount;
         totalStaked -= amount;
         
-        // Transfer TAO to recipient
+        // Transfer TAO tokens to recipient
         if (!TAO.transfer(recipient, amount)) revert TransferFailed();
         
         emit SubnetUnstaked(netuid, amount, validator);
