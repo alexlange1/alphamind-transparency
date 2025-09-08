@@ -8,6 +8,12 @@ optimizer = true
 optimizer_runs = 200
 via_ir = true
 
+# Exclude archived/problematic files
+exclude = [
+    "test/archive/**/*",
+    "script/archive/**/*"
+]
+
 remappings = [
     "forge-std/=lib/forge-std/src/",
     "@openzeppelin/contracts/=lib/openzeppelin-contracts/contracts/"
