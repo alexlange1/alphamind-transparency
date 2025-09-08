@@ -6,12 +6,16 @@
 # Wallet files and private keys
 secure/wallets/*.json
 secure/keys/*
+secrets/wallets/*.json
+secrets/keys/*
+secrets/
 *.key
 *.pem
 *.p12
 .private
 wallets.json
 keys.json
+**/tao20_wallets_*.json
 
 # Environment files with secrets
 .env
