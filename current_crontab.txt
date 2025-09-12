@@ -1,4 +1,0 @@
-# Fixed crontab - complete VPS workflow including transparency updates
-# Auto-finds alphamind project and runs collection (works on dev/VPS)
-# For production VPS, use systemd timer instead (see deployment/vps/setup_vps.sh)
-0 16 * * * bash -c 'for dir in /opt/alphamind /home/alphamind/alphamind /Users/*/alphamind; do [ -f "$dir/deployment/vps/collect_and_upload.sh" ] && cd "$dir" && exec bash deployment/vps/collect_and_upload.sh >> logs/emissions_cron.log 2>&1; done'
