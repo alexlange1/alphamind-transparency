@@ -115,8 +115,8 @@ def normalize_weights(top_20: List[Tuple[int, float]]) -> List[Dict]:
     print(f"✅ Weights normalized (total: {sum(normalized_weights):.6f})")
     return result
 
-def save_tao20_data(tao20_data: List[Dict], output_dir: Path) -> tuple:
-    """Save TAO20 data to JSON, CSV, and MD files"""
+def save_tao20_data(tao20_data: List[Dict], output_dir: Path) -> Path:
+    """Save TAO20 data to JSON file only"""
     timestamp = datetime.now(timezone.utc)
     date_str = timestamp.strftime('%Y%m%d')
     
@@ -135,38 +135,13 @@ def save_tao20_data(tao20_data: List[Dict], output_dir: Path) -> tuple:
         'tao20_constituents': tao20_data
     }
     
-    # Save JSON file
+    # Save JSON file only
     json_file = output_dir / f'tao20_{date_str}.json'
     with open(json_file, 'w') as f:
         json.dump(json_data, f, indent=2, sort_keys=True)
     
-    # Save CSV file
-    csv_file = output_dir / f'tao20_{date_str}.csv'
-    with open(csv_file, 'w') as f:
-        f.write('rank,netuid,weight_percentage,weight_decimal,avg_emission_rate\n')
-        for item in tao20_data:
-            f.write(f'{item["rank"]},{item["netuid"]},{item["weight_percentage"]:.6f},{item["weight"]:.6f},{item["avg_emission_rate"]:.6f}\n')
-    
-    # Save Markdown file
-    md_file = output_dir / f'tao20_{date_str}.md'
-    with open(md_file, 'w') as f:
-        f.write(f"# TAO20 Index - {date_str}\n\n")
-        f.write(f"**Rebalance Date:** {date_str}\n")
-        f.write(f"**Generated:** {timestamp.strftime('%Y-%m-%d %H:%M UTC')}\n")
-        f.write(f"**Methodology:** 14-day average emissions, top 20 subnets\n\n")
-        
-        f.write("## Index Composition\n\n")
-        f.write("| Rank | Subnet | Weight | Avg Emission Rate |\n")
-        f.write("|------|--------|--------|-------------------|\n")
-        
-        for item in tao20_data:
-            f.write(f"| {item['rank']} | {item['netuid']} | {item['weight_percentage']:.2f}% | {item['avg_emission_rate']:.4f} |\n")
-        
-        f.write(f"\n**Total Weight:** {sum(item['weight'] for item in tao20_data):.6f}\n")
-        f.write(f"**Constituents:** {len(tao20_data)}\n")
-    
-    print(f"💾 Saved TAO20 data to {json_file.name}, {csv_file.name}, {md_file.name}")
-    return json_file, csv_file, md_file
+    print(f"💾 Saved TAO20 data to {json_file.name}")
+    return json_file
 
 def should_rebalance() -> Tuple[bool, str]:
     """Check if it's time for bi-weekly rebalancing (every 2nd Sunday)"""
@@ -219,20 +194,7 @@ def main():
         tao20_dir = Path('tao20')
         tao20_dir.mkdir(exist_ok=True)
         
-        json_file, csv_file, md_file = save_tao20_data(tao20_data, tao20_dir)
-        
-        # Calculate checksums
-        checksum_manager = ChecksumManager()
-        json_checksum = checksum_manager.calculate_sha256(json_file)
-        csv_checksum = checksum_manager.calculate_sha256(csv_file)
-        md_checksum = checksum_manager.calculate_sha256(md_file)
-        
-        # Save checksums
-        json_checksum_file = checksum_manager.save_checksum(json_file, json_checksum)
-        csv_checksum_file = checksum_manager.save_checksum(csv_file, csv_checksum)
-        md_checksum_file = checksum_manager.save_checksum(md_file, md_checksum)
-        
-        print(f"🔐 SHA256 checksums calculated and saved")
+        json_file = save_tao20_data(tao20_data, tao20_dir)
         
         # Commit to GitHub
         github_url = "No GitHub integration"
@@ -240,7 +202,7 @@ def main():
             github = GitHubManager(config['repo_path'], config['github_token'])
             github.setup_git_config()
             
-            files_to_commit = [json_file, csv_file, md_file, json_checksum_file, csv_checksum_file, md_checksum_file]
+            files_to_commit = [json_file]
             commit_message = f"TAO20 rebalancing - {datetime.now(timezone.utc).strftime('%Y-%m-%d %H:%M UTC')}"
             
             if github.add_and_commit(files_to_commit, commit_message):
@@ -263,7 +225,7 @@ def main():
             notifier.send_tao20_success(
                 date=datetime.now(timezone.utc).strftime('%Y-%m-%d'),
                 top_3=tao20_data[:3],
-                checksum=json_checksum,
+                checksum="N/A",
                 github_url=github_url
             )
         
@@ -273,8 +235,7 @@ def main():
             print(f"  {item['rank']:2d}. Subnet {item['netuid']:3d}: {item['weight_percentage']:6.2f}%")
         
         print(f"\n✅ TAO20 rebalancing completed successfully")
-        print(f"📁 Files: {json_file.name}, {csv_file.name}, {md_file.name}")
-        print(f"🔐 JSON SHA256: {json_checksum}")
+        print(f"📁 File: {json_file.name}")
         print(f"🌐 GitHub: {github_url}")
         
     except Exception as e:

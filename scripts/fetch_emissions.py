@@ -55,8 +55,8 @@ def collect_emissions_data():
         print(f"❌ Collection failed: {e}")
         return None, None
 
-def save_emissions_data(emissions: dict, raw_data: dict, output_dir: Path) -> tuple:
-    """Save real emissions data to JSON and CSV files"""
+def save_emissions_data(emissions: dict, raw_data: dict, output_dir: Path) -> Path:
+    """Save real emissions data to JSON file only"""
     timestamp = datetime.now(timezone.utc)
     date_str = timestamp.strftime('%Y%m%d')
     
@@ -84,23 +84,13 @@ def save_emissions_data(emissions: dict, raw_data: dict, output_dir: Path) -> tu
         }
     }
     
-    # Save JSON file
+    # Save JSON file only
     json_file = output_dir / f'emissions_{date_str}.json'
     with open(json_file, 'w') as f:
         json.dump(json_data, f, indent=2, sort_keys=True)
     
-    # Save CSV file
-    csv_file = output_dir / f'emissions_{date_str}.csv'
-    with open(csv_file, 'w') as f:
-        f.write('netuid,emission_rate,emission_percentage,rank\n')
-        # Sort by emission rate descending
-        sorted_emissions = sorted(emissions.items(), key=lambda x: x[1], reverse=True)
-        for rank, (netuid, rate) in enumerate(sorted_emissions, 1):
-            percentage = (rate / sum(emissions.values())) * 100 if sum(emissions.values()) > 0 else 0
-            f.write(f'{netuid},{rate:.6f},{percentage:.4f},{rank}\n')
-    
-    print(f"💾 Saved real data to {json_file.name} and {csv_file.name}")
-    return json_file, csv_file
+    print(f"💾 Saved real data to {json_file.name}")
+    return json_file
 
 def main():
     """Main emissions collection process"""
@@ -131,25 +121,14 @@ def main():
     emissions_dir = Path('emissions')
     emissions_dir.mkdir(exist_ok=True)
     
-    json_file, csv_file = save_emissions_data(emissions, raw_data, emissions_dir)
-    
-    # Calculate checksums
-    checksum_manager = ChecksumManager()
-    json_checksum = checksum_manager.calculate_sha256(json_file)
-    csv_checksum = checksum_manager.calculate_sha256(csv_file)
-    
-    # Save checksums
-    json_checksum_file = checksum_manager.save_checksum(json_file, json_checksum)
-    csv_checksum_file = checksum_manager.save_checksum(csv_file, csv_checksum)
-    
-    print(f"🔐 SHA256 checksums calculated and saved")
+    json_file = save_emissions_data(emissions, raw_data, emissions_dir)
     
     # Commit to GitHub
     if config['github_token']:
         github = GitHubManager(config['repo_path'], config['github_token'])
         github.setup_git_config()
         
-        files_to_commit = [json_file, csv_file, json_checksum_file, csv_checksum_file]
+        files_to_commit = [json_file]
         commit_message = f"Real daily emissions collection - {datetime.now(timezone.utc).strftime('%Y-%m-%d %H:%M UTC')}"
         
         if github.add_and_commit(files_to_commit, commit_message):
@@ -172,7 +151,7 @@ def main():
         notifier = DiscordNotifier(config['discord_webhook'])
         notifier.send_emissions_success(
             filename=json_file.name,
-            checksum=json_checksum,
+            checksum="N/A",
             subnet_count=len(emissions)
         )
     
@@ -185,8 +164,7 @@ def main():
         print(f"  {rank:2d}. Subnet {netuid:3d}: {rate:.6f} ({percentage:.2f}%)")
     
     print(f"\n✅ Real daily emissions collection completed successfully")
-    print(f"📁 Files: {json_file.name}, {csv_file.name}")
-    print(f"🔐 JSON SHA256: {json_checksum}")
+    print(f"📁 File: {json_file.name}")
     print(f"🌐 GitHub: {github_url}")
     print(f"🎯 Total active subnets: {len(emissions)}")
     print(f"📈 Total emission rate: {total_emissions:.6f}")
