@@ -40,7 +40,8 @@ def collect_emissions_data():
             try:
                 netuid = int(netuid_str)
                 emission = subnet_data.get('emission', 0.0)
-                if emission > 0:  # Only include subnets with actual emissions
+                # Exclude subnet 0 (root network) and only include subnets with actual emissions
+                if netuid != 0 and emission > 0:
                     emissions[netuid] = emission
                     total_emission += emission
             except (ValueError, TypeError):
