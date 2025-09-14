@@ -1,44 +1,38 @@
-# AlphaMind TAO20 Emissions Transparency Data
+# AlphaMind Transparency
 
-**Real-time subnet emissions from Bittensor Finney network**
+This repository publishes transparent data from AlphaMind's TAO20 index fund operations.
 
-This repository contains the transparency data for the AlphaMind TAO20 project, providing public access to emissions data, manifests, and publications from the Bittensor subnet.
+## Purpose
 
-## 📊 Repository Contents
+This repository serves as the public transparency portal for:
+- **Daily Emissions**: Subnet emission rates collected from Bittensor network
+- **TAO20 Composition**: Bi-weekly portfolio weights for the TAO20 index
 
-### Direct Access to Data
+## Data Sources
 
-- **daily/** - Daily emissions data files (JSON format)
-- **status/** - Status tracking files  
-- **emissions_legacy/** - Historical emissions data
-- **README.md** - This documentation
+All data is automatically collected and processed on VPS `138.68.69.71` and published here for public transparency.
 
-## 🔍 Data Structure
+## Data Structure
 
-The transparency data is organized to provide:
+### Daily Emissions (`/data/emissions/`)
+- **File**: `emissions_YYYYMMDD.json` 
+- **Schedule**: Daily at 16:00 UTC
+- **Content**: Emission rates for all active Bittensor subnets
+- **Format**: Decimal values (e.g., 0.098567 = 9.8567%)
 
-- **Real-time emissions tracking** from Bittensor subnets
-- **Cryptographic verification** of data integrity
-- **Historical data** for analysis and auditing
-- **Public accessibility** for community verification
+### TAO20 Portfolio (`/data/tao20/`)
+- **File**: `tao20_YYYYMMDD.json`
+- **Schedule**: Bi-weekly on Sundays at 12:00 UTC
+- **Content**: Top 20 subnet weights based on 14-day average emissions
+- **Format**: Normalized weights summing to 1.0
 
-## 📈 Usage
+## Verification
 
-This data is automatically updated by the AlphaMind emissions system and is publicly available for:
+All data includes cryptographic signatures for integrity verification.
 
-- Community verification of emissions
-- Third-party analysis and reporting
-- Audit and compliance purposes
-- Research and development
+## Automation
 
-## 🔒 Security
-
-All data is cryptographically signed and verified to ensure integrity and authenticity.
-
-## 📄 License
-
-This project is licensed under the MIT License - see the LICENSE file for details.
-
----
-
-**Built with ❤️ for the Bittensor community transparency**
+Data collection and publishing is fully automated via:
+- VPS-based collection system
+- Automated GitHub publishing
+- Real-time transparency updates
