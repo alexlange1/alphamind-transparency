@@ -1,0 +1,23 @@
+# TAO20 CPS Configuration
+# Copy to .env and fill in your values
+
+# GitHub Configuration
+GITHUB_TOKEN=your_github_personal_access_token_here
+REPO_PATH=.
+
+# Discord Notifications
+DISCORD_WEBHOOK_URL=your_discord_webhook_url_here
+
+# Collection Settings
+EMISSIONS_LOOKBACK_DAYS=14
+TAO20_TOP_N=20
+RANDOM_JITTER_MAX_SECONDS=300
+
+# Network Settings
+BITTENSOR_NETWORK=finney
+BTCLI_TIMEOUT=120
+
+# File Settings
+ENABLE_CSV_EXPORT=true
+ENABLE_MARKDOWN_EXPORT=true
+ENABLE_CHECKSUMS=true
