@@ -43,12 +43,6 @@ Browse the `emissions/` and `tao20/` folders to access:
 - Historical data via Git history
 - Complete metadata and statistics
 
-## Current Status
-
-**Last Update**: Check the latest file timestamps in the data folders  
-**Next Rebalancing**: Every second Sunday at 16:30 UTC  
-**Active Subnets**: ~118 subnets in the Bittensor network  
-
 ---
 
 *This repository represents our commitment to complete transparency in TAO20 index fund management.*
