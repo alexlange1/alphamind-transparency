@@ -1,3 +1,9 @@
+<br>
+
+<p align="center">
+  <img src="logo.png" alt="ALPHAMIND Logo" width="500">
+</p>
+
 # TAO20 Index - Transparency Portal
 
 ## Overview
