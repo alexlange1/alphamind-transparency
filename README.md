@@ -4,9 +4,7 @@
   <img src="logo.png" alt="ALPHAMIND Logo" width="500">
 </p>
 
-# TAO20 Index - Transparency Portal
-
-## Overview
+<h1 align="center">TAO20 Index - Transparency Portal</h1>
 
 The TAO20 Index is a top-20 emissions-weighted Bittensor subnet index that automatically rebalances every two weeks based on real-time network data. This repository provides complete transparency into the index composition and underlying data.
 
