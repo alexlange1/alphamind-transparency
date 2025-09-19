@@ -1,7 +1,7 @@
 <br>
 
 <p align="center">
-  <img src="logo.png" alt="ALPHAMIND Logo" width="500">
+  <img src="alphamind.png" alt="ALPHAMIND Logo" width="500">
 </p>
 
 <h1 align="center">TAO20 Index - Transparency Portal</h1>
