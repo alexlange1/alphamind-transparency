@@ -106,6 +106,8 @@ def find_block_at_time(sub, target_time_utc: datetime) -> int:
     return low
 
 def balance_to_float(bal):
+    if bal is None:
+        return None
     try:
         return float(bal)
     except Exception:
@@ -114,14 +116,31 @@ def balance_to_float(bal):
 
 def fetch_prices_at_block(sub: bt.Subtensor, block: int):
     infos = sub.get_all_subnets_info(block=block) or []
+
+    def load_price_map() -> dict[int, float | None]:
+        try:
+            balances = sub.get_subnet_prices(block=block) or {}
+            return {int(netuid): balance_to_float(balance) for netuid, balance in balances.items()}
+        except Exception as primary_exc:
+            print(f"[info] Swap-based price fetch unavailable: {type(primary_exc).__name__} ({primary_exc})")
+        try:
+            dynamics = sub.all_subnets(block=block) or []
+        except Exception as fallback_exc:
+            print(f"[warn] Reserve-based price fallback failed: {type(fallback_exc).__name__} ({fallback_exc})")
+            return {}
+        prices: dict[int, float | None] = {}
+        for dynamic in dynamics:
+            netuid = int(getattr(dynamic, "netuid", -1))
+            prices[netuid] = balance_to_float(getattr(dynamic, "price", None))
+        prices[0] = 1.0
+        return prices
+
+    price_map = load_price_map()
+
     rows = []
     for info in infos:
         netuid = int(getattr(info, "netuid"))
-        try:
-            price_bal = sub.get_subnet_price(netuid, block=block)
-            price_tao = balance_to_float(price_bal)
-        except Exception:
-            price_tao = None
+        price_tao = price_map.get(netuid)
 
         rows.append({
             "netuid": netuid,
@@ -129,6 +148,17 @@ def fetch_prices_at_block(sub: bt.Subtensor, block: int):
             #"name": getattr(info, "subnet_name", None),
             "price_tao_per_alpha": price_tao,
         })
+
+    # include any subnets from fallback price map that might not be present in infos
+    known_netuid = {row["netuid"] for row in rows}
+    for netuid, price in price_map.items():
+        if netuid in known_netuid:
+            continue
+        rows.append({
+            "netuid": netuid,
+            "price_tao_per_alpha": price,
+        })
+
     rows.sort(key=lambda x: x["netuid"])
     return rows
 
