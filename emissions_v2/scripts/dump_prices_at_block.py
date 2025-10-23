@@ -1,0 +1,172 @@
+#!/usr/bin/env python3
+"""
+Fetch subnet alpha-token prices (TAO per ALPHA) at *exact noon* Warsaw time on a given date.
+
+Usage:
+    python dump_prices_at_block.py --date 2025-10-22
+"""
+
+import argparse
+import json
+from datetime import datetime, timezone
+from zoneinfo import ZoneInfo
+import bittensor as bt
+
+
+def get_block_timestamp(sub, block: int) -> datetime | None:
+    """Return UTC datetime of a given block.
+    If the node pruned the state or the block cannot be fetched, return None.
+    """
+    try:
+        block_hash = sub.substrate.get_block_hash(block)
+        if block_hash is None:
+            return None
+
+        block_data = sub.substrate.get_block(block_hash)
+        extrinsics = block_data.get("extrinsics", [])
+        for ext in extrinsics:
+            call = None
+            if isinstance(ext, dict):
+                call = ext.get("call")
+            elif hasattr(ext, "value"):
+                call = ext.value.get("call")
+            elif hasattr(ext, "call"):
+                call = ext.call
+
+            if not call:
+                continue
+
+            module = call.get("call_module") or call.get("call_module_name")
+            if module != "Timestamp":
+                continue
+
+            args = call.get("call_args") or call.get("params") or []
+            for arg in args:
+                value = arg.get("value")
+                if isinstance(value, dict) and "value" in value:
+                    value = value["value"]
+                if isinstance(value, (int, float)):
+                    return datetime.fromtimestamp(value / 1000.0, tz=timezone.utc)
+    except Exception as e:
+        # StateDiscardedError or anything else — skip gracefully
+        print(f"[warn] Cannot fetch block {block}: {type(e).__name__} ({e})")
+        return None
+
+    return None
+
+def find_block_at_time(sub, target_time_utc: datetime) -> int:
+    """Binary search for block closest to target_time_utc.
+    Skips missing (pruned) blocks gracefully.
+    """
+    latest = sub.get_current_block()
+    earliest = 1
+
+    ts_latest = get_block_timestamp(sub, latest)
+    if ts_latest is None:
+        raise RuntimeError("Cannot read latest block timestamp.")
+
+    # Find first block that still has state available on this node
+    def find_first_available_block() -> tuple[int, datetime]:
+        low, high = earliest, latest
+        first_block = None
+        first_ts = None
+
+        while low <= high:
+            mid = (low + high) // 2
+            ts_mid = get_block_timestamp(sub, mid)
+            if ts_mid is None:
+                low = mid + 1
+                continue
+            first_block = mid
+            first_ts = ts_mid
+            high = mid - 1
+
+        if first_block is None or first_ts is None:
+            raise RuntimeError("No retrievable blocks on this node.")
+        return first_block, first_ts
+
+    earliest, ts_earliest = find_first_available_block()
+
+    if target_time_utc <= ts_earliest:
+        return earliest
+    if target_time_utc >= ts_latest:
+        return latest
+
+    low, high = earliest, latest
+    while low < high:
+        mid = (low + high) // 2
+        ts_mid = get_block_timestamp(sub, mid)
+        if ts_mid is None:
+            # skip if timestamp unavailable
+            low = mid + 1
+            continue
+        if ts_mid < target_time_utc:
+            low = mid + 1
+        else:
+            high = mid
+    return low
+
+def balance_to_float(bal):
+    try:
+        return float(bal)
+    except Exception:
+        return float(getattr(bal, "tao", 0))
+
+
+def fetch_prices_at_block(sub: bt.Subtensor, block: int):
+    infos = sub.get_all_subnets_info(block=block) or []
+    rows = []
+    for info in infos:
+        netuid = int(getattr(info, "netuid"))
+        try:
+            price_bal = sub.get_subnet_price(netuid, block=block)
+            price_tao = balance_to_float(price_bal)
+        except Exception:
+            price_tao = None
+
+        rows.append({
+            "netuid": netuid,
+            #"symbol": getattr(info, "symbol", None),
+            #"name": getattr(info, "subnet_name", None),
+            "price_tao_per_alpha": price_tao,
+        })
+    rows.sort(key=lambda x: x["netuid"])
+    return rows
+
+
+def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--network", default="finney", help="Bittensor network (default: finney)")
+    parser.add_argument("--date", required=True, help="Date in YYYY-MM-DD (local Warsaw date)")
+    args = parser.parse_args()
+
+    # Step 1: Convert noon Warsaw time to UTC
+    local_tz = ZoneInfo("Europe/Warsaw")
+    local_noon = datetime.strptime(args.date, "%Y-%m-%d").replace(
+        hour=12, minute=0, second=0, tzinfo=local_tz
+    )
+    target_utc = local_noon.astimezone(timezone.utc)
+
+    sub = bt.Subtensor(network=args.network)
+
+    # Step 2: Find closest block
+    print(f"Finding block closest to {target_utc.isoformat()} UTC...")
+    block = find_block_at_time(sub, target_utc)
+    block_time = get_block_timestamp(sub, block)
+    print(f"Closest block: {block} at {block_time.isoformat()} UTC")
+
+    # Step 3: Fetch prices at that block
+    rows = fetch_prices_at_block(sub, block)
+    output = {
+        "requested_local_noon": local_noon.isoformat(),
+        "closest_block": block,
+        "block_timestamp_utc": block_time.isoformat(),
+        "network": args.network,
+        "prices": rows,
+    }
+
+    print(json.dumps(output, ensure_ascii=False, indent=2))
+
+
+if __name__ == "__main__":
+    main()
