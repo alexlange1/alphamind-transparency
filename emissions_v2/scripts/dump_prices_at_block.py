@@ -1,15 +1,14 @@
 #!/usr/bin/env python3
 """
-Fetch subnet alpha-token prices (TAO per ALPHA) at *exact noon* Warsaw time on a given date.
+Fetch subnet alpha-token prices (TAO per ALPHA) at a specific timestamp.
 
 Usage:
-    python dump_prices_at_block.py --date 2025-10-22
+    python dump_prices_at_block.py --date 2025-10-22 --time 16:00+00:00
 """
 
 import argparse
 import json
 from datetime import datetime, timezone
-from zoneinfo import ZoneInfo
 import bittensor as bt
 
 
@@ -137,15 +136,20 @@ def fetch_prices_at_block(sub: bt.Subtensor, block: int):
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--network", default="finney", help="Bittensor network (default: finney)")
-    parser.add_argument("--date", required=True, help="Date in YYYY-MM-DD (local Warsaw date)")
+    parser.add_argument("--date", required=True, help="Date in YYYY-MM-DD")
+    parser.add_argument(
+        "--time",
+        default="16:00+00:00",
+        help="Time with offset in HH:MM±HH:MM (default: 16:00+00:00)",
+    )
     args = parser.parse_args()
 
-    # Step 1: Convert noon Warsaw time to UTC
-    local_tz = ZoneInfo("Europe/Warsaw")
-    local_noon = datetime.strptime(args.date, "%Y-%m-%d").replace(
-        hour=12, minute=0, second=0, tzinfo=local_tz
-    )
-    target_utc = local_noon.astimezone(timezone.utc)
+    # Step 1: Parse requested timestamp and convert to UTC
+    try:
+        requested_dt = datetime.strptime(f"{args.date} {args.time}", "%Y-%m-%d %H:%M%z")
+    except ValueError as exc:
+        raise SystemExit(f"Invalid --time format {args.time!r}: {exc}") from exc
+    target_utc = requested_dt.astimezone(timezone.utc)
 
     sub = bt.Subtensor(network=args.network)
 
@@ -158,7 +162,7 @@ def main():
     # Step 3: Fetch prices at that block
     rows = fetch_prices_at_block(sub, block)
     output = {
-        "requested_local_noon": local_noon.isoformat(),
+        "requested_time": requested_dt.isoformat(),
         "closest_block": block,
         "block_timestamp_utc": block_time.isoformat(),
         "network": args.network,
