@@ -8,7 +8,8 @@ Usage:
 
 import argparse
 import json
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
+from pathlib import Path
 import bittensor as bt
 
 
@@ -53,15 +54,30 @@ def get_block_timestamp(sub, block: int) -> datetime | None:
 
     return None
 
-def find_block_at_time(sub, target_time_utc: datetime) -> int:
+ESTIMATED_BLOCKS_PER_DAY = 7200
+
+
+def find_block_at_time(
+    sub,
+    target_time_utc: datetime,
+    min_block: int | None = None,
+    max_block: int | None = None,
+) -> int:
     """Binary search for block closest to target_time_utc.
     Skips missing (pruned) blocks gracefully.
     """
-    latest = sub.get_current_block()
-    earliest = 1
+    latest = max_block if max_block is not None else sub.get_current_block()
+    earliest = min_block if min_block is not None else 1
+    earliest = max(earliest, 1)
+
+    if latest < earliest:
+        latest = sub.get_current_block()
 
     ts_latest = get_block_timestamp(sub, latest)
     if ts_latest is None:
+        if max_block is not None:
+            # fall back to full-range search if limited window has no data
+            return find_block_at_time(sub, target_time_utc)
         raise RuntimeError("Cannot read latest block timestamp.")
 
     # Find first block that still has state available on this node
@@ -89,6 +105,9 @@ def find_block_at_time(sub, target_time_utc: datetime) -> int:
     if target_time_utc <= ts_earliest:
         return earliest
     if target_time_utc >= ts_latest:
+        if max_block is not None and max_block != sub.get_current_block():
+            # window too low, redo with full search
+            return find_block_at_time(sub, target_time_utc)
         return latest
 
     low, high = earliest, latest
@@ -163,10 +182,22 @@ def fetch_prices_at_block(sub: bt.Subtensor, block: int):
     return rows
 
 
+def parse_requested_datetime(date_str: str, time_str: str) -> datetime:
+    try:
+        return datetime.strptime(f"{date_str} {time_str}", "%Y-%m-%d %H:%M%z")
+    except ValueError as exc:
+        raise SystemExit(f"Invalid --time format {time_str!r}: {exc}") from exc
+
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--network", default="finney", help="Bittensor network (default: finney)")
-    parser.add_argument("--date", required=True, help="Date in YYYY-MM-DD")
+    date_group = parser.add_mutually_exclusive_group(required=True)
+    date_group.add_argument("--date", help="Single date in YYYY-MM-DD")
+    date_group.add_argument(
+        "--date-range",
+        help="Date range inclusive in YYYY-MM-DD:YYYY-MM-DD",
+    )
     parser.add_argument(
         "--time",
         default="16:00+00:00",
@@ -174,32 +205,80 @@ def main():
     )
     args = parser.parse_args()
 
-    # Step 1: Parse requested timestamp and convert to UTC
-    try:
-        requested_dt = datetime.strptime(f"{args.date} {args.time}", "%Y-%m-%d %H:%M%z")
-    except ValueError as exc:
-        raise SystemExit(f"Invalid --time format {args.time!r}: {exc}") from exc
-    target_utc = requested_dt.astimezone(timezone.utc)
-
     sub = bt.Subtensor(network=args.network)
 
-    # Step 2: Find closest block
-    print(f"Finding block closest to {target_utc.isoformat()} UTC...")
-    block = find_block_at_time(sub, target_utc)
-    block_time = get_block_timestamp(sub, block)
-    print(f"Closest block: {block} at {block_time.isoformat()} UTC")
+    if args.date_range:
+        start_str, end_str = args.date_range.split(":", maxsplit=1)
+        try:
+            start_date = datetime.strptime(start_str, "%Y-%m-%d").date()
+            end_date = datetime.strptime(end_str, "%Y-%m-%d").date()
+        except ValueError as exc:
+            raise SystemExit(f"Invalid --date-range format {args.date_range!r}: {exc}") from exc
+        if end_date < start_date:
+            raise SystemExit("--date-range end must be on or after start")
 
-    # Step 3: Fetch prices at that block
-    rows = fetch_prices_at_block(sub, block)
-    output = {
-        "requested_time": requested_dt.isoformat(),
-        "closest_block": block,
-        "block_timestamp_utc": block_time.isoformat(),
-        "network": args.network,
-        "prices": rows,
-    }
+        output_dir = Path("outputs")
+        output_dir.mkdir(parents=True, exist_ok=True)
 
-    print(json.dumps(output, ensure_ascii=False, indent=2))
+        prev_block: int | None = None
+        current_date = start_date
+        while current_date <= end_date:
+            date_str = current_date.strftime("%Y-%m-%d")
+            requested_dt = parse_requested_datetime(date_str, args.time)
+            target_utc = requested_dt.astimezone(timezone.utc)
+
+            min_block = prev_block
+            max_block = prev_block + ESTIMATED_BLOCKS_PER_DAY * 2 if prev_block else None
+
+            print(f"Finding block closest to {target_utc.isoformat()} UTC for {date_str}...")
+            block = find_block_at_time(sub, target_utc, min_block=min_block, max_block=max_block)
+            block_time = get_block_timestamp(sub, block)
+
+            if block_time is None:
+                raise RuntimeError(f"Unable to read timestamp for block {block}")
+
+            if max_block is not None and block_time < target_utc:
+                block = find_block_at_time(sub, target_utc)
+                block_time = get_block_timestamp(sub, block)
+                if block_time is None:
+                    raise RuntimeError(f"Unable to read timestamp for block {block}")
+
+            rows = fetch_prices_at_block(sub, block)
+            output = {
+                "requested_time": requested_dt.isoformat(),
+                "closest_block": block,
+                "block_timestamp_utc": block_time.isoformat(),
+                "network": args.network,
+                "prices": rows,
+            }
+
+            out_path = output_dir / f"prices_{date_str}.json"
+            out_path.write_text(json.dumps(output, ensure_ascii=False, indent=2), encoding="utf-8")
+            print(f"Saved {out_path} (block {block} at {block_time.isoformat()} UTC)")
+
+            prev_block = block
+            current_date += timedelta(days=1)
+    else:
+        requested_dt = parse_requested_datetime(args.date, args.time)
+        target_utc = requested_dt.astimezone(timezone.utc)
+
+        print(f"Finding block closest to {target_utc.isoformat()} UTC...")
+        block = find_block_at_time(sub, target_utc)
+        block_time = get_block_timestamp(sub, block)
+        if block_time is None:
+            raise RuntimeError(f"Unable to read timestamp for block {block}")
+        print(f"Closest block: {block} at {block_time.isoformat()} UTC")
+
+        rows = fetch_prices_at_block(sub, block)
+        output = {
+            "requested_time": requested_dt.isoformat(),
+            "closest_block": block,
+            "block_timestamp_utc": block_time.isoformat(),
+            "network": args.network,
+            "prices": rows,
+        }
+
+        print(json.dumps(output, ensure_ascii=False, indent=2))
 
 
 if __name__ == "__main__":
