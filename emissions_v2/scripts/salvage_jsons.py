@@ -44,8 +44,44 @@ def load_price_snapshot(path: Path) -> Tuple[Optional[Dict[str, Any]], Optional[
     return data, None
 
 
-def extract_prices(prices: Iterable[Any]) -> Tuple[Dict[int, float], bool, bool]:
+def sanitize_validator_entry(value: Any) -> Optional[Dict[str, Any]]:
+    if not isinstance(value, dict):
+        return None
+
+    matches_raw = value.get("matched_coldkeys") or value.get("matches")
+    if not isinstance(matches_raw, list):
+        return None
+
+    matches: List[Dict[str, Any]] = []
+    for entry in matches_raw:
+        if not isinstance(entry, dict):
+            continue
+        uid = entry.get("uid")
+        coldkey = entry.get("coldkey")
+        hotkey = entry.get("hotkey")
+        if not isinstance(uid, int) or not isinstance(coldkey, str):
+            continue
+        sanitized_entry: Dict[str, Any] = {
+            "uid": uid,
+            "coldkey": coldkey,
+        }
+        if isinstance(hotkey, str):
+            sanitized_entry["hotkey"] = hotkey
+        matches.append(sanitized_entry)
+
+    if not matches:
+        return None
+
+    block = value.get("block")
+    sanitized: Dict[str, Any] = {"matched": matches}
+    if isinstance(block, int):
+        sanitized["block"] = block
+    return sanitized
+
+
+def extract_prices(prices: Iterable[Any]) -> Tuple[Dict[int, float], Dict[int, Dict[str, Any]], bool, bool]:
     sanitized: Dict[int, float] = {}
+    validator_matches: Dict[int, Dict[str, Any]] = {}
     found_numeric = False
     found_nonzero = False
 
@@ -62,7 +98,10 @@ def extract_prices(prices: Iterable[Any]) -> Tuple[Dict[int, float], bool, bool]
                 continue
             sanitized[netuid] = float(price)
             found_nonzero = True
-    return sanitized, found_numeric, found_nonzero
+            validator_entry = sanitize_validator_entry(entry.get("validators"))
+            if validator_entry:
+                validator_matches[netuid] = validator_entry
+    return sanitized, validator_matches, found_numeric, found_nonzero
 
 
 def parse_iso_datetime(value: Any) -> Optional[datetime]:
@@ -78,6 +117,7 @@ def build_output(
     source_path: Path,
     raw: Dict[str, Any],
     prices: Dict[int, float],
+    validators: Dict[int, Dict[str, Any]],
 ) -> Dict[str, Any]:
     by_netuid = OrderedDict(
         (str(netuid), value) for netuid, value in sorted(prices.items())
@@ -115,12 +155,18 @@ def build_output(
         "total_emission_rate": total,
     }
 
+    validator_block = OrderedDict(
+        (str(netuid), value) for netuid, value in sorted(validators.items())
+    )
+
     generated = {
         "emissions": by_netuid,
         "metadata": metadata,
         "statistics": statistics,
         "generated_at": datetime.now(timezone.utc).isoformat(),
     }
+    if validator_block:
+        generated["validators"] = validator_block
     return generated
 
 
@@ -133,7 +179,7 @@ def salvage_file(path: Path) -> SalvageResult:
     if not isinstance(prices_field, list):
         return SalvageResult(payload={}, skipped_reason="missing 'prices' list")
 
-    prices, found_numeric, found_nonzero = extract_prices(prices_field)
+    prices, validators, found_numeric, found_nonzero = extract_prices(prices_field)
     if not found_numeric:
         return SalvageResult(payload={}, skipped_reason="no numeric price records")
     if not found_nonzero:
@@ -147,7 +193,7 @@ def salvage_file(path: Path) -> SalvageResult:
             skipped_reason="requested local time date differs from block timestamp date",
         )
 
-    output = build_output(path, raw, prices)
+    output = build_output(path, raw, prices, validators)
     return SalvageResult(payload=output)
 
 

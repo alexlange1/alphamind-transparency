@@ -15,11 +15,22 @@ This spec documents how to regenerate the cleaned `emissions_v2_*.json` files fr
 1. **Input parsing**
    - Reads each `.json` file and strips console preamble to reach the embedded JSON object.
    - Skips the file if the JSON cannot be decoded or the top-level value is not an object.
-2. **Price extraction**
+2. **Price & validator extraction**
    - Requires a `prices` array of objects with integer `netuid` and numeric `price_tao_per_alpha`.
    - Ignores non-dict entries, non-integer netuids, and non-numeric prices.
    - Drops **netuid 0** entirely; only non-zero netuids are retained.
    - Skips the file if **no numeric prices** are found, or if only netuid 0 had numeric data.
+   - When a price entry contains `validators.matched_coldkeys`, each match (uid, coldkey, optional hotkey) is preserved. Salvaged outputs now include a top-level `validators` mapping from stringified netuid to:
+     ```json
+     {
+       "block": 6593785,
+       "matched": [
+         { "uid": 12, "coldkey": "5GZSA…", "hotkey": "5CCx…" },
+         { "uid": 225, "coldkey": "5HBtp…", "hotkey": "5EFZ…" }
+       ]
+     }
+     ```
+     Subnets without matches are omitted, and the entire block is omitted when no subnet provided validator metadata.
 3. **Timestamp guard**
    - Parses `requested_local_noon` and `block_timestamp_utc` (ISO 8601).
    - Skips the file if both parse successfully and their calendar dates differ (prevents using “future” requested days with present block data).
