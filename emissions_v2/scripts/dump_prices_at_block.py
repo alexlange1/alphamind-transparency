@@ -451,6 +451,19 @@ def parse_requested_datetime(date_str: str, time_str: str) -> datetime:
         raise SystemExit(f"Invalid --time format {time_str!r}: {exc}") from exc
 
 
+def build_daily_sample_datetimes(date_str: str, time_str: str, samples_per_day: int) -> list[datetime]:
+    if samples_per_day <= 0:
+        raise SystemExit("--samples-per-day must be a positive integer")
+
+    base_dt = parse_requested_datetime(date_str, time_str)
+    if samples_per_day == 1:
+        return [base_dt]
+
+    interval_seconds = 24 * 3600 / samples_per_day
+    interval = timedelta(seconds=interval_seconds)
+    return [base_dt + i * interval for i in range(samples_per_day)]
+
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--network", default="finney", help="Bittensor network (default: finney)")
@@ -462,8 +475,8 @@ def main():
     )
     parser.add_argument(
         "--time",
-        default="16:00+00:00",
-        help="Time with offset in HH:MM±HH:MM (default: 16:00+00:00)",
+        default="00:00+00:00",
+        help="Time with offset in HH:MM±HH:MM (default: 00:00+00:00)",
     )
     parser.add_argument(
         "--output",
@@ -472,6 +485,12 @@ def main():
     parser.add_argument(
         "--output-dir",
         help="Directory for auto-named JSON output (default: outputs in date-range mode).",
+    )
+    parser.add_argument(
+        "--samples-per-day",
+        type=int,
+        default=1,
+        help="Number of evenly spaced snapshots per day (default: 1).",
     )
     parser.add_argument(
         "--validator-coldkey",
@@ -507,6 +526,7 @@ def main():
     )
     args = parser.parse_args()
 
+    samples_per_day = args.samples_per_day
     sub = bt.Subtensor(network=args.network)
 
     include_validators = not args.no_validator_info
@@ -547,6 +567,60 @@ def main():
             )
             validator_cache = {}
 
+    def collect_sample(
+        label: str | None,
+        sample_index: int,
+        requested_dt: datetime,
+        prev_block: int | None,
+    ) -> tuple[int, dict[str, Any]]:
+        target_utc = requested_dt.astimezone(timezone.utc)
+        if label and samples_per_day > 1:
+            sample_desc = f"{label} sample {sample_index + 1}/{samples_per_day}"
+        elif label:
+            sample_desc = label
+        elif samples_per_day > 1:
+            sample_desc = f"sample {sample_index + 1}/{samples_per_day}"
+        else:
+            sample_desc = "requested time"
+
+        log(f"Finding block closest to {target_utc.isoformat()} UTC for {sample_desc}...")
+        min_block = prev_block
+        max_block = prev_block + ESTIMATED_BLOCKS_PER_DAY * 2 if prev_block is not None else None
+
+        block = find_block_at_time(sub, target_utc, min_block=min_block, max_block=max_block)
+        block_time = get_block_timestamp(sub, block)
+
+        if block_time is None:
+            raise RuntimeError(f"Unable to read timestamp for block {block}")
+
+        if max_block is not None and block_time < target_utc:
+            block = find_block_at_time(sub, target_utc)
+            block_time = get_block_timestamp(sub, block)
+            if block_time is None:
+                raise RuntimeError(f"Unable to read timestamp for block {block}")
+
+        if label or samples_per_day > 1:
+            log(f"Closest block for {sample_desc}: {block} at {block_time.isoformat()} UTC")
+        else:
+            log(f"Closest block: {block} at {block_time.isoformat()} UTC")
+
+        rows = fetch_prices_at_block(
+            sub,
+            block,
+            validator_targets=validator_targets if include_validators else None,
+            validator_coldkeys=validator_coldkeys,
+            validator_cache=validator_cache,
+            validator_max_backtrack=validator_max_backtrack,
+            include_all_validators=include_all_validators if include_validators else False,
+        )
+        sample_payload = {
+            "requested_time": requested_dt.isoformat(),
+            "closest_block": block,
+            "block_timestamp_utc": block_time.isoformat(),
+            "prices": rows,
+        }
+        return block, sample_payload
+
     if args.date_range:
         start_str, end_str = args.date_range.split(":", maxsplit=1)
         try:
@@ -564,87 +638,60 @@ def main():
         current_date = start_date
         while current_date <= end_date:
             date_str = current_date.strftime("%Y-%m-%d")
-            requested_dt = parse_requested_datetime(date_str, args.time)
-            target_utc = requested_dt.astimezone(timezone.utc)
+            daily_datetimes = build_daily_sample_datetimes(date_str, args.time, samples_per_day)
 
-            min_block = prev_block
-            max_block = prev_block + ESTIMATED_BLOCKS_PER_DAY * 2 if prev_block else None
+            day_samples: list[dict[str, Any]] = []
+            for sample_index, requested_dt in enumerate(daily_datetimes):
+                block, sample_payload = collect_sample(date_str, sample_index, requested_dt, prev_block)
+                day_samples.append(sample_payload)
+                prev_block = block
 
-            log(f"Finding block closest to {target_utc.isoformat()} UTC for {date_str}...")
-            block = find_block_at_time(sub, target_utc, min_block=min_block, max_block=max_block)
-            block_time = get_block_timestamp(sub, block)
-
-            if block_time is None:
-                raise RuntimeError(f"Unable to read timestamp for block {block}")
-
-            if max_block is not None and block_time < target_utc:
-                block = find_block_at_time(sub, target_utc)
-                block_time = get_block_timestamp(sub, block)
-                if block_time is None:
-                    raise RuntimeError(f"Unable to read timestamp for block {block}")
-
-            rows = fetch_prices_at_block(
-                sub,
-                block,
-                validator_targets=validator_targets if include_validators else None,
-                validator_coldkeys=validator_coldkeys,
-                validator_cache=validator_cache,
-                validator_max_backtrack=validator_max_backtrack,
-                include_all_validators=include_all_validators if include_validators else False,
-            )
-            output = {
-                "requested_time": requested_dt.isoformat(),
-                "closest_block": block,
-                "block_timestamp_utc": block_time.isoformat(),
+            day_output: dict[str, Any] = {
+                "date": date_str,
                 "network": args.network,
-                "prices": rows,
+                "samples_per_day": samples_per_day,
+                "samples": day_samples,
             }
+            if samples_per_day == 1:
+                day_output.update(day_samples[0])
 
             out_path = output_dir / f"prices_{date_str}.json"
-            out_path.write_text(json.dumps(output, ensure_ascii=False, indent=2), encoding="utf-8")
-            log(f"Saved {out_path} (block {block} at {block_time.isoformat()} UTC)")
+            out_path.write_text(json.dumps(day_output, ensure_ascii=False, indent=2), encoding="utf-8")
+            log(f"Saved {out_path}")
 
-            prev_block = block
             current_date += timedelta(days=1)
     else:
-        requested_dt = parse_requested_datetime(args.date, args.time)
-        target_utc = requested_dt.astimezone(timezone.utc)
+        date_str = args.date
+        daily_datetimes = build_daily_sample_datetimes(date_str, args.time, samples_per_day)
 
-        log(f"Finding block closest to {target_utc.isoformat()} UTC...")
-        block = find_block_at_time(sub, target_utc)
-        block_time = get_block_timestamp(sub, block)
-        if block_time is None:
-            raise RuntimeError(f"Unable to read timestamp for block {block}")
-        log(f"Closest block: {block} at {block_time.isoformat()} UTC")
+        prev_block: int | None = None
+        samples: list[dict[str, Any]] = []
+        for sample_index, requested_dt in enumerate(daily_datetimes):
+            label = date_str if samples_per_day > 1 else None
+            block, sample_payload = collect_sample(label, sample_index, requested_dt, prev_block)
+            samples.append(sample_payload)
+            prev_block = block
 
-        rows = fetch_prices_at_block(
-            sub,
-            block,
-            validator_targets=validator_targets if include_validators else None,
-            validator_coldkeys=validator_coldkeys,
-            validator_cache=validator_cache,
-            validator_max_backtrack=validator_max_backtrack,
-            include_all_validators=include_all_validators if include_validators else False,
-        )
-        output = {
-            "requested_time": requested_dt.isoformat(),
-            "closest_block": block,
-            "block_timestamp_utc": block_time.isoformat(),
+        output: dict[str, Any] = {
+            "date": date_str,
             "network": args.network,
-            "prices": rows,
+            "samples_per_day": samples_per_day,
+            "samples": samples,
         }
+        if samples_per_day == 1:
+            output.update(samples[0])
 
         if args.output:
             out_path = Path(args.output)
             out_path.parent.mkdir(parents=True, exist_ok=True)
             out_path.write_text(json.dumps(output, ensure_ascii=False, indent=2), encoding="utf-8")
-            log(f"Saved {out_path} (block {block} at {block_time.isoformat()} UTC)")
+            log(f"Saved {out_path}")
         elif args.output_dir:
             output_dir = Path(args.output_dir)
             output_dir.mkdir(parents=True, exist_ok=True)
-            out_path = output_dir / f"prices_{requested_dt.date().isoformat()}.json"
+            out_path = output_dir / f"prices_{date_str}.json"
             out_path.write_text(json.dumps(output, ensure_ascii=False, indent=2), encoding="utf-8")
-            log(f"Saved {out_path} (block {block} at {block_time.isoformat()} UTC)")
+            log(f"Saved {out_path}")
         else:
             print(json.dumps(output, ensure_ascii=False, indent=2))
 

@@ -19,7 +19,8 @@ file per day.
 | `--network` | `finney` | Bittensor network or Substrate endpoint (e.g. `ws://localhost:9944`). Passed to `bt.Subtensor`. |
 | `--date` | _required (if no range)_ | Single day `YYYY-MM-DD`. |
 | `--date-range` | _required (if no single day)_ | Inclusive `YYYY-MM-DD:YYYY-MM-DD`. Creates/overwrites `scripts/outputs/prices_<day>.json` for every day. |
-| `--time` | `16:00+00:00` | Time-of-day with offset. Converted to UTC before block search. |
+| `--time` | `00:00+00:00` | First snapshot time with offset. Additional samples are evenly spaced across the next 24 hours. |
+| `--samples-per-day` | `1` | Number of snapshots per calendar day (e.g. `24` → hourly, `2` → midnight + 12h later). |
 | `--output` | _stdout_ | Single-day mode only. When provided, writes JSON to the given path (parents auto-created). |
 | `--output-dir` | `outputs` (range) | Directory for auto-named JSON files. Date-range mode defaults here; single-day mode writes `prices_<day>.json` when set. |
 | `--validator-coldkey` | – | Extra coldkeys to track. Multiple flags allowed. |
@@ -34,42 +35,57 @@ file per day.
 ## Output Structure (per day)
 ```json
 {
-  "requested_time": "2025-10-05T16:00:00+00:00",
-  "closest_block": 6593785,
-  "block_timestamp_utc": "2025-10-05T16:00:00.001000+00:00",
+  "date": "2025-10-05",
   "network": "ws://localhost:9944",
-  "prices": [
+  "samples_per_day": 2,
+  "samples": [
     {
-      "netuid": 12,
-      "price_tao_per_alpha": 0.006521844,
-      "validators": {
-        "block": 6593785,
-        "matched_coldkeys": [
-          { "uid": 12, "hotkey": "<…>", "coldkey": "5GZSA…" },
-          { "uid": 225, "hotkey": "<…>", "coldkey": "5HBtp…" },
-          { "uid": 220, "hotkey": "<…>", "coldkey": "5Fuzg…" }
-        ]
-      }
+      "requested_time": "2025-10-05T00:00:00+00:00",
+      "closest_block": 6588760,
+      "block_timestamp_utc": "2025-10-05T00:00:00.004000+00:00",
+      "prices": [
+        {
+          "netuid": 12,
+          "price_tao_per_alpha": 0.006521844,
+          "validators": {
+            "block": 6588760,
+            "matched_coldkeys": [
+              { "uid": 12, "hotkey": "<…>", "coldkey": "5GZSA…" },
+              { "uid": 225, "hotkey": "<…>", "coldkey": "5HBtp…" }
+            ]
+          }
+        },
+        { "netuid": 13, "price_tao_per_alpha": 0.007975205, "validators": { … } },
+        …
+      ]
     },
-    { "netuid": 13, "price_tao_per_alpha": 0.007975205, "validators": { … } },
-    …
+    {
+      "requested_time": "2025-10-05T12:00:00+00:00",
+      "closest_block": 6593785,
+      "block_timestamp_utc": "2025-10-05T12:00:00.001000+00:00",
+      "prices": [ … ]
+    }
   ]
 }
 ```
 `price_tao_per_alpha` may be `null` when the node’s RPC lacks swap/reserve
 modules. If `--include-all-validators` is used, each `validators` object gains
 an `entries` array containing every validator (uid/hotkey/coldkey) seen on that
-subnet at the sampled block.
+subnet at the sampled block. When `--samples-per-day` is `1`, the top-level
+object also repeats the first sample’s fields (`requested_time`, `closest_block`,
+`block_timestamp_utc`, `prices`) for backwards compatibility.
 
 ---
 
 ## Workflow Summary
 
 1. **Block selection**
-   - Convert `--date` + `--time` (`%Y-%m-%d %H:%M%z`) to UTC.
-   - Binary search between `min_block` (previous day’s block for ranges) and
-     `max_block` (previous block + ~2 days) to locate the closest block with a
-     Timestamp extrinsic.
+   - Build the day’s sampling schedule: start at `--time` and add evenly spaced
+     offsets so that `--samples-per-day` snapshots cover the next 24 hours.
+   - Convert each scheduled time (`%Y-%m-%d %H:%M%z`) to UTC.
+   - For every sample (processed chronologically), binary search between the
+     previous block (if any) and roughly two days ahead to locate the closest
+     block with a Timestamp extrinsic.
    - If bounds are invalid or timestamps unavailable, fall back to a full-range
      search (1 → latest).
 
@@ -101,7 +117,8 @@ subnet at the sampled block.
 4. **Date-range loop**
    - Creates `scripts/<output-dir>/` (default `outputs/`) and writes
      `prices_<YYYY-MM-DD>.json` for each day.
-   - Reuses the previous day’s `closest_block` as the lower bound to
+   - Each JSON contains a `samples` array with one entry per scheduled snapshot.
+   - Reuses the previous block (across samples and days) as the lower bound to
      accelerate block searches.
    - Shares a single validator cache across the whole run, minimizing costly
      backtracking.
