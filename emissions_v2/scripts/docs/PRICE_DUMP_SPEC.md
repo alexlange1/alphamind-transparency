@@ -21,6 +21,7 @@ file per day.
 | `--date-range` | _required (if no single day)_ | Inclusive `YYYY-MM-DD:YYYY-MM-DD`. Creates/overwrites `scripts/outputs/prices_<day>.json` for every day. |
 | `--time` | `16:00+00:00` | Time-of-day with offset. Converted to UTC before block search. |
 | `--output` | _stdout_ | Single-day mode only. When provided, writes JSON to the given path (parents auto-created). |
+| `--output-dir` | `outputs` (range) | Directory for auto-named JSON files. Date-range mode defaults here; single-day mode writes `prices_<day>.json` when set. |
 | `--validator-coldkey` | – | Extra coldkeys to track. Multiple flags allowed. |
 | `--no-default-validator-coldkeys` | `False` | Skip the embedded trio of coldkeys (otherwise they’re always included). |
 | `--validator-netuid` | all subnets | Restrict validator lookups to the listed netuids. Without this flag every subnet is checked. |
@@ -98,7 +99,7 @@ subnet at the sampled block.
      `--include-all-validators` adds the `entries` list.
 
 4. **Date-range loop**
-   - Creates `scripts/outputs/` and writes
+   - Creates `scripts/<output-dir>/` (default `outputs/`) and writes
      `prices_<YYYY-MM-DD>.json` for each day.
    - Reuses the previous day’s `closest_block` as the lower bound to
      accelerate block searches.

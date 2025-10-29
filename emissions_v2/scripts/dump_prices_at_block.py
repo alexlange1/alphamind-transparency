@@ -470,6 +470,10 @@ def main():
         help="Write JSON to this path instead of stdout (single-date mode only).",
     )
     parser.add_argument(
+        "--output-dir",
+        help="Directory for auto-named JSON output (default: outputs in date-range mode).",
+    )
+    parser.add_argument(
         "--validator-coldkey",
         action="append",
         help="Extra validator coldkey(s) to track alongside the defaults.",
@@ -553,7 +557,7 @@ def main():
         if end_date < start_date:
             raise SystemExit("--date-range end must be on or after start")
 
-        output_dir = Path("outputs")
+        output_dir = Path(args.output_dir or "outputs")
         output_dir.mkdir(parents=True, exist_ok=True)
 
         prev_block: int | None = None
@@ -633,6 +637,12 @@ def main():
         if args.output:
             out_path = Path(args.output)
             out_path.parent.mkdir(parents=True, exist_ok=True)
+            out_path.write_text(json.dumps(output, ensure_ascii=False, indent=2), encoding="utf-8")
+            log(f"Saved {out_path} (block {block} at {block_time.isoformat()} UTC)")
+        elif args.output_dir:
+            output_dir = Path(args.output_dir)
+            output_dir.mkdir(parents=True, exist_ok=True)
+            out_path = output_dir / f"prices_{requested_dt.date().isoformat()}.json"
             out_path.write_text(json.dumps(output, ensure_ascii=False, indent=2), encoding="utf-8")
             log(f"Saved {out_path} (block {block} at {block_time.isoformat()} UTC)")
         else:
