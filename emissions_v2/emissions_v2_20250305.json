@@ -1,1030 +1,2096 @@
 {
-  "emissions": {
-    "1": 0.034986892,
-    "2": 0.002682671,
-    "3": 0.033274344,
-    "4": 0.193927215,
-    "5": 0.013439457,
-    "6": 0.012009154,
-    "7": 0.001854484,
-    "8": 0.184284168,
-    "9": 0.02227878,
-    "10": 0.039791628,
-    "11": 0.025471359,
-    "12": 0.003375688,
-    "13": 0.044557442,
-    "14": 0.002092364,
-    "15": 0.001919536,
-    "16": 0.009155999,
-    "17": 0.007961388,
-    "18": 0.002402262,
-    "19": 0.063393271,
-    "20": 0.007956593,
-    "21": 0.00541662,
-    "22": 0.004393195,
-    "23": 0.002338693,
-    "24": 0.00316093,
-    "25": 0.019944258,
-    "26": 0.002225431,
-    "27": 0.00853108,
-    "28": 0.001842863,
-    "29": 0.011091285,
-    "30": 0.010446192,
-    "31": 0.00155123,
-    "32": 0.008186147,
-    "33": 0.005729107,
-    "34": 0.102415505,
-    "35": 0.00491953,
-    "36": 0.003018704,
-    "37": 0.006937031,
-    "38": 0.002352356,
-    "39": 0.002599555,
-    "40": 0.007601346,
-    "41": 0.014758034,
-    "42": 0.021890919,
-    "43": 0.011577214,
-    "44": 0.008503824,
-    "45": 0.01067201,
-    "46": 0.011127415,
-    "47": 0.003869918,
-    "48": 0.010897361,
-    "49": 0.001485101,
-    "50": 0.00662327,
-    "51": 0.087466457,
-    "52": 0.018368948,
-    "53": 0.017240819,
-    "54": 0.001730142,
-    "55": 0.003022525,
-    "56": 0.02564586,
-    "57": 0.003411014,
-    "58": 0.006332602,
-    "59": 0.005622823,
-    "60": 0.003828689,
-    "61": 0.006108069,
-    "62": 0.002300913,
-    "63": 0.004047139,
-    "64": 0.194547594,
-    "65": 0.004544051,
-    "66": 0.003862663,
-    "67": 0.002633584,
-    "68": 0.055004893,
-    "69": 0.005026494,
-    "70": 0.023913634,
-    "71": 0.011728594
-  },
   "metadata": {
     "collection_method": "btsdk scripts v2",
-    "date": "prices_20250305",
+    "date": "20250305",
     "network": "ws://localhost:9944",
-    "timestamp": "2025-03-05T16:00:00+00:00",
-    "closest_block": 5062632,
-    "requested_local_time": null,
-    "total_active_subnets": 71,
-    "total_emission_rate": 1.509308326
+    "timestamp": "2025-03-05T00:00:00+00:00",
+    "closest_block": 5057832,
+    "requested_time": "2025-03-05T00:00:00+00:00",
+    "samples_per_day": 24,
+    "primary_sample_index": 0
   },
   "statistics": {
     "active_subnets": 71,
-    "avg_emission_rate": 0.021257863746478874,
-    "max_emission_rate": 0.194547594,
-    "min_emission_rate": 0.001485101,
-    "total_emission_rate": 1.509308326
+    "avg_emission_rate": 0.022479134788732393,
+    "max_emission_rate": 0.214224563,
+    "min_emission_rate": 0.001506607,
+    "total_emission_rate": 1.59601857
   },
-  "generated_at": "2025-10-27T06:05:45.591375+00:00",
-  "validators": {
-    "1": {
-      "matched": [
-        {
-          "uid": 5,
-          "coldkey": "5HBtpwxuGNL1gwzwomwR7sjwUt8WXYSuWcLYN6f9KpTZkP4k",
-          "hotkey": "5F4tQyWrhfGVcNhoqeiNsR6KjD4wMZ2kfhLj4oHYuyHbZAc3"
-        },
-        {
-          "uid": 518,
-          "coldkey": "5GZSAgaVGQqegjhEkxpJjpSVLVmNnE2vx2PFLzr7kBBMKpGQ",
-          "hotkey": "5FFApaS75bv5pJHfAp2FVLBj9ZaXuFDjEypsaBNc1wCfe52v"
-        }
-      ],
-      "block": 5062632
-    },
-    "2": {
-      "matched": [
-        {
-          "uid": 5,
-          "coldkey": "5GZSAgaVGQqegjhEkxpJjpSVLVmNnE2vx2PFLzr7kBBMKpGQ",
-          "hotkey": "5FFApaS75bv5pJHfAp2FVLBj9ZaXuFDjEypsaBNc1wCfe52v"
-        },
-        {
-          "uid": 98,
-          "coldkey": "5HBtpwxuGNL1gwzwomwR7sjwUt8WXYSuWcLYN6f9KpTZkP4k",
-          "hotkey": "5F4tQyWrhfGVcNhoqeiNsR6KjD4wMZ2kfhLj4oHYuyHbZAc3"
-        }
-      ],
-      "block": 5062632
-    },
-    "3": {
-      "matched": [
-        {
-          "uid": 0,
-          "coldkey": "5GZSAgaVGQqegjhEkxpJjpSVLVmNnE2vx2PFLzr7kBBMKpGQ",
-          "hotkey": "5FFApaS75bv5pJHfAp2FVLBj9ZaXuFDjEypsaBNc1wCfe52v"
-        }
-      ],
-      "block": 5062632
-    },
-    "4": {
-      "matched": [
-        {
-          "uid": 5,
-          "coldkey": "5GZSAgaVGQqegjhEkxpJjpSVLVmNnE2vx2PFLzr7kBBMKpGQ",
-          "hotkey": "5FFApaS75bv5pJHfAp2FVLBj9ZaXuFDjEypsaBNc1wCfe52v"
-        }
-      ],
-      "block": 5062632
-    },
-    "5": {
-      "matched": [
-        {
-          "uid": 6,
-          "coldkey": "5GZSAgaVGQqegjhEkxpJjpSVLVmNnE2vx2PFLzr7kBBMKpGQ",
-          "hotkey": "5FFApaS75bv5pJHfAp2FVLBj9ZaXuFDjEypsaBNc1wCfe52v"
-        },
-        {
-          "uid": 54,
-          "coldkey": "5HBtpwxuGNL1gwzwomwR7sjwUt8WXYSuWcLYN6f9KpTZkP4k",
-          "hotkey": "5F4tQyWrhfGVcNhoqeiNsR6KjD4wMZ2kfhLj4oHYuyHbZAc3"
-        }
-      ],
-      "block": 5062632
-    },
-    "6": {
-      "matched": [
-        {
-          "uid": 16,
-          "coldkey": "5GZSAgaVGQqegjhEkxpJjpSVLVmNnE2vx2PFLzr7kBBMKpGQ",
-          "hotkey": "5FFApaS75bv5pJHfAp2FVLBj9ZaXuFDjEypsaBNc1wCfe52v"
-        },
-        {
-          "uid": 171,
-          "coldkey": "5HBtpwxuGNL1gwzwomwR7sjwUt8WXYSuWcLYN6f9KpTZkP4k",
-          "hotkey": "5F4tQyWrhfGVcNhoqeiNsR6KjD4wMZ2kfhLj4oHYuyHbZAc3"
-        }
-      ],
-      "block": 5062632
-    },
-    "7": {
-      "matched": [
-        {
-          "uid": 0,
-          "coldkey": "5GZSAgaVGQqegjhEkxpJjpSVLVmNnE2vx2PFLzr7kBBMKpGQ",
-          "hotkey": "5FFApaS75bv5pJHfAp2FVLBj9ZaXuFDjEypsaBNc1wCfe52v"
-        },
-        {
-          "uid": 231,
-          "coldkey": "5HBtpwxuGNL1gwzwomwR7sjwUt8WXYSuWcLYN6f9KpTZkP4k",
-          "hotkey": "5F4tQyWrhfGVcNhoqeiNsR6KjD4wMZ2kfhLj4oHYuyHbZAc3"
-        }
-      ],
-      "block": 5062632
-    },
-    "8": {
-      "matched": [
-        {
-          "uid": 4,
-          "coldkey": "5GZSAgaVGQqegjhEkxpJjpSVLVmNnE2vx2PFLzr7kBBMKpGQ",
-          "hotkey": "5FFApaS75bv5pJHfAp2FVLBj9ZaXuFDjEypsaBNc1wCfe52v"
-        },
-        {
-          "uid": 69,
-          "coldkey": "5HBtpwxuGNL1gwzwomwR7sjwUt8WXYSuWcLYN6f9KpTZkP4k",
-          "hotkey": "5F4tQyWrhfGVcNhoqeiNsR6KjD4wMZ2kfhLj4oHYuyHbZAc3"
-        }
-      ],
-      "block": 5062632
-    },
-    "9": {
-      "matched": [
-        {
-          "uid": 238,
-          "coldkey": "5HBtpwxuGNL1gwzwomwR7sjwUt8WXYSuWcLYN6f9KpTZkP4k",
-          "hotkey": "5F4tQyWrhfGVcNhoqeiNsR6KjD4wMZ2kfhLj4oHYuyHbZAc3"
-        },
-        {
-          "uid": 243,
-          "coldkey": "5GZSAgaVGQqegjhEkxpJjpSVLVmNnE2vx2PFLzr7kBBMKpGQ",
-          "hotkey": "5FFApaS75bv5pJHfAp2FVLBj9ZaXuFDjEypsaBNc1wCfe52v"
-        }
-      ],
-      "block": 5062632
-    },
-    "10": {
-      "matched": [
-        {
-          "uid": 40,
-          "coldkey": "5HBtpwxuGNL1gwzwomwR7sjwUt8WXYSuWcLYN6f9KpTZkP4k",
-          "hotkey": "5F4tQyWrhfGVcNhoqeiNsR6KjD4wMZ2kfhLj4oHYuyHbZAc3"
-        },
-        {
-          "uid": 179,
-          "coldkey": "5GZSAgaVGQqegjhEkxpJjpSVLVmNnE2vx2PFLzr7kBBMKpGQ",
-          "hotkey": "5FFApaS75bv5pJHfAp2FVLBj9ZaXuFDjEypsaBNc1wCfe52v"
-        }
-      ],
-      "block": 5062632
-    },
-    "11": {
-      "matched": [
-        {
-          "uid": 29,
-          "coldkey": "5GZSAgaVGQqegjhEkxpJjpSVLVmNnE2vx2PFLzr7kBBMKpGQ",
-          "hotkey": "5FFApaS75bv5pJHfAp2FVLBj9ZaXuFDjEypsaBNc1wCfe52v"
-        },
-        {
-          "uid": 191,
-          "coldkey": "5HBtpwxuGNL1gwzwomwR7sjwUt8WXYSuWcLYN6f9KpTZkP4k",
-          "hotkey": "5F4tQyWrhfGVcNhoqeiNsR6KjD4wMZ2kfhLj4oHYuyHbZAc3"
-        }
-      ],
-      "block": 5062632
-    },
-    "12": {
-      "matched": [
-        {
-          "uid": 12,
-          "coldkey": "5GZSAgaVGQqegjhEkxpJjpSVLVmNnE2vx2PFLzr7kBBMKpGQ",
-          "hotkey": "5FFApaS75bv5pJHfAp2FVLBj9ZaXuFDjEypsaBNc1wCfe52v"
-        },
-        {
-          "uid": 173,
-          "coldkey": "5HBtpwxuGNL1gwzwomwR7sjwUt8WXYSuWcLYN6f9KpTZkP4k",
-          "hotkey": "5F4tQyWrhfGVcNhoqeiNsR6KjD4wMZ2kfhLj4oHYuyHbZAc3"
-        }
-      ],
-      "block": 5062632
-    },
-    "13": {
-      "matched": [
-        {
-          "uid": 160,
-          "coldkey": "5GZSAgaVGQqegjhEkxpJjpSVLVmNnE2vx2PFLzr7kBBMKpGQ",
-          "hotkey": "5FFApaS75bv5pJHfAp2FVLBj9ZaXuFDjEypsaBNc1wCfe52v"
-        },
-        {
-          "uid": 232,
-          "coldkey": "5HBtpwxuGNL1gwzwomwR7sjwUt8WXYSuWcLYN6f9KpTZkP4k",
-          "hotkey": "5F4tQyWrhfGVcNhoqeiNsR6KjD4wMZ2kfhLj4oHYuyHbZAc3"
-        }
-      ],
-      "block": 5062632
-    },
-    "14": {
-      "matched": [
-        {
-          "uid": 3,
-          "coldkey": "5GZSAgaVGQqegjhEkxpJjpSVLVmNnE2vx2PFLzr7kBBMKpGQ",
-          "hotkey": "5FFApaS75bv5pJHfAp2FVLBj9ZaXuFDjEypsaBNc1wCfe52v"
-        },
-        {
-          "uid": 28,
-          "coldkey": "5HBtpwxuGNL1gwzwomwR7sjwUt8WXYSuWcLYN6f9KpTZkP4k",
-          "hotkey": "5F4tQyWrhfGVcNhoqeiNsR6KjD4wMZ2kfhLj4oHYuyHbZAc3"
-        }
-      ],
-      "block": 5062632
-    },
-    "15": {
-      "matched": [
-        {
-          "uid": 0,
-          "coldkey": "5GZSAgaVGQqegjhEkxpJjpSVLVmNnE2vx2PFLzr7kBBMKpGQ",
-          "hotkey": "5FFApaS75bv5pJHfAp2FVLBj9ZaXuFDjEypsaBNc1wCfe52v"
-        },
-        {
-          "uid": 2,
-          "coldkey": "5HBtpwxuGNL1gwzwomwR7sjwUt8WXYSuWcLYN6f9KpTZkP4k",
-          "hotkey": "5F4tQyWrhfGVcNhoqeiNsR6KjD4wMZ2kfhLj4oHYuyHbZAc3"
-        }
-      ],
-      "block": 5062632
-    },
-    "16": {
-      "matched": [
-        {
-          "uid": 0,
-          "coldkey": "5GZSAgaVGQqegjhEkxpJjpSVLVmNnE2vx2PFLzr7kBBMKpGQ",
-          "hotkey": "5FFApaS75bv5pJHfAp2FVLBj9ZaXuFDjEypsaBNc1wCfe52v"
-        },
-        {
-          "uid": 255,
-          "coldkey": "5HBtpwxuGNL1gwzwomwR7sjwUt8WXYSuWcLYN6f9KpTZkP4k",
-          "hotkey": "5F4tQyWrhfGVcNhoqeiNsR6KjD4wMZ2kfhLj4oHYuyHbZAc3"
-        }
-      ],
-      "block": 5062632
-    },
-    "17": {
-      "matched": [
-        {
-          "uid": 27,
-          "coldkey": "5GZSAgaVGQqegjhEkxpJjpSVLVmNnE2vx2PFLzr7kBBMKpGQ",
-          "hotkey": "5FFApaS75bv5pJHfAp2FVLBj9ZaXuFDjEypsaBNc1wCfe52v"
-        },
-        {
-          "uid": 128,
-          "coldkey": "5HBtpwxuGNL1gwzwomwR7sjwUt8WXYSuWcLYN6f9KpTZkP4k",
-          "hotkey": "5F4tQyWrhfGVcNhoqeiNsR6KjD4wMZ2kfhLj4oHYuyHbZAc3"
-        }
-      ],
-      "block": 5062632
-    },
-    "18": {
-      "matched": [
-        {
-          "uid": 224,
-          "coldkey": "5GZSAgaVGQqegjhEkxpJjpSVLVmNnE2vx2PFLzr7kBBMKpGQ",
-          "hotkey": "5FFApaS75bv5pJHfAp2FVLBj9ZaXuFDjEypsaBNc1wCfe52v"
-        },
-        {
-          "uid": 236,
-          "coldkey": "5HBtpwxuGNL1gwzwomwR7sjwUt8WXYSuWcLYN6f9KpTZkP4k",
-          "hotkey": "5F4tQyWrhfGVcNhoqeiNsR6KjD4wMZ2kfhLj4oHYuyHbZAc3"
-        }
-      ],
-      "block": 5062632
-    },
-    "19": {
-      "matched": [
-        {
-          "uid": 97,
-          "coldkey": "5GZSAgaVGQqegjhEkxpJjpSVLVmNnE2vx2PFLzr7kBBMKpGQ",
-          "hotkey": "5FFApaS75bv5pJHfAp2FVLBj9ZaXuFDjEypsaBNc1wCfe52v"
-        },
-        {
-          "uid": 140,
-          "coldkey": "5HBtpwxuGNL1gwzwomwR7sjwUt8WXYSuWcLYN6f9KpTZkP4k",
-          "hotkey": "5F4tQyWrhfGVcNhoqeiNsR6KjD4wMZ2kfhLj4oHYuyHbZAc3"
-        }
-      ],
-      "block": 5062632
-    },
-    "20": {
-      "matched": [
-        {
-          "uid": 6,
-          "coldkey": "5GZSAgaVGQqegjhEkxpJjpSVLVmNnE2vx2PFLzr7kBBMKpGQ",
-          "hotkey": "5FFApaS75bv5pJHfAp2FVLBj9ZaXuFDjEypsaBNc1wCfe52v"
-        },
-        {
-          "uid": 18,
-          "coldkey": "5HBtpwxuGNL1gwzwomwR7sjwUt8WXYSuWcLYN6f9KpTZkP4k",
-          "hotkey": "5F4tQyWrhfGVcNhoqeiNsR6KjD4wMZ2kfhLj4oHYuyHbZAc3"
-        }
-      ],
-      "block": 5062632
-    },
-    "21": {
-      "matched": [
-        {
-          "uid": 0,
-          "coldkey": "5GZSAgaVGQqegjhEkxpJjpSVLVmNnE2vx2PFLzr7kBBMKpGQ",
-          "hotkey": "5FFApaS75bv5pJHfAp2FVLBj9ZaXuFDjEypsaBNc1wCfe52v"
-        },
-        {
-          "uid": 224,
-          "coldkey": "5HBtpwxuGNL1gwzwomwR7sjwUt8WXYSuWcLYN6f9KpTZkP4k",
-          "hotkey": "5F4tQyWrhfGVcNhoqeiNsR6KjD4wMZ2kfhLj4oHYuyHbZAc3"
-        }
-      ],
-      "block": 5062632
-    },
-    "22": {
-      "matched": [
-        {
-          "uid": 6,
-          "coldkey": "5HBtpwxuGNL1gwzwomwR7sjwUt8WXYSuWcLYN6f9KpTZkP4k",
-          "hotkey": "5F4tQyWrhfGVcNhoqeiNsR6KjD4wMZ2kfhLj4oHYuyHbZAc3"
-        },
-        {
-          "uid": 159,
-          "coldkey": "5GZSAgaVGQqegjhEkxpJjpSVLVmNnE2vx2PFLzr7kBBMKpGQ",
-          "hotkey": "5FFApaS75bv5pJHfAp2FVLBj9ZaXuFDjEypsaBNc1wCfe52v"
-        }
-      ],
-      "block": 5062632
-    },
-    "23": {
-      "matched": [
-        {
-          "uid": 28,
-          "coldkey": "5GZSAgaVGQqegjhEkxpJjpSVLVmNnE2vx2PFLzr7kBBMKpGQ",
-          "hotkey": "5FFApaS75bv5pJHfAp2FVLBj9ZaXuFDjEypsaBNc1wCfe52v"
-        },
-        {
-          "uid": 202,
-          "coldkey": "5HBtpwxuGNL1gwzwomwR7sjwUt8WXYSuWcLYN6f9KpTZkP4k",
-          "hotkey": "5F4tQyWrhfGVcNhoqeiNsR6KjD4wMZ2kfhLj4oHYuyHbZAc3"
-        }
-      ],
-      "block": 5062632
-    },
-    "24": {
-      "matched": [
-        {
-          "uid": 8,
-          "coldkey": "5GZSAgaVGQqegjhEkxpJjpSVLVmNnE2vx2PFLzr7kBBMKpGQ",
-          "hotkey": "5FFApaS75bv5pJHfAp2FVLBj9ZaXuFDjEypsaBNc1wCfe52v"
-        },
-        {
-          "uid": 199,
-          "coldkey": "5HBtpwxuGNL1gwzwomwR7sjwUt8WXYSuWcLYN6f9KpTZkP4k",
-          "hotkey": "5F4tQyWrhfGVcNhoqeiNsR6KjD4wMZ2kfhLj4oHYuyHbZAc3"
-        }
-      ],
-      "block": 5062632
-    },
-    "25": {
-      "matched": [
-        {
-          "uid": 114,
-          "coldkey": "5GZSAgaVGQqegjhEkxpJjpSVLVmNnE2vx2PFLzr7kBBMKpGQ",
-          "hotkey": "5FFApaS75bv5pJHfAp2FVLBj9ZaXuFDjEypsaBNc1wCfe52v"
-        },
-        {
-          "uid": 143,
-          "coldkey": "5HBtpwxuGNL1gwzwomwR7sjwUt8WXYSuWcLYN6f9KpTZkP4k",
-          "hotkey": "5F4tQyWrhfGVcNhoqeiNsR6KjD4wMZ2kfhLj4oHYuyHbZAc3"
-        }
-      ],
-      "block": 5062632
-    },
-    "26": {
-      "matched": [
-        {
-          "uid": 0,
-          "coldkey": "5GZSAgaVGQqegjhEkxpJjpSVLVmNnE2vx2PFLzr7kBBMKpGQ",
-          "hotkey": "5FFApaS75bv5pJHfAp2FVLBj9ZaXuFDjEypsaBNc1wCfe52v"
-        }
-      ],
-      "block": 5062632
-    },
-    "27": {
-      "matched": [
-        {
-          "uid": 43,
-          "coldkey": "5GZSAgaVGQqegjhEkxpJjpSVLVmNnE2vx2PFLzr7kBBMKpGQ",
-          "hotkey": "5FFApaS75bv5pJHfAp2FVLBj9ZaXuFDjEypsaBNc1wCfe52v"
-        },
-        {
-          "uid": 195,
-          "coldkey": "5HBtpwxuGNL1gwzwomwR7sjwUt8WXYSuWcLYN6f9KpTZkP4k",
-          "hotkey": "5F4tQyWrhfGVcNhoqeiNsR6KjD4wMZ2kfhLj4oHYuyHbZAc3"
-        }
-      ],
-      "block": 5062632
-    },
-    "28": {
-      "matched": [
-        {
-          "uid": 252,
-          "coldkey": "5HBtpwxuGNL1gwzwomwR7sjwUt8WXYSuWcLYN6f9KpTZkP4k",
-          "hotkey": "5F4tQyWrhfGVcNhoqeiNsR6KjD4wMZ2kfhLj4oHYuyHbZAc3"
-        }
-      ],
-      "block": 5062632
-    },
-    "29": {
-      "matched": [
-        {
-          "uid": 1,
-          "coldkey": "5GZSAgaVGQqegjhEkxpJjpSVLVmNnE2vx2PFLzr7kBBMKpGQ",
-          "hotkey": "5FFApaS75bv5pJHfAp2FVLBj9ZaXuFDjEypsaBNc1wCfe52v"
-        },
-        {
-          "uid": 143,
-          "coldkey": "5HBtpwxuGNL1gwzwomwR7sjwUt8WXYSuWcLYN6f9KpTZkP4k",
-          "hotkey": "5F4tQyWrhfGVcNhoqeiNsR6KjD4wMZ2kfhLj4oHYuyHbZAc3"
-        }
-      ],
-      "block": 5062632
-    },
-    "30": {
-      "matched": [
-        {
-          "uid": 163,
-          "coldkey": "5GZSAgaVGQqegjhEkxpJjpSVLVmNnE2vx2PFLzr7kBBMKpGQ",
-          "hotkey": "5FFApaS75bv5pJHfAp2FVLBj9ZaXuFDjEypsaBNc1wCfe52v"
-        },
-        {
-          "uid": 236,
-          "coldkey": "5HBtpwxuGNL1gwzwomwR7sjwUt8WXYSuWcLYN6f9KpTZkP4k",
-          "hotkey": "5F4tQyWrhfGVcNhoqeiNsR6KjD4wMZ2kfhLj4oHYuyHbZAc3"
-        }
-      ],
-      "block": 5062632
-    },
-    "31": {
-      "matched": [
-        {
-          "uid": 10,
-          "coldkey": "5HBtpwxuGNL1gwzwomwR7sjwUt8WXYSuWcLYN6f9KpTZkP4k",
-          "hotkey": "5F4tQyWrhfGVcNhoqeiNsR6KjD4wMZ2kfhLj4oHYuyHbZAc3"
-        },
-        {
-          "uid": 49,
-          "coldkey": "5GZSAgaVGQqegjhEkxpJjpSVLVmNnE2vx2PFLzr7kBBMKpGQ",
-          "hotkey": "5FFApaS75bv5pJHfAp2FVLBj9ZaXuFDjEypsaBNc1wCfe52v"
-        }
-      ],
-      "block": 5062632
-    },
-    "32": {
-      "matched": [
-        {
-          "uid": 31,
-          "coldkey": "5GZSAgaVGQqegjhEkxpJjpSVLVmNnE2vx2PFLzr7kBBMKpGQ",
-          "hotkey": "5FFApaS75bv5pJHfAp2FVLBj9ZaXuFDjEypsaBNc1wCfe52v"
-        },
-        {
-          "uid": 147,
-          "coldkey": "5HBtpwxuGNL1gwzwomwR7sjwUt8WXYSuWcLYN6f9KpTZkP4k",
-          "hotkey": "5F4tQyWrhfGVcNhoqeiNsR6KjD4wMZ2kfhLj4oHYuyHbZAc3"
-        }
-      ],
-      "block": 5062632
-    },
-    "33": {
-      "matched": [
-        {
-          "uid": 1,
-          "coldkey": "5GZSAgaVGQqegjhEkxpJjpSVLVmNnE2vx2PFLzr7kBBMKpGQ",
-          "hotkey": "5FFApaS75bv5pJHfAp2FVLBj9ZaXuFDjEypsaBNc1wCfe52v"
-        },
-        {
-          "uid": 63,
-          "coldkey": "5HBtpwxuGNL1gwzwomwR7sjwUt8WXYSuWcLYN6f9KpTZkP4k",
-          "hotkey": "5F4tQyWrhfGVcNhoqeiNsR6KjD4wMZ2kfhLj4oHYuyHbZAc3"
-        }
-      ],
-      "block": 5062632
-    },
-    "34": {
-      "matched": [
-        {
-          "uid": 6,
-          "coldkey": "5GZSAgaVGQqegjhEkxpJjpSVLVmNnE2vx2PFLzr7kBBMKpGQ",
-          "hotkey": "5FFApaS75bv5pJHfAp2FVLBj9ZaXuFDjEypsaBNc1wCfe52v"
-        },
-        {
-          "uid": 236,
-          "coldkey": "5HBtpwxuGNL1gwzwomwR7sjwUt8WXYSuWcLYN6f9KpTZkP4k",
-          "hotkey": "5F4tQyWrhfGVcNhoqeiNsR6KjD4wMZ2kfhLj4oHYuyHbZAc3"
-        }
-      ],
-      "block": 5062632
-    },
-    "35": {
-      "matched": [
-        {
-          "uid": 0,
-          "coldkey": "5GZSAgaVGQqegjhEkxpJjpSVLVmNnE2vx2PFLzr7kBBMKpGQ",
-          "hotkey": "5FFApaS75bv5pJHfAp2FVLBj9ZaXuFDjEypsaBNc1wCfe52v"
-        },
-        {
-          "uid": 133,
-          "coldkey": "5HBtpwxuGNL1gwzwomwR7sjwUt8WXYSuWcLYN6f9KpTZkP4k",
-          "hotkey": "5F4tQyWrhfGVcNhoqeiNsR6KjD4wMZ2kfhLj4oHYuyHbZAc3"
-        }
-      ],
-      "block": 5062632
-    },
-    "36": {
-      "matched": [
-        {
-          "uid": 3,
-          "coldkey": "5GZSAgaVGQqegjhEkxpJjpSVLVmNnE2vx2PFLzr7kBBMKpGQ",
-          "hotkey": "5FFApaS75bv5pJHfAp2FVLBj9ZaXuFDjEypsaBNc1wCfe52v"
-        }
-      ],
-      "block": 5062632
-    },
-    "37": {
-      "matched": [
-        {
-          "uid": 107,
-          "coldkey": "5GZSAgaVGQqegjhEkxpJjpSVLVmNnE2vx2PFLzr7kBBMKpGQ",
-          "hotkey": "5FFApaS75bv5pJHfAp2FVLBj9ZaXuFDjEypsaBNc1wCfe52v"
-        }
-      ],
-      "block": 5062632
-    },
-    "38": {
-      "matched": [
-        {
-          "uid": 0,
-          "coldkey": "5GZSAgaVGQqegjhEkxpJjpSVLVmNnE2vx2PFLzr7kBBMKpGQ",
-          "hotkey": "5FFApaS75bv5pJHfAp2FVLBj9ZaXuFDjEypsaBNc1wCfe52v"
-        },
-        {
-          "uid": 224,
-          "coldkey": "5HBtpwxuGNL1gwzwomwR7sjwUt8WXYSuWcLYN6f9KpTZkP4k",
-          "hotkey": "5F4tQyWrhfGVcNhoqeiNsR6KjD4wMZ2kfhLj4oHYuyHbZAc3"
-        }
-      ],
-      "block": 5062632
-    },
-    "39": {
-      "matched": [
-        {
-          "uid": 39,
-          "coldkey": "5HBtpwxuGNL1gwzwomwR7sjwUt8WXYSuWcLYN6f9KpTZkP4k",
-          "hotkey": "5F4tQyWrhfGVcNhoqeiNsR6KjD4wMZ2kfhLj4oHYuyHbZAc3"
-        },
-        {
-          "uid": 144,
-          "coldkey": "5GZSAgaVGQqegjhEkxpJjpSVLVmNnE2vx2PFLzr7kBBMKpGQ",
-          "hotkey": "5FFApaS75bv5pJHfAp2FVLBj9ZaXuFDjEypsaBNc1wCfe52v"
-        }
-      ],
-      "block": 5062632
-    },
-    "40": {
-      "matched": [
-        {
-          "uid": 20,
-          "coldkey": "5GZSAgaVGQqegjhEkxpJjpSVLVmNnE2vx2PFLzr7kBBMKpGQ",
-          "hotkey": "5FFApaS75bv5pJHfAp2FVLBj9ZaXuFDjEypsaBNc1wCfe52v"
-        },
-        {
-          "uid": 250,
-          "coldkey": "5HBtpwxuGNL1gwzwomwR7sjwUt8WXYSuWcLYN6f9KpTZkP4k",
-          "hotkey": "5F4tQyWrhfGVcNhoqeiNsR6KjD4wMZ2kfhLj4oHYuyHbZAc3"
-        }
-      ],
-      "block": 5062632
-    },
-    "41": {
-      "matched": [
-        {
-          "uid": 2,
-          "coldkey": "5GZSAgaVGQqegjhEkxpJjpSVLVmNnE2vx2PFLzr7kBBMKpGQ",
-          "hotkey": "5FFApaS75bv5pJHfAp2FVLBj9ZaXuFDjEypsaBNc1wCfe52v"
-        },
-        {
-          "uid": 233,
-          "coldkey": "5HBtpwxuGNL1gwzwomwR7sjwUt8WXYSuWcLYN6f9KpTZkP4k",
-          "hotkey": "5F4tQyWrhfGVcNhoqeiNsR6KjD4wMZ2kfhLj4oHYuyHbZAc3"
-        }
-      ],
-      "block": 5062632
-    },
-    "42": {
-      "matched": [
-        {
-          "uid": 3,
-          "coldkey": "5GZSAgaVGQqegjhEkxpJjpSVLVmNnE2vx2PFLzr7kBBMKpGQ",
-          "hotkey": "5FFApaS75bv5pJHfAp2FVLBj9ZaXuFDjEypsaBNc1wCfe52v"
-        },
-        {
-          "uid": 255,
-          "coldkey": "5HBtpwxuGNL1gwzwomwR7sjwUt8WXYSuWcLYN6f9KpTZkP4k",
-          "hotkey": "5F4tQyWrhfGVcNhoqeiNsR6KjD4wMZ2kfhLj4oHYuyHbZAc3"
-        }
-      ],
-      "block": 5062632
-    },
-    "43": {
-      "matched": [
-        {
-          "uid": 3,
-          "coldkey": "5GZSAgaVGQqegjhEkxpJjpSVLVmNnE2vx2PFLzr7kBBMKpGQ",
-          "hotkey": "5FFApaS75bv5pJHfAp2FVLBj9ZaXuFDjEypsaBNc1wCfe52v"
-        },
-        {
-          "uid": 236,
-          "coldkey": "5HBtpwxuGNL1gwzwomwR7sjwUt8WXYSuWcLYN6f9KpTZkP4k",
-          "hotkey": "5F4tQyWrhfGVcNhoqeiNsR6KjD4wMZ2kfhLj4oHYuyHbZAc3"
-        }
-      ],
-      "block": 5062632
-    },
-    "44": {
-      "matched": [
-        {
-          "uid": 35,
-          "coldkey": "5GZSAgaVGQqegjhEkxpJjpSVLVmNnE2vx2PFLzr7kBBMKpGQ",
-          "hotkey": "5FFApaS75bv5pJHfAp2FVLBj9ZaXuFDjEypsaBNc1wCfe52v"
-        },
-        {
-          "uid": 71,
-          "coldkey": "5HBtpwxuGNL1gwzwomwR7sjwUt8WXYSuWcLYN6f9KpTZkP4k",
-          "hotkey": "5F4tQyWrhfGVcNhoqeiNsR6KjD4wMZ2kfhLj4oHYuyHbZAc3"
-        }
-      ],
-      "block": 5062632
-    },
-    "45": {
-      "matched": [
-        {
-          "uid": 1,
-          "coldkey": "5GZSAgaVGQqegjhEkxpJjpSVLVmNnE2vx2PFLzr7kBBMKpGQ",
-          "hotkey": "5FFApaS75bv5pJHfAp2FVLBj9ZaXuFDjEypsaBNc1wCfe52v"
-        },
-        {
-          "uid": 250,
-          "coldkey": "5HBtpwxuGNL1gwzwomwR7sjwUt8WXYSuWcLYN6f9KpTZkP4k",
-          "hotkey": "5F4tQyWrhfGVcNhoqeiNsR6KjD4wMZ2kfhLj4oHYuyHbZAc3"
-        }
-      ],
-      "block": 5062632
-    },
-    "46": {
-      "matched": [
-        {
-          "uid": 1,
-          "coldkey": "5GZSAgaVGQqegjhEkxpJjpSVLVmNnE2vx2PFLzr7kBBMKpGQ",
-          "hotkey": "5FFApaS75bv5pJHfAp2FVLBj9ZaXuFDjEypsaBNc1wCfe52v"
-        },
-        {
-          "uid": 70,
-          "coldkey": "5HBtpwxuGNL1gwzwomwR7sjwUt8WXYSuWcLYN6f9KpTZkP4k",
-          "hotkey": "5F4tQyWrhfGVcNhoqeiNsR6KjD4wMZ2kfhLj4oHYuyHbZAc3"
-        }
-      ],
-      "block": 5062632
-    },
-    "47": {
-      "matched": [
-        {
-          "uid": 2,
-          "coldkey": "5GZSAgaVGQqegjhEkxpJjpSVLVmNnE2vx2PFLzr7kBBMKpGQ",
-          "hotkey": "5FFApaS75bv5pJHfAp2FVLBj9ZaXuFDjEypsaBNc1wCfe52v"
-        },
-        {
-          "uid": 171,
-          "coldkey": "5HBtpwxuGNL1gwzwomwR7sjwUt8WXYSuWcLYN6f9KpTZkP4k",
-          "hotkey": "5F4tQyWrhfGVcNhoqeiNsR6KjD4wMZ2kfhLj4oHYuyHbZAc3"
-        }
-      ],
-      "block": 5062632
-    },
-    "48": {
-      "matched": [
-        {
-          "uid": 0,
-          "coldkey": "5GZSAgaVGQqegjhEkxpJjpSVLVmNnE2vx2PFLzr7kBBMKpGQ",
-          "hotkey": "5FFApaS75bv5pJHfAp2FVLBj9ZaXuFDjEypsaBNc1wCfe52v"
-        },
-        {
-          "uid": 15,
-          "coldkey": "5HBtpwxuGNL1gwzwomwR7sjwUt8WXYSuWcLYN6f9KpTZkP4k",
-          "hotkey": "5F4tQyWrhfGVcNhoqeiNsR6KjD4wMZ2kfhLj4oHYuyHbZAc3"
-        }
-      ],
-      "block": 5062632
-    },
-    "49": {
-      "matched": [
-        {
-          "uid": 29,
-          "coldkey": "5GZSAgaVGQqegjhEkxpJjpSVLVmNnE2vx2PFLzr7kBBMKpGQ",
-          "hotkey": "5FFApaS75bv5pJHfAp2FVLBj9ZaXuFDjEypsaBNc1wCfe52v"
-        },
-        {
-          "uid": 45,
-          "coldkey": "5HBtpwxuGNL1gwzwomwR7sjwUt8WXYSuWcLYN6f9KpTZkP4k",
-          "hotkey": "5F4tQyWrhfGVcNhoqeiNsR6KjD4wMZ2kfhLj4oHYuyHbZAc3"
-        }
-      ],
-      "block": 5062632
-    },
-    "50": {
-      "matched": [
-        {
-          "uid": 0,
-          "coldkey": "5GZSAgaVGQqegjhEkxpJjpSVLVmNnE2vx2PFLzr7kBBMKpGQ",
-          "hotkey": "5FFApaS75bv5pJHfAp2FVLBj9ZaXuFDjEypsaBNc1wCfe52v"
-        },
-        {
-          "uid": 49,
-          "coldkey": "5HBtpwxuGNL1gwzwomwR7sjwUt8WXYSuWcLYN6f9KpTZkP4k",
-          "hotkey": "5F4tQyWrhfGVcNhoqeiNsR6KjD4wMZ2kfhLj4oHYuyHbZAc3"
-        }
-      ],
-      "block": 5062632
-    },
-    "51": {
-      "matched": [
-        {
-          "uid": 0,
-          "coldkey": "5GZSAgaVGQqegjhEkxpJjpSVLVmNnE2vx2PFLzr7kBBMKpGQ",
-          "hotkey": "5FFApaS75bv5pJHfAp2FVLBj9ZaXuFDjEypsaBNc1wCfe52v"
-        }
-      ],
-      "block": 5062632
-    },
-    "52": {
-      "matched": [
-        {
-          "uid": 3,
-          "coldkey": "5GZSAgaVGQqegjhEkxpJjpSVLVmNnE2vx2PFLzr7kBBMKpGQ",
-          "hotkey": "5FFApaS75bv5pJHfAp2FVLBj9ZaXuFDjEypsaBNc1wCfe52v"
-        },
-        {
-          "uid": 159,
-          "coldkey": "5HBtpwxuGNL1gwzwomwR7sjwUt8WXYSuWcLYN6f9KpTZkP4k",
-          "hotkey": "5F4tQyWrhfGVcNhoqeiNsR6KjD4wMZ2kfhLj4oHYuyHbZAc3"
-        }
-      ],
-      "block": 5062632
-    },
-    "53": {
-      "matched": [
-        {
-          "uid": 0,
-          "coldkey": "5GZSAgaVGQqegjhEkxpJjpSVLVmNnE2vx2PFLzr7kBBMKpGQ",
-          "hotkey": "5FFApaS75bv5pJHfAp2FVLBj9ZaXuFDjEypsaBNc1wCfe52v"
-        },
-        {
-          "uid": 32,
-          "coldkey": "5HBtpwxuGNL1gwzwomwR7sjwUt8WXYSuWcLYN6f9KpTZkP4k",
-          "hotkey": "5F4tQyWrhfGVcNhoqeiNsR6KjD4wMZ2kfhLj4oHYuyHbZAc3"
-        }
-      ],
-      "block": 5062632
-    },
-    "54": {
-      "matched": [
-        {
-          "uid": 3,
-          "coldkey": "5GZSAgaVGQqegjhEkxpJjpSVLVmNnE2vx2PFLzr7kBBMKpGQ",
-          "hotkey": "5FFApaS75bv5pJHfAp2FVLBj9ZaXuFDjEypsaBNc1wCfe52v"
-        },
-        {
-          "uid": 137,
-          "coldkey": "5HBtpwxuGNL1gwzwomwR7sjwUt8WXYSuWcLYN6f9KpTZkP4k",
-          "hotkey": "5F4tQyWrhfGVcNhoqeiNsR6KjD4wMZ2kfhLj4oHYuyHbZAc3"
-        }
-      ],
-      "block": 5062632
-    },
-    "55": {
-      "matched": [
-        {
-          "uid": 0,
-          "coldkey": "5GZSAgaVGQqegjhEkxpJjpSVLVmNnE2vx2PFLzr7kBBMKpGQ",
-          "hotkey": "5FFApaS75bv5pJHfAp2FVLBj9ZaXuFDjEypsaBNc1wCfe52v"
-        },
-        {
-          "uid": 47,
-          "coldkey": "5HBtpwxuGNL1gwzwomwR7sjwUt8WXYSuWcLYN6f9KpTZkP4k",
-          "hotkey": "5F4tQyWrhfGVcNhoqeiNsR6KjD4wMZ2kfhLj4oHYuyHbZAc3"
-        }
-      ],
-      "block": 5062632
-    },
-    "56": {
-      "matched": [
-        {
-          "uid": 1,
-          "coldkey": "5GZSAgaVGQqegjhEkxpJjpSVLVmNnE2vx2PFLzr7kBBMKpGQ",
-          "hotkey": "5FFApaS75bv5pJHfAp2FVLBj9ZaXuFDjEypsaBNc1wCfe52v"
-        },
-        {
-          "uid": 207,
-          "coldkey": "5HBtpwxuGNL1gwzwomwR7sjwUt8WXYSuWcLYN6f9KpTZkP4k",
-          "hotkey": "5F4tQyWrhfGVcNhoqeiNsR6KjD4wMZ2kfhLj4oHYuyHbZAc3"
-        }
-      ],
-      "block": 5062632
-    },
-    "57": {
-      "matched": [
-        {
-          "uid": 0,
-          "coldkey": "5GZSAgaVGQqegjhEkxpJjpSVLVmNnE2vx2PFLzr7kBBMKpGQ",
-          "hotkey": "5FFApaS75bv5pJHfAp2FVLBj9ZaXuFDjEypsaBNc1wCfe52v"
-        },
-        {
-          "uid": 119,
-          "coldkey": "5HBtpwxuGNL1gwzwomwR7sjwUt8WXYSuWcLYN6f9KpTZkP4k",
-          "hotkey": "5F4tQyWrhfGVcNhoqeiNsR6KjD4wMZ2kfhLj4oHYuyHbZAc3"
-        }
-      ],
-      "block": 5062632
-    },
-    "58": {
-      "matched": [
-        {
-          "uid": 0,
-          "coldkey": "5GZSAgaVGQqegjhEkxpJjpSVLVmNnE2vx2PFLzr7kBBMKpGQ",
-          "hotkey": "5FFApaS75bv5pJHfAp2FVLBj9ZaXuFDjEypsaBNc1wCfe52v"
-        },
-        {
-          "uid": 149,
-          "coldkey": "5HBtpwxuGNL1gwzwomwR7sjwUt8WXYSuWcLYN6f9KpTZkP4k",
-          "hotkey": "5F4tQyWrhfGVcNhoqeiNsR6KjD4wMZ2kfhLj4oHYuyHbZAc3"
-        }
-      ],
-      "block": 5062632
-    },
-    "59": {
-      "matched": [
-        {
-          "uid": 239,
-          "coldkey": "5HBtpwxuGNL1gwzwomwR7sjwUt8WXYSuWcLYN6f9KpTZkP4k",
-          "hotkey": "5F4tQyWrhfGVcNhoqeiNsR6KjD4wMZ2kfhLj4oHYuyHbZAc3"
-        },
-        {
-          "uid": 242,
-          "coldkey": "5GZSAgaVGQqegjhEkxpJjpSVLVmNnE2vx2PFLzr7kBBMKpGQ",
-          "hotkey": "5FFApaS75bv5pJHfAp2FVLBj9ZaXuFDjEypsaBNc1wCfe52v"
-        }
-      ],
-      "block": 5062632
-    },
-    "60": {
-      "matched": [
-        {
-          "uid": 3,
-          "coldkey": "5GZSAgaVGQqegjhEkxpJjpSVLVmNnE2vx2PFLzr7kBBMKpGQ",
-          "hotkey": "5FFApaS75bv5pJHfAp2FVLBj9ZaXuFDjEypsaBNc1wCfe52v"
-        },
-        {
-          "uid": 160,
-          "coldkey": "5HBtpwxuGNL1gwzwomwR7sjwUt8WXYSuWcLYN6f9KpTZkP4k",
-          "hotkey": "5F4tQyWrhfGVcNhoqeiNsR6KjD4wMZ2kfhLj4oHYuyHbZAc3"
-        }
-      ],
-      "block": 5062632
-    },
-    "61": {
-      "matched": [
-        {
-          "uid": 0,
-          "coldkey": "5GZSAgaVGQqegjhEkxpJjpSVLVmNnE2vx2PFLzr7kBBMKpGQ",
-          "hotkey": "5FFApaS75bv5pJHfAp2FVLBj9ZaXuFDjEypsaBNc1wCfe52v"
-        },
-        {
-          "uid": 88,
-          "coldkey": "5HBtpwxuGNL1gwzwomwR7sjwUt8WXYSuWcLYN6f9KpTZkP4k",
-          "hotkey": "5F4tQyWrhfGVcNhoqeiNsR6KjD4wMZ2kfhLj4oHYuyHbZAc3"
-        }
-      ],
-      "block": 5062632
-    },
-    "62": {
-      "matched": [
-        {
-          "uid": 0,
-          "coldkey": "5GZSAgaVGQqegjhEkxpJjpSVLVmNnE2vx2PFLzr7kBBMKpGQ",
-          "hotkey": "5FFApaS75bv5pJHfAp2FVLBj9ZaXuFDjEypsaBNc1wCfe52v"
-        },
-        {
-          "uid": 17,
-          "coldkey": "5HBtpwxuGNL1gwzwomwR7sjwUt8WXYSuWcLYN6f9KpTZkP4k",
-          "hotkey": "5F4tQyWrhfGVcNhoqeiNsR6KjD4wMZ2kfhLj4oHYuyHbZAc3"
-        }
-      ],
-      "block": 5062632
-    },
-    "64": {
-      "matched": [
-        {
-          "uid": 8,
-          "coldkey": "5GZSAgaVGQqegjhEkxpJjpSVLVmNnE2vx2PFLzr7kBBMKpGQ",
-          "hotkey": "5FFApaS75bv5pJHfAp2FVLBj9ZaXuFDjEypsaBNc1wCfe52v"
-        }
-      ],
-      "block": 5062632
-    },
-    "65": {
-      "matched": [
-        {
-          "uid": 4,
-          "coldkey": "5GZSAgaVGQqegjhEkxpJjpSVLVmNnE2vx2PFLzr7kBBMKpGQ",
-          "hotkey": "5FFApaS75bv5pJHfAp2FVLBj9ZaXuFDjEypsaBNc1wCfe52v"
-        }
-      ],
-      "block": 5062632
-    },
-    "66": {
-      "matched": [
-        {
-          "uid": 13,
-          "coldkey": "5GZSAgaVGQqegjhEkxpJjpSVLVmNnE2vx2PFLzr7kBBMKpGQ",
-          "hotkey": "5FFApaS75bv5pJHfAp2FVLBj9ZaXuFDjEypsaBNc1wCfe52v"
-        }
-      ],
-      "block": 5062632
-    },
-    "68": {
-      "matched": [
-        {
-          "uid": 6,
-          "coldkey": "5GZSAgaVGQqegjhEkxpJjpSVLVmNnE2vx2PFLzr7kBBMKpGQ",
-          "hotkey": "5FFApaS75bv5pJHfAp2FVLBj9ZaXuFDjEypsaBNc1wCfe52v"
-        }
-      ],
-      "block": 5062632
+  "samples": [
+    {
+      "sample_index": 0,
+      "requested_time": "2025-03-05T00:00:00+00:00",
+      "block_timestamp_utc": "2025-03-05T00:00:00+00:00",
+      "closest_block": 5057832,
+      "emissions": {
+        "1": 0.036387863,
+        "2": 0.002830626,
+        "3": 0.028759894,
+        "4": 0.205625643,
+        "5": 0.014935489,
+        "6": 0.011993773,
+        "7": 0.002048796,
+        "8": 0.192802633,
+        "9": 0.023426132,
+        "10": 0.041519318,
+        "11": 0.027965636,
+        "12": 0.003528853,
+        "13": 0.049931423,
+        "14": 0.002131056,
+        "15": 0.002133485,
+        "16": 0.008311893,
+        "17": 0.007809689,
+        "18": 0.00253844,
+        "19": 0.068265576,
+        "20": 0.0083813,
+        "21": 0.005602586,
+        "22": 0.004485353,
+        "23": 0.002363815,
+        "24": 0.003528198,
+        "25": 0.02062523,
+        "26": 0.002045233,
+        "27": 0.006596078,
+        "28": 0.001909468,
+        "29": 0.011497806,
+        "30": 0.010529713,
+        "31": 0.001550178,
+        "32": 0.007563351,
+        "33": 0.005883988,
+        "34": 0.104750492,
+        "35": 0.005133906,
+        "36": 0.002574529,
+        "37": 0.007487845,
+        "38": 0.00245618,
+        "39": 0.00262226,
+        "40": 0.007871636,
+        "41": 0.018799879,
+        "42": 0.022260624,
+        "43": 0.008241316,
+        "44": 0.010362423,
+        "45": 0.011695856,
+        "46": 0.01126388,
+        "47": 0.003879318,
+        "48": 0.011283557,
+        "49": 0.001506607,
+        "50": 0.006773593,
+        "51": 0.094997039,
+        "52": 0.012403084,
+        "53": 0.016732176,
+        "54": 0.001625616,
+        "55": 0.003117234,
+        "56": 0.035855613,
+        "57": 0.003333019,
+        "58": 0.006464681,
+        "59": 0.00621483,
+        "60": 0.003914134,
+        "61": 0.005821664,
+        "62": 0.002466388,
+        "63": 0.004134606,
+        "64": 0.214224563,
+        "65": 0.003986806,
+        "66": 0.003526242,
+        "67": 0.003068095,
+        "68": 0.049816832,
+        "69": 0.00473589,
+        "70": 0.02715815,
+        "71": 0.027949492
+      },
+      "statistics": {
+        "active_subnets": 71,
+        "avg_emission_rate": 0.022479134788732393,
+        "max_emission_rate": 0.214224563,
+        "min_emission_rate": 0.001506607,
+        "total_emission_rate": 1.59601857
+      }
+    },
+    {
+      "sample_index": 1,
+      "requested_time": "2025-03-05T01:00:00+00:00",
+      "block_timestamp_utc": "2025-03-05T01:00:00+00:00",
+      "closest_block": 5058132,
+      "emissions": {
+        "1": 0.036029017,
+        "2": 0.002825137,
+        "3": 0.028361871,
+        "4": 0.208186528,
+        "5": 0.016135642,
+        "6": 0.012014369,
+        "7": 0.002044665,
+        "8": 0.195584045,
+        "9": 0.022897604,
+        "10": 0.041924002,
+        "11": 0.027900099,
+        "12": 0.003522975,
+        "13": 0.050604926,
+        "14": 0.002127279,
+        "15": 0.002129769,
+        "16": 0.008295174,
+        "17": 0.008427269,
+        "18": 0.002534898,
+        "19": 0.070558985,
+        "20": 0.008407173,
+        "21": 0.00560953,
+        "22": 0.004522341,
+        "23": 0.002380122,
+        "24": 0.003550799,
+        "25": 0.020357619,
+        "26": 0.002076205,
+        "27": 0.006669428,
+        "28": 0.001904408,
+        "29": 0.011476067,
+        "30": 0.010557447,
+        "31": 0.001547916,
+        "32": 0.007592047,
+        "33": 0.005875863,
+        "34": 0.106543626,
+        "35": 0.005128242,
+        "36": 0.002571684,
+        "37": 0.007787596,
+        "38": 0.002451582,
+        "39": 0.002638022,
+        "40": 0.007855905,
+        "41": 0.019133572,
+        "42": 0.022340649,
+        "43": 0.008224448,
+        "44": 0.009927186,
+        "45": 0.011712749,
+        "46": 0.01130005,
+        "47": 0.003890928,
+        "48": 0.012163166,
+        "49": 0.00150444,
+        "50": 0.006763941,
+        "51": 0.093062201,
+        "52": 0.013875353,
+        "53": 0.016727677,
+        "54": 0.001632047,
+        "55": 0.003111581,
+        "56": 0.035704432,
+        "57": 0.003331356,
+        "58": 0.006496848,
+        "59": 0.006311696,
+        "60": 0.003872025,
+        "61": 0.005813384,
+        "62": 0.002484876,
+        "63": 0.00382053,
+        "64": 0.211294423,
+        "65": 0.003974814,
+        "66": 0.003539538,
+        "67": 0.00303904,
+        "68": 0.048041225,
+        "69": 0.004665426,
+        "70": 0.02478898,
+        "71": 0.018574484
+      },
+      "statistics": {
+        "active_subnets": 71,
+        "avg_emission_rate": 0.02240466114084507,
+        "max_emission_rate": 0.211294423,
+        "min_emission_rate": 0.00150444,
+        "total_emission_rate": 1.5907309410000001
+      }
+    },
+    {
+      "sample_index": 2,
+      "requested_time": "2025-03-05T02:00:00+00:00",
+      "block_timestamp_utc": "2025-03-05T02:00:00.001000+00:00",
+      "closest_block": 5058432,
+      "emissions": {
+        "1": 0.03570608,
+        "2": 0.002986718,
+        "3": 0.028312478,
+        "4": 0.206222751,
+        "5": 0.016139513,
+        "6": 0.011996614,
+        "7": 0.002034307,
+        "8": 0.193905706,
+        "9": 0.022886025,
+        "10": 0.042618477,
+        "11": 0.028051685,
+        "12": 0.003517125,
+        "13": 0.046349725,
+        "14": 0.002122741,
+        "15": 0.002126059,
+        "16": 0.008288868,
+        "17": 0.008423325,
+        "18": 0.002535806,
+        "19": 0.07059771,
+        "20": 0.008420618,
+        "21": 0.005633284,
+        "22": 0.004517106,
+        "23": 0.002377353,
+        "24": 0.003543363,
+        "25": 0.02020748,
+        "26": 0.002247906,
+        "27": 0.006661206,
+        "28": 0.001899272,
+        "29": 0.011457184,
+        "30": 0.010548049,
+        "31": 0.001545664,
+        "32": 0.007580872,
+        "33": 0.005867769,
+        "34": 0.107030481,
+        "35": 0.005122599,
+        "36": 0.002576535,
+        "37": 0.007765518,
+        "38": 0.002451686,
+        "39": 0.002650262,
+        "40": 0.007846713,
+        "41": 0.018990271,
+        "42": 0.022460606,
+        "43": 0.008207675,
+        "44": 0.009897445,
+        "45": 0.011662114,
+        "46": 0.011309707,
+        "47": 0.00387698,
+        "48": 0.011656472,
+        "49": 0.001505175,
+        "50": 0.006754937,
+        "51": 0.094763116,
+        "52": 0.013723542,
+        "53": 0.016711575,
+        "54": 0.001641353,
+        "55": 0.00317165,
+        "56": 0.035173629,
+        "57": 0.003322666,
+        "58": 0.006470859,
+        "59": 0.006247156,
+        "60": 0.003864505,
+        "61": 0.005802938,
+        "62": 0.002480829,
+        "63": 0.003769456,
+        "64": 0.215679244,
+        "65": 0.003923742,
+        "66": 0.003658191,
+        "67": 0.002915255,
+        "68": 0.045484962,
+        "69": 0.004440944,
+        "70": 0.022734079,
+        "71": 0.0164912
+      },
+      "statistics": {
+        "active_subnets": 71,
+        "avg_emission_rate": 0.02227556205633803,
+        "max_emission_rate": 0.215679244,
+        "min_emission_rate": 0.001505175,
+        "total_emission_rate": 1.581564906
+      }
+    },
+    {
+      "sample_index": 3,
+      "requested_time": "2025-03-05T03:00:00+00:00",
+      "block_timestamp_utc": "2025-03-05T03:00:00.001000+00:00",
+      "closest_block": 5058732,
+      "emissions": {
+        "1": 0.035569471,
+        "2": 0.002980974,
+        "3": 0.028174337,
+        "4": 0.20215115,
+        "5": 0.016041841,
+        "6": 0.012176163,
+        "7": 0.001956963,
+        "8": 0.193754438,
+        "9": 0.022222935,
+        "10": 0.042326377,
+        "11": 0.027958895,
+        "12": 0.003511301,
+        "13": 0.043110296,
+        "14": 0.002120014,
+        "15": 0.002122367,
+        "16": 0.008271531,
+        "17": 0.008406174,
+        "18": 0.002532283,
+        "19": 0.066538774,
+        "20": 0.008388565,
+        "21": 0.005604647,
+        "22": 0.004512454,
+        "23": 0.002373205,
+        "24": 0.003537876,
+        "25": 0.020084379,
+        "26": 0.002249507,
+        "27": 0.006622054,
+        "28": 0.001891087,
+        "29": 0.011373953,
+        "30": 0.010533465,
+        "31": 0.001528147,
+        "32": 0.007634173,
+        "33": 0.005859728,
+        "34": 0.105628916,
+        "35": 0.005099814,
+        "36": 0.00258514,
+        "37": 0.007681713,
+        "38": 0.002447121,
+        "39": 0.002654732,
+        "40": 0.007831134,
+        "41": 0.01828667,
+        "42": 0.023162123,
+        "43": 0.008426892,
+        "44": 0.009889465,
+        "45": 0.011900043,
+        "46": 0.011296506,
+        "47": 0.003847246,
+        "48": 0.011559691,
+        "49": 0.001502868,
+        "50": 0.006744759,
+        "51": 0.09343854,
+        "52": 0.013666112,
+        "53": 0.016696665,
+        "54": 0.001647772,
+        "55": 0.003135747,
+        "56": 0.030884497,
+        "57": 0.003312119,
+        "58": 0.006450322,
+        "59": 0.00614213,
+        "60": 0.003854873,
+        "61": 0.005548503,
+        "62": 0.0024768,
+        "63": 0.00437018,
+        "64": 0.209752798,
+        "65": 0.00385129,
+        "66": 0.003628217,
+        "67": 0.002900089,
+        "68": 0.048871214,
+        "69": 0.004615714,
+        "70": 0.023296296,
+        "71": 0.013800588
+      },
+      "statistics": {
+        "active_subnets": 71,
+        "avg_emission_rate": 0.021929645394366197,
+        "max_emission_rate": 0.209752798,
+        "min_emission_rate": 0.001502868,
+        "total_emission_rate": 1.557004823
+      }
+    },
+    {
+      "sample_index": 4,
+      "requested_time": "2025-03-05T04:00:00+00:00",
+      "block_timestamp_utc": "2025-03-05T04:00:00+00:00",
+      "closest_block": 5059032,
+      "emissions": {
+        "1": 0.035520783,
+        "2": 0.002975713,
+        "3": 0.028123278,
+        "4": 0.199890838,
+        "5": 0.015719636,
+        "6": 0.01216006,
+        "7": 0.001909131,
+        "8": 0.193380883,
+        "9": 0.022172874,
+        "10": 0.042116825,
+        "11": 0.027898773,
+        "12": 0.003502118,
+        "13": 0.043017049,
+        "14": 0.002116654,
+        "15": 0.002118692,
+        "16": 0.00825495,
+        "17": 0.00838921,
+        "18": 0.002533429,
+        "19": 0.066389636,
+        "20": 0.008414947,
+        "21": 0.005592942,
+        "22": 0.004505272,
+        "23": 0.002367127,
+        "24": 0.003583277,
+        "25": 0.019958975,
+        "26": 0.00224767,
+        "27": 0.006610825,
+        "28": 0.001889022,
+        "29": 0.011355396,
+        "30": 0.010518367,
+        "31": 0.001483357,
+        "32": 0.007627888,
+        "33": 0.005851697,
+        "34": 0.10549354,
+        "35": 0.00507369,
+        "36": 0.002580323,
+        "37": 0.007660323,
+        "38": 0.002440777,
+        "39": 0.00265919,
+        "40": 0.007835107,
+        "41": 0.017359478,
+        "42": 0.0230347,
+        "43": 0.008409597,
+        "44": 0.009875859,
+        "45": 0.011993281,
+        "46": 0.011276214,
+        "47": 0.003840616,
+        "48": 0.011530229,
+        "49": 0.001500571,
+        "50": 0.006734623,
+        "51": 0.093300697,
+        "52": 0.013100032,
+        "53": 0.016677459,
+        "54": 0.001658018,
+        "55": 0.003130017,
+        "56": 0.028632311,
+        "57": 0.003306037,
+        "58": 0.006406938,
+        "59": 0.006061503,
+        "60": 0.003823395,
+        "61": 0.005538733,
+        "62": 0.002445685,
+        "63": 0.004975896,
+        "64": 0.208034927,
+        "65": 0.003867683,
+        "66": 0.003630933,
+        "67": 0.002909924,
+        "68": 0.050576481,
+        "69": 0.004599688,
+        "70": 0.02273347,
+        "71": 0.011452995
+      },
+      "statistics": {
+        "active_subnets": 71,
+        "avg_emission_rate": 0.02177969343661972,
+        "max_emission_rate": 0.208034927,
+        "min_emission_rate": 0.001483357,
+        "total_emission_rate": 1.546358234
+      }
+    },
+    {
+      "sample_index": 5,
+      "requested_time": "2025-03-05T05:00:00+00:00",
+      "block_timestamp_utc": "2025-03-05T05:00:00.001000+00:00",
+      "closest_block": 5059332,
+      "emissions": {
+        "1": 0.035465953,
+        "2": 0.002939087,
+        "3": 0.027893727,
+        "4": 0.201394885,
+        "5": 0.015577639,
+        "6": 0.012200303,
+        "7": 0.001890233,
+        "8": 0.192612608,
+        "9": 0.022124441,
+        "10": 0.041358,
+        "11": 0.027517196,
+        "12": 0.003495626,
+        "13": 0.042262707,
+        "14": 0.002131265,
+        "15": 0.002098333,
+        "16": 0.008243596,
+        "17": 0.008372313,
+        "18": 0.00253103,
+        "19": 0.065400835,
+        "20": 0.008528696,
+        "21": 0.005582897,
+        "22": 0.004500124,
+        "23": 0.002376592,
+        "24": 0.003203615,
+        "25": 0.019983273,
+        "26": 0.0022455,
+        "27": 0.006603433,
+        "28": 0.001883962,
+        "29": 0.011296419,
+        "30": 0.010503329,
+        "31": 0.001481256,
+        "32": 0.007630536,
+        "33": 0.005843697,
+        "34": 0.104858796,
+        "35": 0.00506705,
+        "36": 0.002562049,
+        "37": 0.007581527,
+        "38": 0.002432559,
+        "39": 0.002653981,
+        "40": 0.007836339,
+        "41": 0.016329331,
+        "42": 0.023007525,
+        "43": 0.008392387,
+        "44": 0.009359672,
+        "45": 0.010672941,
+        "46": 0.011149765,
+        "47": 0.003829601,
+        "48": 0.011508065,
+        "49": 0.001498283,
+        "50": 0.006724529,
+        "51": 0.092320022,
+        "52": 0.013281086,
+        "53": 0.01662831,
+        "54": 0.001664416,
+        "55": 0.003128455,
+        "56": 0.028624257,
+        "57": 0.003296453,
+        "58": 0.006405775,
+        "59": 0.006055876,
+        "60": 0.003828112,
+        "61": 0.00552971,
+        "62": 0.002441757,
+        "63": 0.004938075,
+        "64": 0.207471227,
+        "65": 0.003921238,
+        "66": 0.00365162,
+        "67": 0.002878326,
+        "68": 0.060099112,
+        "69": 0.004831718,
+        "70": 0.024819507,
+        "71": 0.011769645
+      },
+      "statistics": {
+        "active_subnets": 71,
+        "avg_emission_rate": 0.021834115535211265,
+        "max_emission_rate": 0.207471227,
+        "min_emission_rate": 0.001481256,
+        "total_emission_rate": 1.550222203
+      }
+    },
+    {
+      "sample_index": 6,
+      "requested_time": "2025-03-05T06:00:00+00:00",
+      "block_timestamp_utc": "2025-03-05T06:00:00.001000+00:00",
+      "closest_block": 5059632,
+      "emissions": {
+        "1": 0.035431041,
+        "2": 0.002863912,
+        "3": 0.027638093,
+        "4": 0.201115641,
+        "5": 0.015288542,
+        "6": 0.012223166,
+        "7": 0.00188657,
+        "8": 0.192199582,
+        "9": 0.022120015,
+        "10": 0.041618683,
+        "11": 0.027229871,
+        "12": 0.003489892,
+        "13": 0.042189042,
+        "14": 0.002128084,
+        "15": 0.002094735,
+        "16": 0.008227177,
+        "17": 0.00835327,
+        "18": 0.002527535,
+        "19": 0.065280008,
+        "20": 0.00814218,
+        "21": 0.005571888,
+        "22": 0.004491513,
+        "23": 0.002372292,
+        "24": 0.003195876,
+        "25": 0.020071232,
+        "26": 0.002241971,
+        "27": 0.006423473,
+        "28": 0.00187893,
+        "29": 0.01128238,
+        "30": 0.01048835,
+        "31": 0.001479164,
+        "32": 0.007646433,
+        "33": 0.005835747,
+        "34": 0.10471242,
+        "35": 0.005060436,
+        "36": 0.002549415,
+        "37": 0.00756028,
+        "38": 0.002428078,
+        "39": 0.002639184,
+        "40": 0.007839326,
+        "41": 0.016287231,
+        "42": 0.022918353,
+        "43": 0.012616225,
+        "44": 0.009060301,
+        "45": 0.010679488,
+        "46": 0.011134386,
+        "47": 0.00382612,
+        "48": 0.011453792,
+        "49": 0.001496005,
+        "50": 0.006714477,
+        "51": 0.092155576,
+        "52": 0.013433189,
+        "53": 0.016607749,
+        "54": 0.001664029,
+        "55": 0.003119237,
+        "56": 0.028606149,
+        "57": 0.003275767,
+        "58": 0.006395136,
+        "59": 0.005979992,
+        "60": 0.003820791,
+        "61": 0.005524545,
+        "62": 0.002435698,
+        "63": 0.005398086,
+        "64": 0.204458561,
+        "65": 0.003981059,
+        "66": 0.003642441,
+        "67": 0.002873381,
+        "68": 0.058370888,
+        "69": 0.004815965,
+        "70": 0.024629536,
+        "71": 0.010707092
+      },
+      "statistics": {
+        "active_subnets": 71,
+        "avg_emission_rate": 0.021773192563380284,
+        "max_emission_rate": 0.204458561,
+        "min_emission_rate": 0.001479164,
+        "total_emission_rate": 1.545896672
+      }
+    },
+    {
+      "sample_index": 7,
+      "requested_time": "2025-03-05T07:00:00+00:00",
+      "block_timestamp_utc": "2025-03-05T07:00:00.001000+00:00",
+      "closest_block": 5059932,
+      "emissions": {
+        "1": 0.034892907,
+        "2": 0.002855086,
+        "3": 0.027371796,
+        "4": 0.199594563,
+        "5": 0.013899484,
+        "6": 0.012273859,
+        "7": 0.001891244,
+        "8": 0.189173879,
+        "9": 0.021811794,
+        "10": 0.041163206,
+        "11": 0.027172498,
+        "12": 0.003482108,
+        "13": 0.040925737,
+        "14": 0.00212518,
+        "15": 0.002091155,
+        "16": 0.008251068,
+        "17": 0.008342167,
+        "18": 0.002524641,
+        "19": 0.064447318,
+        "20": 0.008140752,
+        "21": 0.005560369,
+        "22": 0.004484909,
+        "23": 0.002368193,
+        "24": 0.003180179,
+        "25": 0.019618583,
+        "26": 0.002240164,
+        "27": 0.006394265,
+        "28": 0.001874012,
+        "29": 0.011231937,
+        "30": 0.010658456,
+        "31": 0.001477079,
+        "32": 0.007634484,
+        "33": 0.005827808,
+        "34": 0.104922712,
+        "35": 0.005053833,
+        "36": 0.002544754,
+        "37": 0.00753847,
+        "38": 0.002394632,
+        "39": 0.002641722,
+        "40": 0.007825848,
+        "41": 0.016101867,
+        "42": 0.022876376,
+        "43": 0.01265842,
+        "44": 0.008859359,
+        "45": 0.010675359,
+        "46": 0.011134934,
+        "47": 0.003819759,
+        "48": 0.010876421,
+        "49": 0.001493737,
+        "50": 0.006704467,
+        "51": 0.09118498,
+        "52": 0.013117874,
+        "53": 0.016593695,
+        "54": 0.001670404,
+        "55": 0.003113588,
+        "56": 0.028077452,
+        "57": 0.003271538,
+        "58": 0.006386115,
+        "59": 0.005959935,
+        "60": 0.003720101,
+        "61": 0.005559262,
+        "62": 0.00243181,
+        "63": 0.005723053,
+        "64": 0.203392198,
+        "65": 0.004045972,
+        "66": 0.003631939,
+        "67": 0.002865906,
+        "68": 0.055451982,
+        "69": 0.004986697,
+        "70": 0.024022668,
+        "71": 0.010071205
+      },
+      "statistics": {
+        "active_subnets": 71,
+        "avg_emission_rate": 0.021526505971830985,
+        "max_emission_rate": 0.203392198,
+        "min_emission_rate": 0.001477079,
+        "total_emission_rate": 1.528381924
+      }
+    },
+    {
+      "sample_index": 8,
+      "requested_time": "2025-03-05T08:00:00+00:00",
+      "block_timestamp_utc": "2025-03-05T08:00:00+00:00",
+      "closest_block": 5060232,
+      "emissions": {
+        "1": 0.034310658,
+        "2": 0.002849295,
+        "3": 0.027184283,
+        "4": 0.196939135,
+        "5": 0.013777195,
+        "6": 0.01198439,
+        "7": 0.001887595,
+        "8": 0.190322969,
+        "9": 0.021450066,
+        "10": 0.040501232,
+        "11": 0.025884845,
+        "12": 0.003476429,
+        "13": 0.039387381,
+        "14": 0.002121665,
+        "15": 0.002068877,
+        "16": 0.008194425,
+        "17": 0.008136369,
+        "18": 0.002522271,
+        "19": 0.063904178,
+        "20": 0.008086345,
+        "21": 0.00555054,
+        "22": 0.004478439,
+        "23": 0.002364071,
+        "24": 0.003173304,
+        "25": 0.019078656,
+        "26": 0.002236323,
+        "27": 0.006425061,
+        "28": 0.001865675,
+        "29": 0.011145195,
+        "30": 0.010654297,
+        "31": 0.001540461,
+        "32": 0.007583141,
+        "33": 0.005819898,
+        "34": 0.10309886,
+        "35": 0.005046576,
+        "36": 0.002533561,
+        "37": 0.007472552,
+        "38": 0.002390275,
+        "39": 0.002636754,
+        "40": 0.007759606,
+        "41": 0.015853165,
+        "42": 0.022632212,
+        "43": 0.012292961,
+        "44": 0.008644518,
+        "45": 0.010722025,
+        "46": 0.011238999,
+        "47": 0.003813459,
+        "48": 0.010620923,
+        "49": 0.001506463,
+        "50": 0.006694499,
+        "51": 0.090564504,
+        "52": 0.014396221,
+        "53": 0.016568512,
+        "54": 0.001681526,
+        "55": 0.00310017,
+        "56": 0.027828481,
+        "57": 0.003262261,
+        "58": 0.006351727,
+        "59": 0.005696993,
+        "60": 0.003652729,
+        "61": 0.005476085,
+        "62": 0.002432645,
+        "63": 0.00455487,
+        "64": 0.197132902,
+        "65": 0.004033184,
+        "66": 0.003640246,
+        "67": 0.002714382,
+        "68": 0.048293399,
+        "69": 0.004856662,
+        "70": 0.022858399,
+        "71": 0.009386707
+      },
+      "statistics": {
+        "active_subnets": 71,
+        "avg_emission_rate": 0.021131615169014083,
+        "max_emission_rate": 0.197132902,
+        "min_emission_rate": 0.001506463,
+        "total_emission_rate": 1.500344677
+      }
+    },
+    {
+      "sample_index": 9,
+      "requested_time": "2025-03-05T09:00:00+00:00",
+      "block_timestamp_utc": "2025-03-05T09:00:00+00:00",
+      "closest_block": 5060532,
+      "emissions": {
+        "1": 0.034432004,
+        "2": 0.002870463,
+        "3": 0.027362628,
+        "4": 0.195993179,
+        "5": 0.013756917,
+        "6": 0.01236935,
+        "7": 0.001883451,
+        "8": 0.188459269,
+        "9": 0.021399484,
+        "10": 0.040447269,
+        "11": 0.025858658,
+        "12": 0.003470776,
+        "13": 0.03942786,
+        "14": 0.002114909,
+        "15": 0.002065377,
+        "16": 0.008154124,
+        "17": 0.008118257,
+        "18": 0.002518948,
+        "19": 0.06388161,
+        "20": 0.008071797,
+        "21": 0.005544844,
+        "22": 0.004471441,
+        "23": 0.002359779,
+        "24": 0.003199828,
+        "25": 0.01900447,
+        "26": 0.002229984,
+        "27": 0.006369303,
+        "28": 0.001863193,
+        "29": 0.011124889,
+        "30": 0.010640526,
+        "31": 0.001539567,
+        "32": 0.007566128,
+        "33": 0.005812019,
+        "34": 0.10297655,
+        "35": 0.005040555,
+        "36": 0.002527182,
+        "37": 0.00745108,
+        "38": 0.002382045,
+        "39": 0.002633678,
+        "40": 0.007737743,
+        "41": 0.015867621,
+        "42": 0.022522664,
+        "43": 0.012201544,
+        "44": 0.008625976,
+        "45": 0.010723888,
+        "46": 0.011219235,
+        "47": 0.003810828,
+        "48": 0.010610938,
+        "49": 0.001495399,
+        "50": 0.006684571,
+        "51": 0.090186947,
+        "52": 0.016914904,
+        "53": 0.016549057,
+        "54": 0.00168788,
+        "55": 0.003073416,
+        "56": 0.027811728,
+        "57": 0.003257282,
+        "58": 0.006342525,
+        "59": 0.005671297,
+        "60": 0.003648672,
+        "61": 0.005449708,
+        "62": 0.00242878,
+        "63": 0.004359673,
+        "64": 0.199497946,
+        "65": 0.004017087,
+        "66": 0.003649551,
+        "67": 0.002701171,
+        "68": 0.049489061,
+        "69": 0.004867849,
+        "70": 0.021274459,
+        "71": 0.008819593
+      },
+      "statistics": {
+        "active_subnets": 71,
+        "avg_emission_rate": 0.021135104,
+        "max_emission_rate": 0.199497946,
+        "min_emission_rate": 0.001495399,
+        "total_emission_rate": 1.500592384
+      }
+    },
+    {
+      "sample_index": 10,
+      "requested_time": "2025-03-05T10:00:00+00:00",
+      "block_timestamp_utc": "2025-03-05T10:00:00+00:00",
+      "closest_block": 5060832,
+      "emissions": {
+        "1": 0.034297126,
+        "2": 0.002868812,
+        "3": 0.027255786,
+        "4": 0.195709604,
+        "5": 0.013751412,
+        "6": 0.012317013,
+        "7": 0.00188,
+        "8": 0.188195805,
+        "9": 0.02135556,
+        "10": 0.039854046,
+        "11": 0.025808851,
+        "12": 0.003465156,
+        "13": 0.039362898,
+        "14": 0.002111433,
+        "15": 0.002055519,
+        "16": 0.00813509,
+        "17": 0.00810244,
+        "18": 0.002517224,
+        "19": 0.064189892,
+        "20": 0.008056078,
+        "21": 0.005535326,
+        "22": 0.004469545,
+        "23": 0.002358249,
+        "24": 0.003206094,
+        "25": 0.018658687,
+        "26": 0.002226523,
+        "27": 0.006359711,
+        "28": 0.001861169,
+        "29": 0.011108758,
+        "30": 0.010608281,
+        "31": 0.001537366,
+        "32": 0.007524202,
+        "33": 0.0057777,
+        "34": 0.102972938,
+        "35": 0.005042854,
+        "36": 0.002545642,
+        "37": 0.007435816,
+        "38": 0.002377741,
+        "39": 0.002628601,
+        "40": 0.007719806,
+        "41": 0.01586853,
+        "42": 0.022479195,
+        "43": 0.01189249,
+        "44": 0.008438009,
+        "45": 0.010734654,
+        "46": 0.011199409,
+        "47": 0.003806324,
+        "48": 0.010598853,
+        "49": 0.001497285,
+        "50": 0.00667907,
+        "51": 0.090123344,
+        "52": 0.017118133,
+        "53": 0.016663119,
+        "54": 0.001694232,
+        "55": 0.003060366,
+        "56": 0.027161273,
+        "57": 0.003243924,
+        "58": 0.006365938,
+        "59": 0.005661337,
+        "60": 0.003641924,
+        "61": 0.005441073,
+        "62": 0.002425702,
+        "63": 0.0042065,
+        "64": 0.197157145,
+        "65": 0.00403232,
+        "66": 0.003659859,
+        "67": 0.002697042,
+        "68": 0.051251732,
+        "69": 0.004856068,
+        "70": 0.020320688,
+        "71": 0.00854443
+      },
+      "statistics": {
+        "active_subnets": 71,
+        "avg_emission_rate": 0.02106710876056338,
+        "max_emission_rate": 0.197157145,
+        "min_emission_rate": 0.001497285,
+        "total_emission_rate": 1.495764722
+      }
+    },
+    {
+      "sample_index": 11,
+      "requested_time": "2025-03-05T11:00:00+00:00",
+      "block_timestamp_utc": "2025-03-05T11:00:00+00:00",
+      "closest_block": 5061132,
+      "emissions": {
+        "1": 0.034212441,
+        "2": 0.002862992,
+        "3": 0.027157691,
+        "4": 0.194338211,
+        "5": 0.013681546,
+        "6": 0.01234288,
+        "7": 0.001876409,
+        "8": 0.186518857,
+        "9": 0.02126697,
+        "10": 0.039721572,
+        "11": 0.025722509,
+        "12": 0.003459553,
+        "13": 0.039048407,
+        "14": 0.00210891,
+        "15": 0.001941374,
+        "16": 0.008119029,
+        "17": 0.008093208,
+        "18": 0.002518948,
+        "19": 0.06392884,
+        "20": 0.008038909,
+        "21": 0.00552563,
+        "22": 0.004460642,
+        "23": 0.002355472,
+        "24": 0.003199969,
+        "25": 0.018307454,
+        "26": 0.002222475,
+        "27": 0.006378087,
+        "28": 0.001864243,
+        "29": 0.011091098,
+        "30": 0.010527377,
+        "31": 0.001532829,
+        "32": 0.007512912,
+        "33": 0.005769933,
+        "34": 0.102796546,
+        "35": 0.005038531,
+        "36": 0.002542968,
+        "37": 0.007415143,
+        "38": 0.002373459,
+        "39": 0.002623579,
+        "40": 0.007711843,
+        "41": 0.015704411,
+        "42": 0.022045579,
+        "43": 0.011794877,
+        "44": 0.008309966,
+        "45": 0.010740242,
+        "46": 0.011179676,
+        "47": 0.003927489,
+        "48": 0.010732663,
+        "49": 0.001495031,
+        "50": 0.006670325,
+        "51": 0.089825194,
+        "52": 0.018387281,
+        "53": 0.016672477,
+        "54": 0.001700563,
+        "55": 0.003051931,
+        "56": 0.027006596,
+        "57": 0.00323981,
+        "58": 0.00635686,
+        "59": 0.005651137,
+        "60": 0.00363521,
+        "61": 0.005430153,
+        "62": 0.002423408,
+        "63": 0.004239048,
+        "64": 0.194939737,
+        "65": 0.004005639,
+        "66": 0.003671276,
+        "67": 0.002694981,
+        "68": 0.052852909,
+        "69": 0.004891595,
+        "70": 0.026972942,
+        "71": 0.007916478
+      },
+      "statistics": {
+        "active_subnets": 71,
+        "avg_emission_rate": 0.02107570323943662,
+        "max_emission_rate": 0.194939737,
+        "min_emission_rate": 0.001495031,
+        "total_emission_rate": 1.49637493
+      }
+    },
+    {
+      "sample_index": 12,
+      "requested_time": "2025-03-05T12:00:00+00:00",
+      "block_timestamp_utc": "2025-03-05T12:00:00+00:00",
+      "closest_block": 5061432,
+      "emissions": {
+        "1": 0.034250407,
+        "2": 0.00285758,
+        "3": 0.027020216,
+        "4": 0.194626464,
+        "5": 0.013725045,
+        "6": 0.012410356,
+        "7": 0.001872837,
+        "8": 0.186076493,
+        "9": 0.021223162,
+        "10": 0.039652093,
+        "11": 0.025701533,
+        "12": 0.003451152,
+        "13": 0.040254863,
+        "14": 0.002102719,
+        "15": 0.001938213,
+        "16": 0.008116904,
+        "17": 0.00802822,
+        "18": 0.002515513,
+        "19": 0.064077469,
+        "20": 0.008040859,
+        "21": 0.005471832,
+        "22": 0.004419757,
+        "23": 0.002351457,
+        "24": 0.003149913,
+        "25": 0.018296581,
+        "26": 0.002264405,
+        "27": 0.006369055,
+        "28": 0.001862259,
+        "29": 0.011086096,
+        "30": 0.010504783,
+        "31": 0.00153065,
+        "32": 0.007502411,
+        "33": 0.005762195,
+        "34": 0.101911516,
+        "35": 0.005032037,
+        "36": 0.002538453,
+        "37": 0.007333946,
+        "38": 0.002369197,
+        "39": 0.002618596,
+        "40": 0.007696981,
+        "41": 0.015664789,
+        "42": 0.022023218,
+        "43": 0.011652144,
+        "44": 0.008237175,
+        "45": 0.010729147,
+        "46": 0.011182176,
+        "47": 0.00392457,
+        "48": 0.010616518,
+        "49": 0.001492786,
+        "50": 0.006660505,
+        "51": 0.089715426,
+        "52": 0.018500212,
+        "53": 0.016667039,
+        "54": 0.001706883,
+        "55": 0.003046522,
+        "56": 0.026662517,
+        "57": 0.00323931,
+        "58": 0.006346356,
+        "59": 0.005707111,
+        "60": 0.003637524,
+        "61": 0.005388242,
+        "62": 0.002427304,
+        "63": 0.004129912,
+        "64": 0.195413328,
+        "65": 0.003995212,
+        "66": 0.003675916,
+        "67": 0.002677899,
+        "68": 0.049437641,
+        "69": 0.004871701,
+        "70": 0.02851608,
+        "71": 0.008989674
+      },
+      "statistics": {
+        "active_subnets": 71,
+        "avg_emission_rate": 0.021055620492957745,
+        "max_emission_rate": 0.195413328,
+        "min_emission_rate": 0.001492786,
+        "total_emission_rate": 1.494949055
+      }
+    },
+    {
+      "sample_index": 13,
+      "requested_time": "2025-03-05T13:00:00+00:00",
+      "block_timestamp_utc": "2025-03-05T13:00:00+00:00",
+      "closest_block": 5061732,
+      "emissions": {
+        "1": 0.034689346,
+        "2": 0.002857802,
+        "3": 0.026965235,
+        "4": 0.194317143,
+        "5": 0.013692046,
+        "6": 0.012266772,
+        "7": 0.001867795,
+        "8": 0.185295549,
+        "9": 0.02118888,
+        "10": 0.039602669,
+        "11": 0.025644122,
+        "12": 0.003429715,
+        "13": 0.040472507,
+        "14": 0.002099294,
+        "15": 0.001935067,
+        "16": 0.008970384,
+        "17": 0.00801133,
+        "18": 0.002512092,
+        "19": 0.062481449,
+        "20": 0.008026667,
+        "21": 0.005460025,
+        "22": 0.004411516,
+        "23": 0.002347461,
+        "24": 0.003147758,
+        "25": 0.018060497,
+        "26": 0.002264159,
+        "27": 0.006440318,
+        "28": 0.001857347,
+        "29": 0.011071824,
+        "30": 0.010481395,
+        "31": 0.001532704,
+        "32": 0.008222614,
+        "33": 0.005752047,
+        "34": 0.101565809,
+        "35": 0.005006231,
+        "36": 0.003034345,
+        "37": 0.007315091,
+        "38": 0.002364956,
+        "39": 0.002634397,
+        "40": 0.007685987,
+        "41": 0.015568976,
+        "42": 0.021969781,
+        "43": 0.011629043,
+        "44": 0.008227323,
+        "45": 0.010713443,
+        "46": 0.011166535,
+        "47": 0.003918687,
+        "48": 0.01066651,
+        "49": 0.001495026,
+        "50": 0.006650726,
+        "51": 0.089723718,
+        "52": 0.018437425,
+        "53": 0.016653044,
+        "54": 0.001713192,
+        "55": 0.003042464,
+        "56": 0.025905812,
+        "57": 0.003234227,
+        "58": 0.006337637,
+        "59": 0.005687136,
+        "60": 0.003632677,
+        "61": 0.00603281,
+        "62": 0.002423481,
+        "63": 0.004075878,
+        "64": 0.195700047,
+        "65": 0.003979237,
+        "66": 0.003664784,
+        "67": 0.002668276,
+        "68": 0.050015913,
+        "69": 0.004891717,
+        "70": 0.028913545,
+        "71": 0.01527758
+      },
+      "statistics": {
+        "active_subnets": 71,
+        "avg_emission_rate": 0.02114083091549296,
+        "max_emission_rate": 0.195700047,
+        "min_emission_rate": 0.001495026,
+        "total_emission_rate": 1.500998995
+      }
+    },
+    {
+      "sample_index": 14,
+      "requested_time": "2025-03-05T14:00:00+00:00",
+      "block_timestamp_utc": "2025-03-05T14:00:00+00:00",
+      "closest_block": 5062032,
+      "emissions": {
+        "1": 0.035167999,
+        "2": 0.002804557,
+        "3": 0.027377636,
+        "4": 0.194520436,
+        "5": 0.013666845,
+        "6": 0.012262916,
+        "7": 0.001864039,
+        "8": 0.184174031,
+        "9": 0.021469233,
+        "10": 0.040265238,
+        "11": 0.025640893,
+        "12": 0.003420748,
+        "13": 0.041155,
+        "14": 0.002096507,
+        "15": 0.001925728,
+        "16": 0.009041564,
+        "17": 0.007996022,
+        "18": 0.002510603,
+        "19": 0.062913773,
+        "20": 0.008019588,
+        "21": 0.005424185,
+        "22": 0.004408511,
+        "23": 0.002343484,
+        "24": 0.00314606,
+        "25": 0.019711783,
+        "26": 0.002262335,
+        "27": 0.007562023,
+        "28": 0.001850837,
+        "29": 0.011128338,
+        "30": 0.010467926,
+        "31": 0.001528263,
+        "32": 0.008210224,
+        "33": 0.005744372,
+        "34": 0.101940184,
+        "35": 0.00493202,
+        "36": 0.003028511,
+        "37": 0.007298004,
+        "38": 0.002360736,
+        "39": 0.002605648,
+        "40": 0.007665671,
+        "41": 0.015495608,
+        "42": 0.022025857,
+        "43": 0.011819082,
+        "44": 0.008430006,
+        "45": 0.010702439,
+        "46": 0.011161031,
+        "47": 0.003913023,
+        "48": 0.010778612,
+        "49": 0.001492789,
+        "50": 0.006640986,
+        "51": 0.089983413,
+        "52": 0.017093711,
+        "53": 0.016613203,
+        "54": 0.001717579,
+        "55": 0.003034138,
+        "56": 0.025778181,
+        "57": 0.003228436,
+        "58": 0.006351468,
+        "59": 0.005736331,
+        "60": 0.003847567,
+        "61": 0.006348143,
+        "62": 0.002399616,
+        "63": 0.004098858,
+        "64": 0.196101088,
+        "65": 0.004543754,
+        "66": 0.00364697,
+        "67": 0.002644829,
+        "68": 0.051351092,
+        "69": 0.004912261,
+        "70": 0.022666352,
+        "71": 0.015314842
+      },
+      "statistics": {
+        "active_subnets": 71,
+        "avg_emission_rate": 0.021151883605633803,
+        "max_emission_rate": 0.196101088,
+        "min_emission_rate": 0.001492789,
+        "total_emission_rate": 1.501783736
+      }
+    },
+    {
+      "sample_index": 15,
+      "requested_time": "2025-03-05T15:00:00+00:00",
+      "block_timestamp_utc": "2025-03-05T15:00:00+00:00",
+      "closest_block": 5062332,
+      "emissions": {
+        "1": 0.035156026,
+        "2": 0.002657387,
+        "3": 0.029789579,
+        "4": 0.194267924,
+        "5": 0.013434167,
+        "6": 0.012240918,
+        "7": 0.001860619,
+        "8": 0.183806781,
+        "9": 0.021182066,
+        "10": 0.040219442,
+        "11": 0.025569396,
+        "12": 0.003413353,
+        "13": 0.041137481,
+        "14": 0.002094976,
+        "15": 0.001922625,
+        "16": 0.00902285,
+        "17": 0.007978648,
+        "18": 0.002510864,
+        "19": 0.063399485,
+        "20": 0.007968341,
+        "21": 0.00542308,
+        "22": 0.004401618,
+        "23": 0.002339525,
+        "24": 0.003151221,
+        "25": 0.01996546,
+        "26": 0.002229183,
+        "27": 0.009392961,
+        "28": 0.001843112,
+        "29": 0.011108772,
+        "30": 0.010453094,
+        "31": 0.001539323,
+        "32": 0.008198146,
+        "33": 0.005736725,
+        "34": 0.101566079,
+        "35": 0.004925764,
+        "36": 0.003020764,
+        "37": 0.007038316,
+        "38": 0.002356536,
+        "39": 0.002600708,
+        "40": 0.007614944,
+        "41": 0.014883468,
+        "42": 0.021987887,
+        "43": 0.01182808,
+        "44": 0.008462923,
+        "45": 0.010685983,
+        "46": 0.011143946,
+        "47": 0.003890418,
+        "48": 0.011128906,
+        "49": 0.001493536,
+        "50": 0.006631842,
+        "51": 0.089036101,
+        "52": 0.016176894,
+        "53": 0.016601287,
+        "54": 0.00173347,
+        "55": 0.003020815,
+        "56": 0.025691643,
+        "57": 0.00322428,
+        "58": 0.006324912,
+        "59": 0.005708069,
+        "60": 0.003840343,
+        "61": 0.006120126,
+        "62": 0.002395865,
+        "63": 0.004058421,
+        "64": 0.195156888,
+        "65": 0.004527794,
+        "66": 0.003845804,
+        "67": 0.002635904,
+        "68": 0.057901266,
+        "69": 0.005000685,
+        "70": 0.023160334,
+        "71": 0.013245112
+      },
+      "statistics": {
+        "active_subnets": 71,
+        "avg_emission_rate": 0.021212412126760564,
+        "max_emission_rate": 0.195156888,
+        "min_emission_rate": 0.001493536,
+        "total_emission_rate": 1.506081261
+      }
+    },
+    {
+      "sample_index": 16,
+      "requested_time": "2025-03-05T16:00:00+00:00",
+      "block_timestamp_utc": "2025-03-05T16:00:00+00:00",
+      "closest_block": 5062632,
+      "emissions": {
+        "1": 0.034986892,
+        "2": 0.002682671,
+        "3": 0.033274344,
+        "4": 0.193927215,
+        "5": 0.013439457,
+        "6": 0.012009154,
+        "7": 0.001854484,
+        "8": 0.184284168,
+        "9": 0.02227878,
+        "10": 0.039791628,
+        "11": 0.025471359,
+        "12": 0.003375688,
+        "13": 0.044557442,
+        "14": 0.002092364,
+        "15": 0.001919536,
+        "16": 0.009155999,
+        "17": 0.007961388,
+        "18": 0.002402262,
+        "19": 0.063393271,
+        "20": 0.007956593,
+        "21": 0.00541662,
+        "22": 0.004393195,
+        "23": 0.002338693,
+        "24": 0.00316093,
+        "25": 0.019944258,
+        "26": 0.002225431,
+        "27": 0.00853108,
+        "28": 0.001842863,
+        "29": 0.011091285,
+        "30": 0.010446192,
+        "31": 0.00155123,
+        "32": 0.008186147,
+        "33": 0.005729107,
+        "34": 0.102415505,
+        "35": 0.00491953,
+        "36": 0.003018704,
+        "37": 0.006937031,
+        "38": 0.002352356,
+        "39": 0.002599555,
+        "40": 0.007601346,
+        "41": 0.014758034,
+        "42": 0.021890919,
+        "43": 0.011577214,
+        "44": 0.008503824,
+        "45": 0.01067201,
+        "46": 0.011127415,
+        "47": 0.003869918,
+        "48": 0.010897361,
+        "49": 0.001485101,
+        "50": 0.00662327,
+        "51": 0.087466457,
+        "52": 0.018368948,
+        "53": 0.017240819,
+        "54": 0.001730142,
+        "55": 0.003022525,
+        "56": 0.02564586,
+        "57": 0.003411014,
+        "58": 0.006332602,
+        "59": 0.005622823,
+        "60": 0.003828689,
+        "61": 0.006108069,
+        "62": 0.002300913,
+        "63": 0.004047139,
+        "64": 0.194547594,
+        "65": 0.004544051,
+        "66": 0.003862663,
+        "67": 0.002633584,
+        "68": 0.055004893,
+        "69": 0.005026494,
+        "70": 0.023913634,
+        "71": 0.011728594
+      },
+      "statistics": {
+        "active_subnets": 71,
+        "avg_emission_rate": 0.021257863746478874,
+        "max_emission_rate": 0.194547594,
+        "min_emission_rate": 0.001485101,
+        "total_emission_rate": 1.509308326
+      }
+    },
+    {
+      "sample_index": 17,
+      "requested_time": "2025-03-05T17:00:00+00:00",
+      "block_timestamp_utc": "2025-03-05T17:00:00+00:00",
+      "closest_block": 5062932,
+      "emissions": {
+        "1": 0.0348214,
+        "2": 0.002679227,
+        "3": 0.034787267,
+        "4": 0.193800942,
+        "5": 0.01342092,
+        "6": 0.011850833,
+        "7": 0.001825055,
+        "8": 0.186526748,
+        "9": 0.022348899,
+        "10": 0.039632948,
+        "11": 0.025424308,
+        "12": 0.003372251,
+        "13": 0.044176389,
+        "14": 0.002089299,
+        "15": 0.001916939,
+        "16": 0.008298155,
+        "17": 0.008007871,
+        "18": 0.002434242,
+        "19": 0.062730644,
+        "20": 0.007953731,
+        "21": 0.005407521,
+        "22": 0.00436036,
+        "23": 0.002332858,
+        "24": 0.003161069,
+        "25": 0.01990017,
+        "26": 0.002223367,
+        "27": 0.009521407,
+        "28": 0.001811698,
+        "29": 0.010898791,
+        "30": 0.010417647,
+        "31": 0.001549031,
+        "32": 0.008213854,
+        "33": 0.005721517,
+        "34": 0.102838265,
+        "35": 0.004916519,
+        "36": 0.002988139,
+        "37": 0.006925716,
+        "38": 0.002335614,
+        "39": 0.002557769,
+        "40": 0.007623783,
+        "41": 0.014731039,
+        "42": 0.021798265,
+        "43": 0.011671588,
+        "44": 0.010370786,
+        "45": 0.010657171,
+        "46": 0.011079219,
+        "47": 0.003863491,
+        "48": 0.009925225,
+        "49": 0.001482899,
+        "50": 0.00661475,
+        "51": 0.087353341,
+        "52": 0.018574154,
+        "53": 0.017213853,
+        "54": 0.001738255,
+        "55": 0.003008233,
+        "56": 0.025479636,
+        "57": 0.003422177,
+        "58": 0.00632304,
+        "59": 0.005516401,
+        "60": 0.00382155,
+        "61": 0.006088338,
+        "62": 0.002276522,
+        "63": 0.003989439,
+        "64": 0.193902624,
+        "65": 0.004424134,
+        "66": 0.003834761,
+        "67": 0.002514166,
+        "68": 0.054801756,
+        "69": 0.00502479,
+        "70": 0.022772012,
+        "71": 0.011469493
+      },
+      "statistics": {
+        "active_subnets": 71,
+        "avg_emission_rate": 0.021261215084507044,
+        "max_emission_rate": 0.193902624,
+        "min_emission_rate": 0.001482899,
+        "total_emission_rate": 1.509546271
+      }
+    },
+    {
+      "sample_index": 18,
+      "requested_time": "2025-03-05T18:00:00+00:00",
+      "block_timestamp_utc": "2025-03-05T18:00:00+00:00",
+      "closest_block": 5063232,
+      "emissions": {
+        "1": 0.03433938,
+        "2": 0.002580947,
+        "3": 0.039232615,
+        "4": 0.193592391,
+        "5": 0.013391595,
+        "6": 0.011810201,
+        "7": 0.001787412,
+        "8": 0.186686766,
+        "9": 0.022340789,
+        "10": 0.039441189,
+        "11": 0.025296821,
+        "12": 0.003359711,
+        "13": 0.043175483,
+        "14": 0.00205643,
+        "15": 0.001883677,
+        "16": 0.008266981,
+        "17": 0.008128822,
+        "18": 0.002418229,
+        "19": 0.062563226,
+        "20": 0.007949182,
+        "21": 0.005399571,
+        "22": 0.004352333,
+        "23": 0.002332335,
+        "24": 0.003161088,
+        "25": 0.019881015,
+        "26": 0.00249369,
+        "27": 0.011711336,
+        "28": 0.001807019,
+        "29": 0.010881868,
+        "30": 0.010403005,
+        "31": 0.001571867,
+        "32": 0.008201892,
+        "33": 0.005726769,
+        "34": 0.102702894,
+        "35": 0.004910324,
+        "36": 0.002982284,
+        "37": 0.00690707,
+        "38": 0.00230258,
+        "39": 0.002552996,
+        "40": 0.007612373,
+        "41": 0.014596317,
+        "42": 0.021697969,
+        "43": 0.011644603,
+        "44": 0.010351794,
+        "45": 0.010647465,
+        "46": 0.011067327,
+        "47": 0.003861449,
+        "48": 0.009814712,
+        "49": 0.001480707,
+        "50": 0.006606244,
+        "51": 0.087355973,
+        "52": 0.02144017,
+        "53": 0.017187679,
+        "54": 0.001754018,
+        "55": 0.002999372,
+        "56": 0.025137969,
+        "57": 0.003373686,
+        "58": 0.006313415,
+        "59": 0.005502213,
+        "60": 0.003808869,
+        "61": 0.006076092,
+        "62": 0.002276361,
+        "63": 0.003709772,
+        "64": 0.192711376,
+        "65": 0.004289327,
+        "66": 0.003806184,
+        "67": 0.002509162,
+        "68": 0.057743393,
+        "69": 0.005013274,
+        "70": 0.02541149,
+        "71": 0.01098243
+      },
+      "statistics": {
+        "active_subnets": 71,
+        "avg_emission_rate": 0.02139953476056338,
+        "max_emission_rate": 0.193592391,
+        "min_emission_rate": 0.001480707,
+        "total_emission_rate": 1.519366968
+      }
+    },
+    {
+      "sample_index": 19,
+      "requested_time": "2025-03-05T19:00:00+00:00",
+      "block_timestamp_utc": "2025-03-05T19:00:00+00:00",
+      "closest_block": 5063532,
+      "emissions": {
+        "1": 0.03398004,
+        "2": 0.002576381,
+        "3": 0.039762225,
+        "4": 0.193418235,
+        "5": 0.013374854,
+        "6": 0.011755215,
+        "7": 0.001754484,
+        "8": 0.185713283,
+        "9": 0.021968746,
+        "10": 0.03913689,
+        "11": 0.025246573,
+        "12": 0.003354447,
+        "13": 0.042614627,
+        "14": 0.002053157,
+        "15": 0.0018807,
+        "16": 0.008162101,
+        "17": 0.008118227,
+        "18": 0.002420295,
+        "19": 0.062135684,
+        "20": 0.007923266,
+        "21": 0.005410662,
+        "22": 0.004317932,
+        "23": 0.002276597,
+        "24": 0.003169021,
+        "25": 0.019514497,
+        "26": 0.002481057,
+        "27": 0.010872865,
+        "28": 0.001802354,
+        "29": 0.010802819,
+        "30": 0.01045079,
+        "31": 0.001558426,
+        "32": 0.00817814,
+        "33": 0.005710111,
+        "34": 0.101813239,
+        "35": 0.004904151,
+        "36": 0.002954855,
+        "37": 0.006880852,
+        "38": 0.002275245,
+        "39": 0.002564887,
+        "40": 0.007592799,
+        "41": 0.014559071,
+        "42": 0.021748376,
+        "43": 0.011567525,
+        "44": 0.009687259,
+        "45": 0.010624412,
+        "46": 0.011039683,
+        "47": 0.003883121,
+        "48": 0.009818069,
+        "49": 0.001464051,
+        "50": 0.006593656,
+        "51": 0.086811999,
+        "52": 0.020243124,
+        "53": 0.017283588,
+        "54": 0.001726508,
+        "55": 0.002987034,
+        "56": 0.024804629,
+        "57": 0.003367732,
+        "58": 0.006382658,
+        "59": 0.00557136,
+        "60": 0.003572811,
+        "61": 0.005754969,
+        "62": 0.002256259,
+        "63": 0.00392709,
+        "64": 0.188520009,
+        "65": 0.004282146,
+        "66": 0.003794577,
+        "67": 0.002506287,
+        "68": 0.05231293,
+        "69": 0.004852174,
+        "70": 0.025433397,
+        "71": 0.011090513
+      },
+      "statistics": {
+        "active_subnets": 71,
+        "avg_emission_rate": 0.02114574290140845,
+        "max_emission_rate": 0.193418235,
+        "min_emission_rate": 0.001464051,
+        "total_emission_rate": 1.501347746
+      }
+    },
+    {
+      "sample_index": 20,
+      "requested_time": "2025-03-05T20:00:00+00:00",
+      "block_timestamp_utc": "2025-03-05T20:00:00.001000+00:00",
+      "closest_block": 5063832,
+      "emissions": {
+        "1": 0.03386627,
+        "2": 0.002569539,
+        "3": 0.038676859,
+        "4": 0.193115149,
+        "5": 0.013356648,
+        "6": 0.011676765,
+        "7": 0.0017504,
+        "8": 0.185398989,
+        "9": 0.021965694,
+        "10": 0.03903559,
+        "11": 0.025189259,
+        "12": 0.003349205,
+        "13": 0.042426028,
+        "14": 0.002047468,
+        "15": 0.00187852,
+        "16": 0.008146387,
+        "17": 0.008102583,
+        "18": 0.002436884,
+        "19": 0.061968664,
+        "20": 0.007906112,
+        "21": 0.005406349,
+        "22": 0.004313752,
+        "23": 0.002263827,
+        "24": 0.003163802,
+        "25": 0.019538232,
+        "26": 0.002478441,
+        "27": 0.010480527,
+        "28": 0.001797723,
+        "29": 0.010786182,
+        "30": 0.010441447,
+        "31": 0.001556224,
+        "32": 0.008149849,
+        "33": 0.005702598,
+        "34": 0.102226219,
+        "35": 0.004897643,
+        "36": 0.00296008,
+        "37": 0.006936849,
+        "38": 0.002257197,
+        "39": 0.002557264,
+        "40": 0.007607955,
+        "41": 0.014513511,
+        "42": 0.021628431,
+        "43": 0.011540388,
+        "44": 0.00965,
+        "45": 0.010610715,
+        "46": 0.011020734,
+        "47": 0.003888795,
+        "48": 0.010013222,
+        "49": 0.001460415,
+        "50": 0.006585328,
+        "51": 0.086676842,
+        "52": 0.018714144,
+        "53": 0.017265048,
+        "54": 0.001750123,
+        "55": 0.002926036,
+        "56": 0.02465668,
+        "57": 0.003342574,
+        "58": 0.006428637,
+        "59": 0.005493106,
+        "60": 0.003567296,
+        "61": 0.005745041,
+        "62": 0.002258071,
+        "63": 0.005510486,
+        "64": 0.188116696,
+        "65": 0.004266728,
+        "66": 0.003783329,
+        "67": 0.002505673,
+        "68": 0.055113383,
+        "69": 0.004842561,
+        "70": 0.024937268,
+        "71": 0.01037176
+      },
+      "statistics": {
+        "active_subnets": 71,
+        "avg_emission_rate": 0.021120678788732396,
+        "max_emission_rate": 0.193115149,
+        "min_emission_rate": 0.001460415,
+        "total_emission_rate": 1.499568194
+      }
+    },
+    {
+      "sample_index": 21,
+      "requested_time": "2025-03-05T21:00:00+00:00",
+      "block_timestamp_utc": "2025-03-05T21:00:00+00:00",
+      "closest_block": 5064132,
+      "emissions": {
+        "1": 0.033849903,
+        "2": 0.00256503,
+        "3": 0.038221956,
+        "4": 0.192835685,
+        "5": 0.013338,
+        "6": 0.011670164,
+        "7": 0.001749252,
+        "8": 0.182346485,
+        "9": 0.021944782,
+        "10": 0.038944884,
+        "11": 0.025132409,
+        "12": 0.003344911,
+        "13": 0.042375578,
+        "14": 0.002044229,
+        "15": 0.001875567,
+        "16": 0.007938273,
+        "17": 0.00805062,
+        "18": 0.002438062,
+        "19": 0.061819102,
+        "20": 0.007898982,
+        "21": 0.005397585,
+        "22": 0.004307069,
+        "23": 0.002260114,
+        "24": 0.003138745,
+        "25": 0.019501289,
+        "26": 0.002490971,
+        "27": 0.009828476,
+        "28": 0.001793112,
+        "29": 0.010769614,
+        "30": 0.010426712,
+        "31": 0.002375417,
+        "32": 0.008129358,
+        "33": 0.005696156,
+        "34": 0.102210031,
+        "35": 0.004891514,
+        "36": 0.002963123,
+        "37": 0.006932591,
+        "38": 0.002236706,
+        "39": 0.002551173,
+        "40": 0.00764945,
+        "41": 0.014473183,
+        "42": 0.021582286,
+        "43": 0.011516842,
+        "44": 0.009529442,
+        "45": 0.010600304,
+        "46": 0.011014498,
+        "47": 0.003916426,
+        "48": 0.010000896,
+        "49": 0.001516401,
+        "50": 0.006578241,
+        "51": 0.086615887,
+        "52": 0.018677945,
+        "53": 0.017300295,
+        "54": 0.001706414,
+        "55": 0.002904356,
+        "56": 0.024660653,
+        "57": 0.003338241,
+        "58": 0.006418149,
+        "59": 0.005540451,
+        "60": 0.003508361,
+        "61": 0.005640458,
+        "62": 0.002264698,
+        "63": 0.003197833,
+        "64": 0.189811889,
+        "65": 0.004196752,
+        "66": 0.003762097,
+        "67": 0.002500457,
+        "68": 0.04932621,
+        "69": 0.004866103,
+        "70": 0.024543555,
+        "71": 0.009547847
+      },
+      "statistics": {
+        "active_subnets": 71,
+        "avg_emission_rate": 0.020943524647887325,
+        "max_emission_rate": 0.192835685,
+        "min_emission_rate": 0.001516401,
+        "total_emission_rate": 1.48699025
+      }
+    },
+    {
+      "sample_index": 22,
+      "requested_time": "2025-03-05T22:00:00+00:00",
+      "block_timestamp_utc": "2025-03-05T22:00:00.001000+00:00",
+      "closest_block": 5064432,
+      "emissions": {
+        "1": 0.033621556,
+        "2": 0.002562009,
+        "3": 0.038391555,
+        "4": 0.192377949,
+        "5": 0.013249548,
+        "6": 0.011569306,
+        "7": 0.001745696,
+        "8": 0.182001846,
+        "9": 0.021801439,
+        "10": 0.038865421,
+        "11": 0.025083334,
+        "12": 0.003339713,
+        "13": 0.04221743,
+        "14": 0.002041004,
+        "15": 0.00186679,
+        "16": 0.008683095,
+        "17": 0.008027326,
+        "18": 0.00244194,
+        "19": 0.061736158,
+        "20": 0.007899251,
+        "21": 0.005390476,
+        "22": 0.004298861,
+        "23": 0.002256417,
+        "24": 0.003132982,
+        "25": 0.019452873,
+        "26": 0.002590911,
+        "27": 0.008476305,
+        "28": 0.001791251,
+        "29": 0.010753119,
+        "30": 0.010410421,
+        "31": 0.00187434,
+        "32": 0.008138076,
+        "33": 0.00570182,
+        "34": 0.106225596,
+        "35": 0.004879799,
+        "36": 0.002958221,
+        "37": 0.006800855,
+        "38": 0.002240544,
+        "39": 0.002547165,
+        "40": 0.00775439,
+        "41": 0.014472865,
+        "42": 0.021546464,
+        "43": 0.011490064,
+        "44": 0.009223907,
+        "45": 0.010585215,
+        "46": 0.010993419,
+        "47": 0.004099426,
+        "48": 0.01000878,
+        "49": 0.00151415,
+        "50": 0.006506151,
+        "51": 0.086780537,
+        "52": 0.017185457,
+        "53": 0.017275361,
+        "54": 0.001722057,
+        "55": 0.002899439,
+        "56": 0.024627454,
+        "57": 0.003334049,
+        "58": 0.006486398,
+        "59": 0.005423357,
+        "60": 0.003506504,
+        "61": 0.005631627,
+        "62": 0.002261312,
+        "63": 0.003189466,
+        "64": 0.1910432,
+        "65": 0.004185944,
+        "66": 0.00375474,
+        "67": 0.002500236,
+        "68": 0.040845533,
+        "69": 0.004830046,
+        "70": 0.023854497,
+        "71": 0.00848222,
+        "72": 0.267352197
+      },
+      "statistics": {
+        "active_subnets": 72,
+        "avg_emission_rate": 0.02423345638888889,
+        "max_emission_rate": 0.267352197,
+        "min_emission_rate": 0.00151415,
+        "total_emission_rate": 1.74480886
+      }
+    },
+    {
+      "sample_index": 23,
+      "requested_time": "2025-03-05T23:00:00+00:00",
+      "block_timestamp_utc": "2025-03-05T23:00:00+00:00",
+      "closest_block": 5064732,
+      "emissions": {
+        "1": 0.03343544,
+        "2": 0.002556646,
+        "3": 0.038826434,
+        "4": 0.19203984,
+        "5": 0.013622429,
+        "6": 0.01155566,
+        "7": 0.001725763,
+        "8": 0.181806745,
+        "9": 0.021727276,
+        "10": 0.03892514,
+        "11": 0.025029719,
+        "12": 0.003329275,
+        "13": 0.042148631,
+        "14": 0.002037694,
+        "15": 0.001863591,
+        "16": 0.008663757,
+        "17": 0.007839184,
+        "18": 0.002436875,
+        "19": 0.061480423,
+        "20": 0.007892887,
+        "21": 0.005376572,
+        "22": 0.00428639,
+        "23": 0.002254923,
+        "24": 0.003065893,
+        "25": 0.019333701,
+        "26": 0.00258804,
+        "27": 0.008412585,
+        "28": 0.001786223,
+        "29": 0.010733045,
+        "30": 0.010462512,
+        "31": 0.001886939,
+        "32": 0.008109777,
+        "33": 0.005701778,
+        "34": 0.101136575,
+        "35": 0.004873111,
+        "36": 0.002938503,
+        "37": 0.006422661,
+        "38": 0.002252768,
+        "39": 0.002540552,
+        "40": 0.008082258,
+        "41": 0.014438521,
+        "42": 0.020927314,
+        "43": 0.01143331,
+        "44": 0.009219471,
+        "45": 0.010569052,
+        "46": 0.010969867,
+        "47": 0.004230159,
+        "48": 0.010000446,
+        "49": 0.001548898,
+        "50": 0.006493826,
+        "51": 0.086548819,
+        "52": 0.01697958,
+        "53": 0.017281951,
+        "54": 0.001728256,
+        "55": 0.002887762,
+        "56": 0.024632148,
+        "57": 0.003329257,
+        "58": 0.006459873,
+        "59": 0.00540904,
+        "60": 0.003486885,
+        "61": 0.005410731,
+        "62": 0.00228083,
+        "63": 0.003225315,
+        "64": 0.190692774,
+        "65": 0.004156359,
+        "66": 0.003720014,
+        "67": 0.00250007,
+        "68": 0.043770133,
+        "69": 0.004785643,
+        "70": 0.024220504,
+        "71": 0.008837811,
+        "72": 0.047829999
+      },
+      "statistics": {
+        "active_subnets": 72,
+        "avg_emission_rate": 0.02112767823611111,
+        "max_emission_rate": 0.19203984,
+        "min_emission_rate": 0.001548898,
+        "total_emission_rate": 1.521192833
+      }
     }
+  ],
+  "generated_at": "2025-10-30T06:24:41.198458+00:00",
+  "summary": {
+    "observations": 24,
+    "active_subnets_min": 71,
+    "active_subnets_max": 72,
+    "total_emission_rate_min": 1.48699025,
+    "total_emission_rate_max": 1.74480886,
+    "total_emission_rate_avg": 1.5327165617083331
   }
 }

@@ -11,10 +11,12 @@ import json
 import sys
 from datetime import datetime, timezone, timedelta
 from pathlib import Path
-from typing import Any, Sequence
+from typing import Any, Tuple
 
 import bittensor as bt
+from concurrent.futures import ThreadPoolExecutor
 from async_substrate_interface.errors import SubstrateRequestException
+from threading import local
 
 
 def get_block_timestamp(sub, block: int) -> datetime | None:
@@ -59,12 +61,8 @@ def get_block_timestamp(sub, block: int) -> datetime | None:
     return None
 
 ESTIMATED_BLOCKS_PER_DAY = 7200
-DEFAULT_VALIDATOR_COLDKEYS: tuple[str, ...] = (
-    "5GZSAgaVGQqegjhEkxpJjpSVLVmNnE2vx2PFLzr7kBBMKpGQ",
-    "5HBtpwxuGNL1gwzwomwR7sjwUt8WXYSuWcLYN6f9KpTZkP4k",
-    "5FuzgvtfbZWdKSRxyYVPAPYNaNnf9cMnpT7phL3s2T3Kkrzo",
-)
-DEFAULT_VALIDATOR_NETUIDS: tuple[int, ...] = ()
+AVERAGE_BLOCK_SECONDS = 24 * 3600 / ESTIMATED_BLOCKS_PER_DAY
+DEFAULT_MIDNIGHT_BLOCK_FILE = Path(__file__).with_name("midnight_blocks.json")
 
 
 def find_block_at_time(
@@ -143,173 +141,12 @@ def balance_to_float(bal):
         return float(getattr(bal, "tao", 0))
 
 
-def neuron_is_validator(neuron: Any) -> bool:
-    """Return True if the neuron is a validator across different SDK versions."""
-    for attr in ("is_validator", "validator_permit", "validator_permits"):
-        value = getattr(neuron, attr, None)
-        if value is None:
-            continue
-        if isinstance(value, (list, tuple)):
-            uid = getattr(neuron, "uid", None)
-            if uid is None:
-                continue
-            idx = int(uid)
-            if 0 <= idx < len(value):
-                return bool(value[idx])
-            continue
-        if callable(value):
-            try:
-                value = value()
-            except TypeError:
-                pass
-        return bool(value)
-    return False
-
-
-def list_subnet_validators(sub: bt.Subtensor, netuid: int, block: int) -> list[dict[str, Any]]:
-    """Return validator identity rows for the requested subnet."""
-    try:
-        neurons = sub.neurons_lite(netuid=netuid, block=block) or []
-    except AttributeError as exc:  # pragma: no cover - version specific
-        raise RuntimeError(
-            "Installed bittensor version does not expose `neurons_lite`. "
-            "Upgrade bittensor or adjust the script to use a compatible API."
-        ) from exc
-
-    validators: list[dict[str, Any]] = []
-    for neuron in neurons:
-        if not neuron_is_validator(neuron):
-            continue
-        uid = getattr(neuron, "uid", None)
-        if uid is None:
-            continue
-        validators.append(
-            {
-                "uid": int(uid),
-                "hotkey": getattr(neuron, "hotkey", None),
-                "coldkey": getattr(neuron, "coldkey", None),
-            }
-        )
-
-    validators.sort(key=lambda row: row["uid"])
-    return validators
-
-
-def find_validators_until_coldkeys(
-    sub: bt.Subtensor,
-    netuid: int,
-    start_block: int,
-    coldkeys: Sequence[str] | None = None,
-    max_backtrack: int | None = 0,
-) -> tuple[int, list[dict[str, Any]], list[dict[str, Any]]]:
-    """Search backward from start_block until validators with selected coldkeys are found.
-
-    Returns (block_used, all_validators, matched_validators). When `coldkeys` is falsy,
-    the embedded DEFAULT_VALIDATOR_COLDKEYS are used as the search target.
-    """
-    if start_block <= 0:
-        raise SystemExit("--block must be a positive integer")
-
-    effective_coldkeys = coldkeys if coldkeys else DEFAULT_VALIDATOR_COLDKEYS
-    coldkey_set = {ck for ck in effective_coldkeys if ck}
-    backtracked = 0
-    block = start_block
-
-    while block > 0:
-        validators = list_subnet_validators(sub, netuid, block)
-        matches = (
-            validators
-            if not coldkey_set
-            else [row for row in validators if row.get("coldkey") in coldkey_set]
-        )
-        if matches:
-            return block, validators, matches
-
-        backtracked += 1
-        if max_backtrack is not None and backtracked > max_backtrack:
-            break
-        block -= 1
-
-    coldkey_list = ", ".join(sorted(coldkey_set)) or "unknown"
-    raise RuntimeError(
-        f"No validators with coldkeys [{coldkey_list}] found within the search window (start {start_block}, backtracked {backtracked} blocks)."
-    )
-
-
-def resolve_validator_matches(
-    sub: bt.Subtensor,
-    netuid: int,
-    target_block: int,
-    coldkeys: Sequence[str] | None,
-    validator_cache: dict[int, dict[str, dict[str, Any]]] | None,
-    max_backtrack: int | None,
-) -> tuple[int, list[dict[str, Any]], list[dict[str, Any]]]:
-    """Return (block_used, all_validators, matched subset) for a subnet."""
-    target_coldkeys = [ck for ck in (coldkeys or DEFAULT_VALIDATOR_COLDKEYS) if ck]
-    if not target_coldkeys:
-        validators = list_subnet_validators(sub, netuid, target_block)
-        return target_block, validators, []
-
-    cache_for_net = None
-    if validator_cache is not None:
-        cache_for_net = validator_cache.setdefault(netuid, {})
-
-    validators: list[dict[str, Any]] | None = None
-    if cache_for_net:
-        validators = list_subnet_validators(sub, netuid, target_block)
-        by_uid = {row["uid"]: row for row in validators}
-        by_coldkey = {
-            row.get("coldkey"): row for row in validators if row.get("coldkey")
-        }
-        matches: list[dict[str, Any]] = []
-        missing: list[str] = []
-        for coldkey in target_coldkeys:
-            cached_entry = cache_for_net.get(coldkey)
-            row = None
-            if cached_entry is not None:
-                row = by_uid.get(int(cached_entry["uid"]))
-                if row and row.get("coldkey") != coldkey:
-                    row = None
-            if row is None:
-                row = by_coldkey.get(coldkey)
-            if row:
-                matches.append(row)
-                cache_for_net[coldkey] = row
-            else:
-                missing.append(coldkey)
-        if not missing:
-            return target_block, validators, matches
-
-    block_used, validators, matches = find_validators_until_coldkeys(
-        sub,
-        netuid,
-        target_block,
-        coldkeys=target_coldkeys,
-        max_backtrack=max_backtrack,
-    )
-    if cache_for_net is not None:
-        for row in matches:
-            coldkey = row.get("coldkey")
-            if coldkey:
-                cache_for_net[coldkey] = row
-    return block_used, validators, matches
-
-
 def log(message: str, *, level: str = "info") -> None:
     prefix = f"[{level}] " if level else ""
     print(f"{prefix}{message}", file=sys.stderr)
 
 
-def fetch_prices_at_block(
-    sub: bt.Subtensor,
-    block: int,
-    *,
-    validator_targets: set[int] | None = None,
-    validator_coldkeys: Sequence[str] | None = None,
-    validator_cache: dict[int, dict[str, dict[str, Any]]] | None = None,
-    validator_max_backtrack: int | None = 0,
-    include_all_validators: bool = False,
-):
+def fetch_prices_at_block(sub: bt.Subtensor, block: int) -> list[dict[str, Any]]:
     try:
         infos = sub.get_all_subnets_info(block=block) or []
     except SubstrateRequestException as exc:
@@ -341,104 +178,31 @@ def fetch_prices_at_block(
         return prices
 
     price_map = load_price_map()
-    tracking_all = validator_targets is None
 
-    rows = []
+    rows: list[dict[str, Any]] = []
     for info in infos:
-        netuid = int(getattr(info, "netuid"))
-        price_tao = price_map.get(netuid)
-
-        row: dict[str, Any] = {
-            "netuid": netuid,
-            #"symbol": getattr(info, "symbol", None),
-            #"name": getattr(info, "subnet_name", None),
-            "price_tao_per_alpha": price_tao,
-        }
-        tracked = tracking_all or (validator_targets is not None and netuid in validator_targets)
-        validator_meta: dict[str, Any] | None = None
-        if include_all_validators:
-            try:
-                validator_block, validators_list, matches = resolve_validator_matches(
-                    sub,
-                    netuid,
-                    block,
-                    validator_coldkeys,
-                    validator_cache,
-                    validator_max_backtrack,
-                )
-            except RuntimeError as exc:
-                log(f"Validator lookup failed for netuid {netuid}: {exc}", level="warn")
-                validator_block = block
-                validators_list = list_subnet_validators(sub, netuid, block)
-                matches = []
-            validator_meta = {
-                "block": validator_block,
-                "entries": validators_list,
+        try:
+            netuid = int(getattr(info, "netuid"))
+        except Exception:
+            continue
+        rows.append(
+            {
+                "netuid": netuid,
+                "price_tao_per_alpha": price_map.get(netuid),
             }
-            if matches:
-                validator_meta["matched_coldkeys"] = matches
-        elif tracked:
-            try:
-                validator_block, _, matches = resolve_validator_matches(
-                    sub,
-                    netuid,
-                    block,
-                    validator_coldkeys,
-                    validator_cache,
-                    validator_max_backtrack,
-                )
-            except RuntimeError as exc:
-                log(f"Validator lookup failed for netuid {netuid}: {exc}", level="warn")
-                validator_block = block
-                matches = []
-            validator_meta = {
-                "block": validator_block,
-                "matched_coldkeys": matches,
-            }
+        )
 
-        if validator_meta:
-            row["validators"] = validator_meta
-
-        rows.append(row)
-
-    # include any subnets from fallback price map that might not be present in infos
     known_netuid = {row["netuid"] for row in rows}
-    for netuid, price in price_map.items():
+    for raw_netuid, price in price_map.items():
+        netuid = int(raw_netuid)
         if netuid in known_netuid:
             continue
-        rows.append({
-            "netuid": netuid,
-            "price_tao_per_alpha": price,
-        })
-
-    if validator_targets:
-        for netuid in validator_targets:
-            if netuid in known_netuid:
-                continue
-            try:
-                validator_block, validators_list, matches = resolve_validator_matches(
-                    sub,
-                    netuid,
-                    block,
-                    validator_coldkeys,
-                    validator_cache,
-                    validator_max_backtrack,
-                )
-            except RuntimeError:
-                matches = []
-                validator_block = block
-                validators_list = []
-            row: dict[str, Any] = {
+        rows.append(
+            {
                 "netuid": netuid,
-                "price_tao_per_alpha": None,
+                "price_tao_per_alpha": price,
             }
-            meta: dict[str, Any] = {"block": validator_block}
-            if include_all_validators:
-                meta["entries"] = validators_list
-            meta["matched_coldkeys"] = matches
-            row["validators"] = meta
-            rows.append(row)
-            known_netuid.add(netuid)
+        )
 
     rows.sort(key=lambda x: x["netuid"])
     return rows
@@ -449,6 +213,106 @@ def parse_requested_datetime(date_str: str, time_str: str) -> datetime:
         return datetime.strptime(f"{date_str} {time_str}", "%Y-%m-%d %H:%M%z")
     except ValueError as exc:
         raise SystemExit(f"Invalid --time format {time_str!r}: {exc}") from exc
+
+
+def build_daily_sample_datetimes(date_str: str, time_str: str, samples_per_day: int) -> list[datetime]:
+    if samples_per_day <= 0:
+        raise SystemExit("--samples-per-day must be a positive integer")
+
+    base_dt = parse_requested_datetime(date_str, time_str)
+    if samples_per_day == 1:
+        return [base_dt]
+
+    interval_seconds = 24 * 3600 / samples_per_day
+    interval = timedelta(seconds=interval_seconds)
+    return [base_dt + i * interval for i in range(samples_per_day)]
+ 
+ 
+def load_midnight_block_map(path: Path, network: str) -> dict[str, dict[str, Any]]:
+    if not path.exists():
+        log(f"No midnight block map found at {path}; falling back to live search.", level="info")
+        return {}
+
+    try:
+        data = json.loads(path.read_text())
+    except Exception as exc:
+        log(f"Failed to read midnight block map {path}: {exc}", level="warn")
+        return {}
+
+    file_network = data.get("network")
+    if file_network and file_network != network:
+        log(
+            f"Midnight block map {path} was generated for network {file_network}; continuing with available entries.",
+            level="warn",
+        )
+
+    raw_blocks = data.get("blocks") or data.get("block_map") or {}
+    if not isinstance(raw_blocks, dict):
+        log(f"Midnight block map {path} is missing 'blocks' dictionary.", level="warn")
+        return {}
+
+    blocks: dict[str, dict[str, Any]] = {}
+    for date_key, entry in raw_blocks.items():
+        try:
+            if isinstance(entry, dict):
+                block_val = int(entry.get("block"))
+                timestamp_val = entry.get("block_timestamp_utc") or entry.get("timestamp_utc")
+            else:
+                block_val = int(entry)
+                timestamp_val = None
+        except (TypeError, ValueError):
+            continue
+        blocks[date_key] = {
+            "block": block_val,
+            "block_timestamp_utc": timestamp_val,
+        }
+    return blocks
+
+
+def store_midnight_block(
+    blocks: dict[str, dict[str, Any]],
+    date_key: str,
+    block: int,
+    block_time: datetime | None,
+    *,
+    dirty_set: set[str],
+) -> None:
+    stored_ts = block_time.isoformat() if isinstance(block_time, datetime) else None
+    previous = blocks.get(date_key)
+    if previous and previous.get("block") == block and previous.get("block_timestamp_utc") == stored_ts:
+        return
+    blocks[date_key] = {
+        "block": int(block),
+        "block_timestamp_utc": stored_ts,
+    }
+    dirty_set.add(date_key)
+
+
+def save_midnight_block_map(path: Path, network: str, blocks: dict[str, dict[str, Any]]) -> None:
+    if not blocks:
+        return
+    sorted_dates = sorted(blocks)
+    payload = {
+        "network": network,
+        "generated_at": datetime.now(timezone.utc).isoformat(),
+        "start_date": sorted_dates[0],
+        "end_date": sorted_dates[-1],
+        "blocks": {date_key: blocks[date_key] for date_key in sorted_dates},
+    }
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8")
+    log(f"Updated midnight block cache at {path}", level="info")
+
+
+def build_sample_payload(subtensor: bt.Subtensor, requested_dt: datetime, block: int, block_time: datetime | None) -> dict[str, Any]:
+    rows = fetch_prices_at_block(subtensor, block)
+    timestamp = block_time.isoformat() if isinstance(block_time, datetime) else None
+    return {
+        "requested_time": requested_dt.isoformat(),
+        "closest_block": block,
+        "block_timestamp_utc": timestamp,
+        "prices": rows,
+    }
 
 
 def main():
@@ -462,86 +326,192 @@ def main():
     )
     parser.add_argument(
         "--time",
-        default="16:00+00:00",
-        help="Time with offset in HH:MM±HH:MM (default: 16:00+00:00)",
+        default="00:00+00:00",
+        help="Time with offset in HH:MM±HH:MM (default: 00:00+00:00)",
     )
     parser.add_argument(
         "--output",
         help="Write JSON to this path instead of stdout (single-date mode only).",
     )
     parser.add_argument(
-        "--validator-coldkey",
-        action="append",
-        help="Extra validator coldkey(s) to track alongside the defaults.",
+        "--output-dir",
+        help="Directory for auto-named JSON output (default: outputs in date-range mode).",
     )
     parser.add_argument(
-        "--no-default-validator-coldkeys",
-        action="store_true",
-        help="Ignore the embedded default validator coldkeys.",
-    )
-    parser.add_argument(
-        "--validator-netuid",
-        action="append",
+        "--samples-per-day",
         type=int,
-        help="Subnet(s) to attach validator metadata (default: all subnets).",
+        default=1,
+        help="Number of evenly spaced snapshots per day (default: 1).",
     )
     parser.add_argument(
-        "--validator-max-backtrack",
+        "--sample-workers",
         type=int,
-        default=0,
-        help="Blocks to search backward when validator state is pruned (default: 0, use -1 for unlimited).",
+        default=4,
+        help="Concurrent samples per day (default: 4).",
     )
     parser.add_argument(
-        "--no-validator-info",
-        action="store_true",
-        help="Skip validator lookups entirely.",
-    )
-    parser.add_argument(
-        "--include-all-validators",
-        action="store_true",
-        help="Attach full validator lists for every subnet (default: only matched coldkeys).",
+        "--midnight-blocks",
+        default=str(DEFAULT_MIDNIGHT_BLOCK_FILE),
+        help="Path to JSON file with precomputed midnight blocks (default: ./midnight_blocks.json).",
     )
     args = parser.parse_args()
 
+    samples_per_day = args.samples_per_day
+    if samples_per_day < 1:
+        raise SystemExit("--samples-per-day must be a positive integer")
+
+    sample_workers = max(1, args.sample_workers)
     sub = bt.Subtensor(network=args.network)
 
-    include_validators = not args.no_validator_info
-    include_all_validators = args.include_all_validators
-    validator_coldkeys: list[str] | None = None
-    validator_targets: set[int] | None = None
-    validator_max_backtrack: int | None = None
-    validator_cache: dict[int, dict[str, dict[str, Any]]] | None = None
+    sample_thread_state = local()
+    midnight_blocks: dict[str, dict[str, Any]] = {}
+    midnight_dirty: set[str] = set()
+    midnight_path: Path | None = None
+    if args.midnight_blocks:
+        midnight_path = Path(args.midnight_blocks)
+        if not midnight_path.is_absolute():
+            midnight_path = Path(__file__).resolve().parent / midnight_path
+        midnight_blocks = load_midnight_block_map(midnight_path, args.network)
 
-    if include_validators:
-        coldkey_candidates: list[str] = []
-        if not args.no_default_validator_coldkeys:
-            coldkey_candidates.extend(DEFAULT_VALIDATOR_COLDKEYS)
-        coldkey_candidates.extend(args.validator_coldkey or [])
-        seen_ck: set[str] = set()
-        validator_coldkeys = []
-        for ck in coldkey_candidates:
-            if not ck or ck in seen_ck:
-                continue
-            seen_ck.add(ck)
-            validator_coldkeys.append(ck)
+    def get_sample_subtensor() -> bt.Subtensor:
+        if sample_workers <= 1:
+            return sub
+        worker_sub = getattr(sample_thread_state, "subtensor", None)
+        if worker_sub is None:
+            try:
+                worker_sub = bt.Subtensor(network=args.network)
+            except Exception as exc:
+                log(f'Worker subtensor init failed ({exc}); reusing primary connection.', level='warn')
+                worker_sub = sub
+            sample_thread_state.subtensor = worker_sub
+        return worker_sub
 
-        if not validator_coldkeys:
-            include_validators = False
-        else:
-            if args.validator_netuid:
-                validator_targets = {net for net in args.validator_netuid if net is not None}
-                for net in list(validator_targets):
-                    if net < 0:
-                        raise SystemExit("--validator-netuid values must be non-negative")
-            else:
-                validator_targets = None  # track all subnets
-
-            validator_max_backtrack = (
-                None
-                if args.validator_max_backtrack is not None and args.validator_max_backtrack < 0
-                else args.validator_max_backtrack
+    def build_estimated_sample(
+        sample_index: int,
+        requested_dt: datetime,
+        base_reference_utc: datetime,
+        base_block: int,
+    ) -> tuple[int, dict[str, Any]]:
+        local_sub = get_sample_subtensor()
+        target_utc = requested_dt.astimezone(timezone.utc)
+        delta_seconds = (target_utc - base_reference_utc).total_seconds()
+        estimated_block = int(round(base_block + delta_seconds / AVERAGE_BLOCK_SECONDS))
+        if estimated_block < 1:
+            estimated_block = 1
+        log(
+            f"Estimating block {estimated_block} for sample {sample_index + 1}/{samples_per_day} at {target_utc.isoformat()} UTC",
+            level="info",
+        )
+        block_time = get_block_timestamp(local_sub, estimated_block)
+        if block_time is None:
+            log(
+                f"Timestamp unavailable for estimated block {estimated_block} (sample {sample_index + 1})",
+                level="warn",
             )
-            validator_cache = {}
+        payload = build_sample_payload(local_sub, requested_dt, estimated_block, block_time)
+        return sample_index, payload
+
+    def generate_day_output(date_str: str) -> dict[str, Any]:
+        daily_datetimes = build_daily_sample_datetimes(date_str, args.time, samples_per_day)
+        base_dt = daily_datetimes[0]
+        base_target_utc = base_dt.astimezone(timezone.utc)
+
+        midnight_entry = midnight_blocks.get(date_str)
+        target_is_midnight = (
+            base_target_utc.hour == 0
+            and base_target_utc.minute == 0
+            and base_target_utc.second == 0
+            and base_target_utc.microsecond == 0
+        )
+
+        base_block: int | None = None
+        base_block_time: datetime | None = None
+
+        if midnight_entry and target_is_midnight:
+            base_block = int(midnight_entry["block"])
+            log(
+                f"Using precomputed midnight block {base_block} for sample 1/{samples_per_day} ({date_str}).",
+                level="info",
+            )
+            ts_value = midnight_entry.get("block_timestamp_utc")
+            if ts_value:
+                try:
+                    base_block_time = datetime.fromisoformat(ts_value)
+                except ValueError:
+                    base_block_time = None
+            if base_block_time is None:
+                base_block_time = get_block_timestamp(sub, base_block)
+                if base_block_time is None:
+                    log(
+                        f"Timestamp unavailable for precomputed block {base_block} ({date_str}); continuing.",
+                        level="warn",
+                    )
+        else:
+            log(
+                f"Finding block closest to {base_target_utc.isoformat()} UTC for sample 1/{samples_per_day} ({date_str})...",
+                level="info",
+            )
+            base_block = find_block_at_time(sub, base_target_utc)
+            base_block_time = get_block_timestamp(sub, base_block)
+            if base_block_time is None:
+                raise RuntimeError(f"Unable to read timestamp for block {base_block}")
+
+        if target_is_midnight and midnight_path is not None:
+            store_midnight_block(
+                midnight_blocks,
+                date_str,
+                base_block,
+                base_block_time if isinstance(base_block_time, datetime) else None,
+                dirty_set=midnight_dirty,
+            )
+
+        if isinstance(base_block_time, datetime):
+            log(
+                f"Sample 1/{samples_per_day} uses block {base_block} at {base_block_time.isoformat()} UTC",
+                level="info",
+            )
+        else:
+            log(
+                f"Sample 1/{samples_per_day} uses block {base_block} (timestamp unavailable)",
+                level="info",
+            )
+        base_reference_utc = base_block_time if isinstance(base_block_time, datetime) else base_target_utc
+
+        samples_map: dict[int, dict[str, Any]] = {}
+        samples_map[0] = build_sample_payload(sub, base_dt, base_block, base_block_time)
+
+        if samples_per_day > 1:
+            follow_up = list(enumerate(daily_datetimes[1:], start=1))
+            if sample_workers == 1:
+                for index, requested_dt in follow_up:
+                    _, payload = build_estimated_sample(index, requested_dt, base_reference_utc, base_block)
+                    samples_map[index] = payload
+            else:
+                with ThreadPoolExecutor(max_workers=sample_workers) as executor:
+                    futures = [
+                        executor.submit(
+                            build_estimated_sample,
+                            index,
+                            requested_dt,
+                            base_reference_utc,
+                            base_block,
+                        )
+                        for index, requested_dt in follow_up
+                    ]
+                    for future in futures:
+                        index, payload = future.result()
+                        samples_map[index] = payload
+
+        ordered_samples = [samples_map[idx] for idx in sorted(samples_map)]
+        day_output: dict[str, Any] = {
+            "date": date_str,
+            "network": args.network,
+            "samples_per_day": samples_per_day,
+            "samples": ordered_samples,
+        }
+        if samples_per_day == 1:
+            day_output.update(ordered_samples[0])
+        return day_output
 
     if args.date_range:
         start_str, end_str = args.date_range.split(":", maxsplit=1)
@@ -553,91 +523,37 @@ def main():
         if end_date < start_date:
             raise SystemExit("--date-range end must be on or after start")
 
-        output_dir = Path("outputs")
+        output_dir = Path(args.output_dir or "outputs")
         output_dir.mkdir(parents=True, exist_ok=True)
 
-        prev_block: int | None = None
         current_date = start_date
         while current_date <= end_date:
             date_str = current_date.strftime("%Y-%m-%d")
-            requested_dt = parse_requested_datetime(date_str, args.time)
-            target_utc = requested_dt.astimezone(timezone.utc)
-
-            min_block = prev_block
-            max_block = prev_block + ESTIMATED_BLOCKS_PER_DAY * 2 if prev_block else None
-
-            log(f"Finding block closest to {target_utc.isoformat()} UTC for {date_str}...")
-            block = find_block_at_time(sub, target_utc, min_block=min_block, max_block=max_block)
-            block_time = get_block_timestamp(sub, block)
-
-            if block_time is None:
-                raise RuntimeError(f"Unable to read timestamp for block {block}")
-
-            if max_block is not None and block_time < target_utc:
-                block = find_block_at_time(sub, target_utc)
-                block_time = get_block_timestamp(sub, block)
-                if block_time is None:
-                    raise RuntimeError(f"Unable to read timestamp for block {block}")
-
-            rows = fetch_prices_at_block(
-                sub,
-                block,
-                validator_targets=validator_targets if include_validators else None,
-                validator_coldkeys=validator_coldkeys,
-                validator_cache=validator_cache,
-                validator_max_backtrack=validator_max_backtrack,
-                include_all_validators=include_all_validators if include_validators else False,
-            )
-            output = {
-                "requested_time": requested_dt.isoformat(),
-                "closest_block": block,
-                "block_timestamp_utc": block_time.isoformat(),
-                "network": args.network,
-                "prices": rows,
-            }
-
+            day_output = generate_day_output(date_str)
             out_path = output_dir / f"prices_{date_str}.json"
-            out_path.write_text(json.dumps(output, ensure_ascii=False, indent=2), encoding="utf-8")
-            log(f"Saved {out_path} (block {block} at {block_time.isoformat()} UTC)")
-
-            prev_block = block
+            out_path.write_text(json.dumps(day_output, ensure_ascii=False, indent=2), encoding="utf-8")
+            log(f"Saved {out_path}", level="info")
             current_date += timedelta(days=1)
     else:
-        requested_dt = parse_requested_datetime(args.date, args.time)
-        target_utc = requested_dt.astimezone(timezone.utc)
-
-        log(f"Finding block closest to {target_utc.isoformat()} UTC...")
-        block = find_block_at_time(sub, target_utc)
-        block_time = get_block_timestamp(sub, block)
-        if block_time is None:
-            raise RuntimeError(f"Unable to read timestamp for block {block}")
-        log(f"Closest block: {block} at {block_time.isoformat()} UTC")
-
-        rows = fetch_prices_at_block(
-            sub,
-            block,
-            validator_targets=validator_targets if include_validators else None,
-            validator_coldkeys=validator_coldkeys,
-            validator_cache=validator_cache,
-            validator_max_backtrack=validator_max_backtrack,
-            include_all_validators=include_all_validators if include_validators else False,
-        )
-        output = {
-            "requested_time": requested_dt.isoformat(),
-            "closest_block": block,
-            "block_timestamp_utc": block_time.isoformat(),
-            "network": args.network,
-            "prices": rows,
-        }
+        date_str = args.date
+        day_output = generate_day_output(date_str)
 
         if args.output:
             out_path = Path(args.output)
             out_path.parent.mkdir(parents=True, exist_ok=True)
-            out_path.write_text(json.dumps(output, ensure_ascii=False, indent=2), encoding="utf-8")
-            log(f"Saved {out_path} (block {block} at {block_time.isoformat()} UTC)")
+            out_path.write_text(json.dumps(day_output, ensure_ascii=False, indent=2), encoding="utf-8")
+            log(f"Saved {out_path}", level="info")
+        elif args.output_dir:
+            output_dir = Path(args.output_dir)
+            output_dir.mkdir(parents=True, exist_ok=True)
+            out_path = output_dir / f"prices_{date_str}.json"
+            out_path.write_text(json.dumps(day_output, ensure_ascii=False, indent=2), encoding="utf-8")
+            log(f"Saved {out_path}", level="info")
         else:
-            print(json.dumps(output, ensure_ascii=False, indent=2))
+            print(json.dumps(day_output, ensure_ascii=False, indent=2))
 
+    if midnight_path is not None and midnight_dirty:
+        save_midnight_block_map(midnight_path, args.network, midnight_blocks)
 
 if __name__ == "__main__":
     main()

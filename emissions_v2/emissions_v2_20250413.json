@@ -1,1215 +1,2562 @@
 {
-  "emissions": {
-    "1": 0.056400096,
-    "2": 0.00603329,
-    "3": 0.120950495,
-    "4": 0.205738111,
-    "5": 0.008809904,
-    "6": 0.008576207,
-    "7": 0.001822497,
-    "8": 0.135122568,
-    "9": 0.015540193,
-    "10": 0.014829693,
-    "11": 0.007735118,
-    "12": 0.003658011,
-    "13": 0.058978161,
-    "14": 0.00110455,
-    "15": 0.001244123,
-    "16": 0.004399175,
-    "17": 0.041806059,
-    "18": 0.009897536,
-    "19": 0.100785827,
-    "20": 0.010817591,
-    "21": 0.005415419,
-    "22": 0.007322519,
-    "23": 0.004745717,
-    "24": 0.004741121,
-    "25": 0.026784312,
-    "26": 0.008287799,
-    "27": 0.002421574,
-    "28": 0.00066586,
-    "29": 0.003307855,
-    "30": 0.007643903,
-    "31": 0.001403233,
-    "32": 0.006388914,
-    "33": 0.015625019,
-    "34": 0.053299684,
-    "35": 0.001430768,
-    "36": 0.002352496,
-    "37": 0.008839142,
-    "38": 0.013108351,
-    "39": 0.001321837,
-    "40": 0.004575847,
-    "41": 0.017053775,
-    "42": 0.012191221,
-    "43": 0.020183276,
-    "44": 0.027065659,
-    "45": 0.009188992,
-    "46": 0.003360873,
-    "47": 0.002507228,
-    "48": 0.005668841,
-    "49": 0.001435423,
-    "50": 0.004855427,
-    "51": 0.075410746,
-    "52": 0.044362825,
-    "53": 0.020336944,
-    "54": 0.001175361,
-    "55": 0.002481499,
-    "56": 0.201628106,
-    "57": 0.005222336,
-    "58": 0.002515409,
-    "59": 0.002294279,
-    "60": 0.003927936,
-    "61": 0.003353097,
-    "62": 0.001496285,
-    "63": 0.001810465,
-    "64": 0.40197122,
-    "65": 0.002161341,
-    "66": 0.001932609,
-    "67": 0.000516231,
-    "68": 0.100395456,
-    "69": 0.001204308,
-    "70": 0.002907075,
-    "71": 0.000402394,
-    "72": 0.007020871,
-    "73": 0.001071193,
-    "74": 0.001150148,
-    "75": 0.055398372,
-    "76": 0.003941338,
-    "77": 0.007402003,
-    "78": 0.000679188,
-    "79": 0.001796855,
-    "80": 0.002670635,
-    "81": 0.073355503,
-    "82": 0.000771776,
-    "83": 8.681327772,
-    "84": 3515.81551435,
-    "85": 519.154768737,
-    "86": 100.894643667,
-    "87": 18.286763778,
-    "88": 91.738592709,
-    "89": 17.300190963,
-    "90": 187.657897631,
-    "91": 39.449303279
-  },
   "metadata": {
     "collection_method": "btsdk scripts v2",
-    "date": "prices_20250413",
+    "date": "20250413",
     "network": "ws://localhost:9944",
-    "timestamp": "2025-04-13T16:00:00+00:00",
-    "closest_block": 5343432,
-    "requested_local_time": null,
-    "total_active_subnets": 91,
-    "total_emission_rate": 4501.10920798
+    "timestamp": "2025-04-13T00:00:00+00:00",
+    "closest_block": 5338632,
+    "requested_time": "2025-04-13T00:00:00+00:00",
+    "samples_per_day": 24,
+    "primary_sample_index": 0
   },
   "statistics": {
-    "active_subnets": 91,
-    "avg_emission_rate": 49.46273854923077,
-    "max_emission_rate": 3515.81551435,
-    "min_emission_rate": 0.000402394,
-    "total_emission_rate": 4501.10920798
+    "active_subnets": 90,
+    "avg_emission_rate": 52.071993248077774,
+    "max_emission_rate": 3670.690841486,
+    "min_emission_rate": 0.000410743,
+    "total_emission_rate": 4686.479392327
   },
-  "generated_at": "2025-10-27T06:05:45.647246+00:00",
-  "validators": {
-    "1": {
-      "matched": [
-        {
-          "uid": 5,
-          "coldkey": "5HBtpwxuGNL1gwzwomwR7sjwUt8WXYSuWcLYN6f9KpTZkP4k",
-          "hotkey": "5F4tQyWrhfGVcNhoqeiNsR6KjD4wMZ2kfhLj4oHYuyHbZAc3"
-        },
-        {
-          "uid": 518,
-          "coldkey": "5GZSAgaVGQqegjhEkxpJjpSVLVmNnE2vx2PFLzr7kBBMKpGQ",
-          "hotkey": "5FFApaS75bv5pJHfAp2FVLBj9ZaXuFDjEypsaBNc1wCfe52v"
-        }
-      ],
-      "block": 5343432
-    },
-    "2": {
-      "matched": [
-        {
-          "uid": 5,
-          "coldkey": "5GZSAgaVGQqegjhEkxpJjpSVLVmNnE2vx2PFLzr7kBBMKpGQ",
-          "hotkey": "5FFApaS75bv5pJHfAp2FVLBj9ZaXuFDjEypsaBNc1wCfe52v"
-        },
-        {
-          "uid": 98,
-          "coldkey": "5HBtpwxuGNL1gwzwomwR7sjwUt8WXYSuWcLYN6f9KpTZkP4k",
-          "hotkey": "5F4tQyWrhfGVcNhoqeiNsR6KjD4wMZ2kfhLj4oHYuyHbZAc3"
-        }
-      ],
-      "block": 5343432
-    },
-    "3": {
-      "matched": [
-        {
-          "uid": 0,
-          "coldkey": "5GZSAgaVGQqegjhEkxpJjpSVLVmNnE2vx2PFLzr7kBBMKpGQ",
-          "hotkey": "5FFApaS75bv5pJHfAp2FVLBj9ZaXuFDjEypsaBNc1wCfe52v"
-        }
-      ],
-      "block": 5343432
-    },
-    "4": {
-      "matched": [
-        {
-          "uid": 241,
-          "coldkey": "5GZSAgaVGQqegjhEkxpJjpSVLVmNnE2vx2PFLzr7kBBMKpGQ",
-          "hotkey": "5FFApaS75bv5pJHfAp2FVLBj9ZaXuFDjEypsaBNc1wCfe52v"
-        }
-      ],
-      "block": 5343432
-    },
-    "5": {
-      "matched": [
-        {
-          "uid": 6,
-          "coldkey": "5GZSAgaVGQqegjhEkxpJjpSVLVmNnE2vx2PFLzr7kBBMKpGQ",
-          "hotkey": "5FFApaS75bv5pJHfAp2FVLBj9ZaXuFDjEypsaBNc1wCfe52v"
-        },
-        {
-          "uid": 54,
-          "coldkey": "5HBtpwxuGNL1gwzwomwR7sjwUt8WXYSuWcLYN6f9KpTZkP4k",
-          "hotkey": "5F4tQyWrhfGVcNhoqeiNsR6KjD4wMZ2kfhLj4oHYuyHbZAc3"
-        }
-      ],
-      "block": 5343432
-    },
-    "6": {
-      "matched": [
-        {
-          "uid": 16,
-          "coldkey": "5GZSAgaVGQqegjhEkxpJjpSVLVmNnE2vx2PFLzr7kBBMKpGQ",
-          "hotkey": "5FFApaS75bv5pJHfAp2FVLBj9ZaXuFDjEypsaBNc1wCfe52v"
-        },
-        {
-          "uid": 171,
-          "coldkey": "5HBtpwxuGNL1gwzwomwR7sjwUt8WXYSuWcLYN6f9KpTZkP4k",
-          "hotkey": "5F4tQyWrhfGVcNhoqeiNsR6KjD4wMZ2kfhLj4oHYuyHbZAc3"
-        }
-      ],
-      "block": 5343432
-    },
-    "7": {
-      "matched": [
-        {
-          "uid": 0,
-          "coldkey": "5GZSAgaVGQqegjhEkxpJjpSVLVmNnE2vx2PFLzr7kBBMKpGQ",
-          "hotkey": "5FFApaS75bv5pJHfAp2FVLBj9ZaXuFDjEypsaBNc1wCfe52v"
-        },
-        {
-          "uid": 231,
-          "coldkey": "5HBtpwxuGNL1gwzwomwR7sjwUt8WXYSuWcLYN6f9KpTZkP4k",
-          "hotkey": "5F4tQyWrhfGVcNhoqeiNsR6KjD4wMZ2kfhLj4oHYuyHbZAc3"
-        }
-      ],
-      "block": 5343432
-    },
-    "8": {
-      "matched": [
-        {
-          "uid": 4,
-          "coldkey": "5GZSAgaVGQqegjhEkxpJjpSVLVmNnE2vx2PFLzr7kBBMKpGQ",
-          "hotkey": "5FFApaS75bv5pJHfAp2FVLBj9ZaXuFDjEypsaBNc1wCfe52v"
-        },
-        {
-          "uid": 69,
-          "coldkey": "5HBtpwxuGNL1gwzwomwR7sjwUt8WXYSuWcLYN6f9KpTZkP4k",
-          "hotkey": "5F4tQyWrhfGVcNhoqeiNsR6KjD4wMZ2kfhLj4oHYuyHbZAc3"
-        }
-      ],
-      "block": 5343432
-    },
-    "9": {
-      "matched": [
-        {
-          "uid": 238,
-          "coldkey": "5HBtpwxuGNL1gwzwomwR7sjwUt8WXYSuWcLYN6f9KpTZkP4k",
-          "hotkey": "5F4tQyWrhfGVcNhoqeiNsR6KjD4wMZ2kfhLj4oHYuyHbZAc3"
-        },
-        {
-          "uid": 243,
-          "coldkey": "5GZSAgaVGQqegjhEkxpJjpSVLVmNnE2vx2PFLzr7kBBMKpGQ",
-          "hotkey": "5FFApaS75bv5pJHfAp2FVLBj9ZaXuFDjEypsaBNc1wCfe52v"
-        }
-      ],
-      "block": 5343432
-    },
-    "10": {
-      "matched": [
-        {
-          "uid": 40,
-          "coldkey": "5HBtpwxuGNL1gwzwomwR7sjwUt8WXYSuWcLYN6f9KpTZkP4k",
-          "hotkey": "5F4tQyWrhfGVcNhoqeiNsR6KjD4wMZ2kfhLj4oHYuyHbZAc3"
-        },
-        {
-          "uid": 179,
-          "coldkey": "5GZSAgaVGQqegjhEkxpJjpSVLVmNnE2vx2PFLzr7kBBMKpGQ",
-          "hotkey": "5FFApaS75bv5pJHfAp2FVLBj9ZaXuFDjEypsaBNc1wCfe52v"
-        }
-      ],
-      "block": 5343432
-    },
-    "11": {
-      "matched": [
-        {
-          "uid": 29,
-          "coldkey": "5GZSAgaVGQqegjhEkxpJjpSVLVmNnE2vx2PFLzr7kBBMKpGQ",
-          "hotkey": "5FFApaS75bv5pJHfAp2FVLBj9ZaXuFDjEypsaBNc1wCfe52v"
-        },
-        {
-          "uid": 191,
-          "coldkey": "5HBtpwxuGNL1gwzwomwR7sjwUt8WXYSuWcLYN6f9KpTZkP4k",
-          "hotkey": "5F4tQyWrhfGVcNhoqeiNsR6KjD4wMZ2kfhLj4oHYuyHbZAc3"
-        }
-      ],
-      "block": 5343432
-    },
-    "12": {
-      "matched": [
-        {
-          "uid": 12,
-          "coldkey": "5GZSAgaVGQqegjhEkxpJjpSVLVmNnE2vx2PFLzr7kBBMKpGQ",
-          "hotkey": "5FFApaS75bv5pJHfAp2FVLBj9ZaXuFDjEypsaBNc1wCfe52v"
-        },
-        {
-          "uid": 173,
-          "coldkey": "5HBtpwxuGNL1gwzwomwR7sjwUt8WXYSuWcLYN6f9KpTZkP4k",
-          "hotkey": "5F4tQyWrhfGVcNhoqeiNsR6KjD4wMZ2kfhLj4oHYuyHbZAc3"
-        }
-      ],
-      "block": 5343432
-    },
-    "13": {
-      "matched": [
-        {
-          "uid": 160,
-          "coldkey": "5GZSAgaVGQqegjhEkxpJjpSVLVmNnE2vx2PFLzr7kBBMKpGQ",
-          "hotkey": "5FFApaS75bv5pJHfAp2FVLBj9ZaXuFDjEypsaBNc1wCfe52v"
-        },
-        {
-          "uid": 232,
-          "coldkey": "5HBtpwxuGNL1gwzwomwR7sjwUt8WXYSuWcLYN6f9KpTZkP4k",
-          "hotkey": "5F4tQyWrhfGVcNhoqeiNsR6KjD4wMZ2kfhLj4oHYuyHbZAc3"
-        }
-      ],
-      "block": 5343432
-    },
-    "14": {
-      "matched": [
-        {
-          "uid": 3,
-          "coldkey": "5GZSAgaVGQqegjhEkxpJjpSVLVmNnE2vx2PFLzr7kBBMKpGQ",
-          "hotkey": "5FFApaS75bv5pJHfAp2FVLBj9ZaXuFDjEypsaBNc1wCfe52v"
-        }
-      ],
-      "block": 5343432
-    },
-    "15": {
-      "matched": [
-        {
-          "uid": 0,
-          "coldkey": "5GZSAgaVGQqegjhEkxpJjpSVLVmNnE2vx2PFLzr7kBBMKpGQ",
-          "hotkey": "5FFApaS75bv5pJHfAp2FVLBj9ZaXuFDjEypsaBNc1wCfe52v"
-        },
-        {
-          "uid": 2,
-          "coldkey": "5HBtpwxuGNL1gwzwomwR7sjwUt8WXYSuWcLYN6f9KpTZkP4k",
-          "hotkey": "5F4tQyWrhfGVcNhoqeiNsR6KjD4wMZ2kfhLj4oHYuyHbZAc3"
-        }
-      ],
-      "block": 5343432
-    },
-    "16": {
-      "matched": [
-        {
-          "uid": 0,
-          "coldkey": "5GZSAgaVGQqegjhEkxpJjpSVLVmNnE2vx2PFLzr7kBBMKpGQ",
-          "hotkey": "5FFApaS75bv5pJHfAp2FVLBj9ZaXuFDjEypsaBNc1wCfe52v"
-        },
-        {
-          "uid": 255,
-          "coldkey": "5HBtpwxuGNL1gwzwomwR7sjwUt8WXYSuWcLYN6f9KpTZkP4k",
-          "hotkey": "5F4tQyWrhfGVcNhoqeiNsR6KjD4wMZ2kfhLj4oHYuyHbZAc3"
-        }
-      ],
-      "block": 5343432
-    },
-    "17": {
-      "matched": [
-        {
-          "uid": 27,
-          "coldkey": "5GZSAgaVGQqegjhEkxpJjpSVLVmNnE2vx2PFLzr7kBBMKpGQ",
-          "hotkey": "5FFApaS75bv5pJHfAp2FVLBj9ZaXuFDjEypsaBNc1wCfe52v"
-        },
-        {
-          "uid": 128,
-          "coldkey": "5HBtpwxuGNL1gwzwomwR7sjwUt8WXYSuWcLYN6f9KpTZkP4k",
-          "hotkey": "5F4tQyWrhfGVcNhoqeiNsR6KjD4wMZ2kfhLj4oHYuyHbZAc3"
-        }
-      ],
-      "block": 5343432
-    },
-    "18": {
-      "matched": [
-        {
-          "uid": 224,
-          "coldkey": "5GZSAgaVGQqegjhEkxpJjpSVLVmNnE2vx2PFLzr7kBBMKpGQ",
-          "hotkey": "5FFApaS75bv5pJHfAp2FVLBj9ZaXuFDjEypsaBNc1wCfe52v"
-        },
-        {
-          "uid": 236,
-          "coldkey": "5HBtpwxuGNL1gwzwomwR7sjwUt8WXYSuWcLYN6f9KpTZkP4k",
-          "hotkey": "5F4tQyWrhfGVcNhoqeiNsR6KjD4wMZ2kfhLj4oHYuyHbZAc3"
-        }
-      ],
-      "block": 5343432
-    },
-    "19": {
-      "matched": [
-        {
-          "uid": 97,
-          "coldkey": "5GZSAgaVGQqegjhEkxpJjpSVLVmNnE2vx2PFLzr7kBBMKpGQ",
-          "hotkey": "5FFApaS75bv5pJHfAp2FVLBj9ZaXuFDjEypsaBNc1wCfe52v"
-        },
-        {
-          "uid": 140,
-          "coldkey": "5HBtpwxuGNL1gwzwomwR7sjwUt8WXYSuWcLYN6f9KpTZkP4k",
-          "hotkey": "5F4tQyWrhfGVcNhoqeiNsR6KjD4wMZ2kfhLj4oHYuyHbZAc3"
-        }
-      ],
-      "block": 5343432
-    },
-    "20": {
-      "matched": [
-        {
-          "uid": 6,
-          "coldkey": "5GZSAgaVGQqegjhEkxpJjpSVLVmNnE2vx2PFLzr7kBBMKpGQ",
-          "hotkey": "5FFApaS75bv5pJHfAp2FVLBj9ZaXuFDjEypsaBNc1wCfe52v"
-        },
-        {
-          "uid": 18,
-          "coldkey": "5HBtpwxuGNL1gwzwomwR7sjwUt8WXYSuWcLYN6f9KpTZkP4k",
-          "hotkey": "5F4tQyWrhfGVcNhoqeiNsR6KjD4wMZ2kfhLj4oHYuyHbZAc3"
-        }
-      ],
-      "block": 5343432
-    },
-    "21": {
-      "matched": [
-        {
-          "uid": 0,
-          "coldkey": "5GZSAgaVGQqegjhEkxpJjpSVLVmNnE2vx2PFLzr7kBBMKpGQ",
-          "hotkey": "5FFApaS75bv5pJHfAp2FVLBj9ZaXuFDjEypsaBNc1wCfe52v"
-        },
-        {
-          "uid": 224,
-          "coldkey": "5HBtpwxuGNL1gwzwomwR7sjwUt8WXYSuWcLYN6f9KpTZkP4k",
-          "hotkey": "5F4tQyWrhfGVcNhoqeiNsR6KjD4wMZ2kfhLj4oHYuyHbZAc3"
-        }
-      ],
-      "block": 5343432
-    },
-    "22": {
-      "matched": [
-        {
-          "uid": 6,
-          "coldkey": "5HBtpwxuGNL1gwzwomwR7sjwUt8WXYSuWcLYN6f9KpTZkP4k",
-          "hotkey": "5F4tQyWrhfGVcNhoqeiNsR6KjD4wMZ2kfhLj4oHYuyHbZAc3"
-        },
-        {
-          "uid": 159,
-          "coldkey": "5GZSAgaVGQqegjhEkxpJjpSVLVmNnE2vx2PFLzr7kBBMKpGQ",
-          "hotkey": "5FFApaS75bv5pJHfAp2FVLBj9ZaXuFDjEypsaBNc1wCfe52v"
-        }
-      ],
-      "block": 5343432
-    },
-    "23": {
-      "matched": [
-        {
-          "uid": 28,
-          "coldkey": "5GZSAgaVGQqegjhEkxpJjpSVLVmNnE2vx2PFLzr7kBBMKpGQ",
-          "hotkey": "5FFApaS75bv5pJHfAp2FVLBj9ZaXuFDjEypsaBNc1wCfe52v"
-        },
-        {
-          "uid": 202,
-          "coldkey": "5HBtpwxuGNL1gwzwomwR7sjwUt8WXYSuWcLYN6f9KpTZkP4k",
-          "hotkey": "5F4tQyWrhfGVcNhoqeiNsR6KjD4wMZ2kfhLj4oHYuyHbZAc3"
-        }
-      ],
-      "block": 5343432
-    },
-    "24": {
-      "matched": [
-        {
-          "uid": 8,
-          "coldkey": "5GZSAgaVGQqegjhEkxpJjpSVLVmNnE2vx2PFLzr7kBBMKpGQ",
-          "hotkey": "5FFApaS75bv5pJHfAp2FVLBj9ZaXuFDjEypsaBNc1wCfe52v"
-        },
-        {
-          "uid": 199,
-          "coldkey": "5HBtpwxuGNL1gwzwomwR7sjwUt8WXYSuWcLYN6f9KpTZkP4k",
-          "hotkey": "5F4tQyWrhfGVcNhoqeiNsR6KjD4wMZ2kfhLj4oHYuyHbZAc3"
-        }
-      ],
-      "block": 5343432
-    },
-    "25": {
-      "matched": [
-        {
-          "uid": 114,
-          "coldkey": "5GZSAgaVGQqegjhEkxpJjpSVLVmNnE2vx2PFLzr7kBBMKpGQ",
-          "hotkey": "5FFApaS75bv5pJHfAp2FVLBj9ZaXuFDjEypsaBNc1wCfe52v"
-        },
-        {
-          "uid": 143,
-          "coldkey": "5HBtpwxuGNL1gwzwomwR7sjwUt8WXYSuWcLYN6f9KpTZkP4k",
-          "hotkey": "5F4tQyWrhfGVcNhoqeiNsR6KjD4wMZ2kfhLj4oHYuyHbZAc3"
-        }
-      ],
-      "block": 5343432
-    },
-    "27": {
-      "matched": [
-        {
-          "uid": 43,
-          "coldkey": "5GZSAgaVGQqegjhEkxpJjpSVLVmNnE2vx2PFLzr7kBBMKpGQ",
-          "hotkey": "5FFApaS75bv5pJHfAp2FVLBj9ZaXuFDjEypsaBNc1wCfe52v"
-        },
-        {
-          "uid": 195,
-          "coldkey": "5HBtpwxuGNL1gwzwomwR7sjwUt8WXYSuWcLYN6f9KpTZkP4k",
-          "hotkey": "5F4tQyWrhfGVcNhoqeiNsR6KjD4wMZ2kfhLj4oHYuyHbZAc3"
-        }
-      ],
-      "block": 5343432
-    },
-    "28": {
-      "matched": [
-        {
-          "uid": 252,
-          "coldkey": "5HBtpwxuGNL1gwzwomwR7sjwUt8WXYSuWcLYN6f9KpTZkP4k",
-          "hotkey": "5F4tQyWrhfGVcNhoqeiNsR6KjD4wMZ2kfhLj4oHYuyHbZAc3"
-        }
-      ],
-      "block": 5343432
-    },
-    "29": {
-      "matched": [
-        {
-          "uid": 1,
-          "coldkey": "5GZSAgaVGQqegjhEkxpJjpSVLVmNnE2vx2PFLzr7kBBMKpGQ",
-          "hotkey": "5FFApaS75bv5pJHfAp2FVLBj9ZaXuFDjEypsaBNc1wCfe52v"
-        },
-        {
-          "uid": 143,
-          "coldkey": "5HBtpwxuGNL1gwzwomwR7sjwUt8WXYSuWcLYN6f9KpTZkP4k",
-          "hotkey": "5F4tQyWrhfGVcNhoqeiNsR6KjD4wMZ2kfhLj4oHYuyHbZAc3"
-        }
-      ],
-      "block": 5343432
-    },
-    "30": {
-      "matched": [
-        {
-          "uid": 163,
-          "coldkey": "5GZSAgaVGQqegjhEkxpJjpSVLVmNnE2vx2PFLzr7kBBMKpGQ",
-          "hotkey": "5FFApaS75bv5pJHfAp2FVLBj9ZaXuFDjEypsaBNc1wCfe52v"
-        },
-        {
-          "uid": 236,
-          "coldkey": "5HBtpwxuGNL1gwzwomwR7sjwUt8WXYSuWcLYN6f9KpTZkP4k",
-          "hotkey": "5F4tQyWrhfGVcNhoqeiNsR6KjD4wMZ2kfhLj4oHYuyHbZAc3"
-        }
-      ],
-      "block": 5343432
-    },
-    "31": {
-      "matched": [
-        {
-          "uid": 10,
-          "coldkey": "5HBtpwxuGNL1gwzwomwR7sjwUt8WXYSuWcLYN6f9KpTZkP4k",
-          "hotkey": "5F4tQyWrhfGVcNhoqeiNsR6KjD4wMZ2kfhLj4oHYuyHbZAc3"
-        },
-        {
-          "uid": 49,
-          "coldkey": "5GZSAgaVGQqegjhEkxpJjpSVLVmNnE2vx2PFLzr7kBBMKpGQ",
-          "hotkey": "5FFApaS75bv5pJHfAp2FVLBj9ZaXuFDjEypsaBNc1wCfe52v"
-        }
-      ],
-      "block": 5343432
-    },
-    "32": {
-      "matched": [
-        {
-          "uid": 31,
-          "coldkey": "5GZSAgaVGQqegjhEkxpJjpSVLVmNnE2vx2PFLzr7kBBMKpGQ",
-          "hotkey": "5FFApaS75bv5pJHfAp2FVLBj9ZaXuFDjEypsaBNc1wCfe52v"
-        },
-        {
-          "uid": 147,
-          "coldkey": "5HBtpwxuGNL1gwzwomwR7sjwUt8WXYSuWcLYN6f9KpTZkP4k",
-          "hotkey": "5F4tQyWrhfGVcNhoqeiNsR6KjD4wMZ2kfhLj4oHYuyHbZAc3"
-        }
-      ],
-      "block": 5343432
-    },
-    "33": {
-      "matched": [
-        {
-          "uid": 1,
-          "coldkey": "5GZSAgaVGQqegjhEkxpJjpSVLVmNnE2vx2PFLzr7kBBMKpGQ",
-          "hotkey": "5FFApaS75bv5pJHfAp2FVLBj9ZaXuFDjEypsaBNc1wCfe52v"
-        },
-        {
-          "uid": 63,
-          "coldkey": "5HBtpwxuGNL1gwzwomwR7sjwUt8WXYSuWcLYN6f9KpTZkP4k",
-          "hotkey": "5F4tQyWrhfGVcNhoqeiNsR6KjD4wMZ2kfhLj4oHYuyHbZAc3"
-        }
-      ],
-      "block": 5343432
-    },
-    "34": {
-      "matched": [
-        {
-          "uid": 6,
-          "coldkey": "5GZSAgaVGQqegjhEkxpJjpSVLVmNnE2vx2PFLzr7kBBMKpGQ",
-          "hotkey": "5FFApaS75bv5pJHfAp2FVLBj9ZaXuFDjEypsaBNc1wCfe52v"
-        },
-        {
-          "uid": 236,
-          "coldkey": "5HBtpwxuGNL1gwzwomwR7sjwUt8WXYSuWcLYN6f9KpTZkP4k",
-          "hotkey": "5F4tQyWrhfGVcNhoqeiNsR6KjD4wMZ2kfhLj4oHYuyHbZAc3"
-        }
-      ],
-      "block": 5343432
-    },
-    "35": {
-      "matched": [
-        {
-          "uid": 0,
-          "coldkey": "5GZSAgaVGQqegjhEkxpJjpSVLVmNnE2vx2PFLzr7kBBMKpGQ",
-          "hotkey": "5FFApaS75bv5pJHfAp2FVLBj9ZaXuFDjEypsaBNc1wCfe52v"
-        },
-        {
-          "uid": 133,
-          "coldkey": "5HBtpwxuGNL1gwzwomwR7sjwUt8WXYSuWcLYN6f9KpTZkP4k",
-          "hotkey": "5F4tQyWrhfGVcNhoqeiNsR6KjD4wMZ2kfhLj4oHYuyHbZAc3"
-        }
-      ],
-      "block": 5343432
-    },
-    "36": {
-      "matched": [
-        {
-          "uid": 3,
-          "coldkey": "5GZSAgaVGQqegjhEkxpJjpSVLVmNnE2vx2PFLzr7kBBMKpGQ",
-          "hotkey": "5FFApaS75bv5pJHfAp2FVLBj9ZaXuFDjEypsaBNc1wCfe52v"
-        }
-      ],
-      "block": 5343432
-    },
-    "37": {
-      "matched": [
-        {
-          "uid": 117,
-          "coldkey": "5GZSAgaVGQqegjhEkxpJjpSVLVmNnE2vx2PFLzr7kBBMKpGQ",
-          "hotkey": "5FFApaS75bv5pJHfAp2FVLBj9ZaXuFDjEypsaBNc1wCfe52v"
-        }
-      ],
-      "block": 5343432
-    },
-    "38": {
-      "matched": [
-        {
-          "uid": 0,
-          "coldkey": "5GZSAgaVGQqegjhEkxpJjpSVLVmNnE2vx2PFLzr7kBBMKpGQ",
-          "hotkey": "5FFApaS75bv5pJHfAp2FVLBj9ZaXuFDjEypsaBNc1wCfe52v"
-        },
-        {
-          "uid": 224,
-          "coldkey": "5HBtpwxuGNL1gwzwomwR7sjwUt8WXYSuWcLYN6f9KpTZkP4k",
-          "hotkey": "5F4tQyWrhfGVcNhoqeiNsR6KjD4wMZ2kfhLj4oHYuyHbZAc3"
-        }
-      ],
-      "block": 5343432
-    },
-    "39": {
-      "matched": [
-        {
-          "uid": 39,
-          "coldkey": "5HBtpwxuGNL1gwzwomwR7sjwUt8WXYSuWcLYN6f9KpTZkP4k",
-          "hotkey": "5F4tQyWrhfGVcNhoqeiNsR6KjD4wMZ2kfhLj4oHYuyHbZAc3"
-        },
-        {
-          "uid": 144,
-          "coldkey": "5GZSAgaVGQqegjhEkxpJjpSVLVmNnE2vx2PFLzr7kBBMKpGQ",
-          "hotkey": "5FFApaS75bv5pJHfAp2FVLBj9ZaXuFDjEypsaBNc1wCfe52v"
-        }
-      ],
-      "block": 5343432
-    },
-    "40": {
-      "matched": [
-        {
-          "uid": 20,
-          "coldkey": "5GZSAgaVGQqegjhEkxpJjpSVLVmNnE2vx2PFLzr7kBBMKpGQ",
-          "hotkey": "5FFApaS75bv5pJHfAp2FVLBj9ZaXuFDjEypsaBNc1wCfe52v"
-        },
-        {
-          "uid": 250,
-          "coldkey": "5HBtpwxuGNL1gwzwomwR7sjwUt8WXYSuWcLYN6f9KpTZkP4k",
-          "hotkey": "5F4tQyWrhfGVcNhoqeiNsR6KjD4wMZ2kfhLj4oHYuyHbZAc3"
-        }
-      ],
-      "block": 5343432
-    },
-    "41": {
-      "matched": [
-        {
-          "uid": 2,
-          "coldkey": "5GZSAgaVGQqegjhEkxpJjpSVLVmNnE2vx2PFLzr7kBBMKpGQ",
-          "hotkey": "5FFApaS75bv5pJHfAp2FVLBj9ZaXuFDjEypsaBNc1wCfe52v"
-        },
-        {
-          "uid": 233,
-          "coldkey": "5HBtpwxuGNL1gwzwomwR7sjwUt8WXYSuWcLYN6f9KpTZkP4k",
-          "hotkey": "5F4tQyWrhfGVcNhoqeiNsR6KjD4wMZ2kfhLj4oHYuyHbZAc3"
-        }
-      ],
-      "block": 5343432
-    },
-    "42": {
-      "matched": [
-        {
-          "uid": 3,
-          "coldkey": "5GZSAgaVGQqegjhEkxpJjpSVLVmNnE2vx2PFLzr7kBBMKpGQ",
-          "hotkey": "5FFApaS75bv5pJHfAp2FVLBj9ZaXuFDjEypsaBNc1wCfe52v"
-        },
-        {
-          "uid": 255,
-          "coldkey": "5HBtpwxuGNL1gwzwomwR7sjwUt8WXYSuWcLYN6f9KpTZkP4k",
-          "hotkey": "5F4tQyWrhfGVcNhoqeiNsR6KjD4wMZ2kfhLj4oHYuyHbZAc3"
-        }
-      ],
-      "block": 5343432
-    },
-    "43": {
-      "matched": [
-        {
-          "uid": 3,
-          "coldkey": "5GZSAgaVGQqegjhEkxpJjpSVLVmNnE2vx2PFLzr7kBBMKpGQ",
-          "hotkey": "5FFApaS75bv5pJHfAp2FVLBj9ZaXuFDjEypsaBNc1wCfe52v"
-        },
-        {
-          "uid": 236,
-          "coldkey": "5HBtpwxuGNL1gwzwomwR7sjwUt8WXYSuWcLYN6f9KpTZkP4k",
-          "hotkey": "5F4tQyWrhfGVcNhoqeiNsR6KjD4wMZ2kfhLj4oHYuyHbZAc3"
-        }
-      ],
-      "block": 5343432
-    },
-    "44": {
-      "matched": [
-        {
-          "uid": 35,
-          "coldkey": "5GZSAgaVGQqegjhEkxpJjpSVLVmNnE2vx2PFLzr7kBBMKpGQ",
-          "hotkey": "5FFApaS75bv5pJHfAp2FVLBj9ZaXuFDjEypsaBNc1wCfe52v"
-        },
-        {
-          "uid": 71,
-          "coldkey": "5HBtpwxuGNL1gwzwomwR7sjwUt8WXYSuWcLYN6f9KpTZkP4k",
-          "hotkey": "5F4tQyWrhfGVcNhoqeiNsR6KjD4wMZ2kfhLj4oHYuyHbZAc3"
-        }
-      ],
-      "block": 5343432
-    },
-    "45": {
-      "matched": [
-        {
-          "uid": 1,
-          "coldkey": "5GZSAgaVGQqegjhEkxpJjpSVLVmNnE2vx2PFLzr7kBBMKpGQ",
-          "hotkey": "5FFApaS75bv5pJHfAp2FVLBj9ZaXuFDjEypsaBNc1wCfe52v"
-        },
-        {
-          "uid": 250,
-          "coldkey": "5HBtpwxuGNL1gwzwomwR7sjwUt8WXYSuWcLYN6f9KpTZkP4k",
-          "hotkey": "5F4tQyWrhfGVcNhoqeiNsR6KjD4wMZ2kfhLj4oHYuyHbZAc3"
-        }
-      ],
-      "block": 5343432
-    },
-    "46": {
-      "matched": [
-        {
-          "uid": 1,
-          "coldkey": "5GZSAgaVGQqegjhEkxpJjpSVLVmNnE2vx2PFLzr7kBBMKpGQ",
-          "hotkey": "5FFApaS75bv5pJHfAp2FVLBj9ZaXuFDjEypsaBNc1wCfe52v"
-        },
-        {
-          "uid": 70,
-          "coldkey": "5HBtpwxuGNL1gwzwomwR7sjwUt8WXYSuWcLYN6f9KpTZkP4k",
-          "hotkey": "5F4tQyWrhfGVcNhoqeiNsR6KjD4wMZ2kfhLj4oHYuyHbZAc3"
-        }
-      ],
-      "block": 5343432
-    },
-    "47": {
-      "matched": [
-        {
-          "uid": 2,
-          "coldkey": "5GZSAgaVGQqegjhEkxpJjpSVLVmNnE2vx2PFLzr7kBBMKpGQ",
-          "hotkey": "5FFApaS75bv5pJHfAp2FVLBj9ZaXuFDjEypsaBNc1wCfe52v"
-        },
-        {
-          "uid": 171,
-          "coldkey": "5HBtpwxuGNL1gwzwomwR7sjwUt8WXYSuWcLYN6f9KpTZkP4k",
-          "hotkey": "5F4tQyWrhfGVcNhoqeiNsR6KjD4wMZ2kfhLj4oHYuyHbZAc3"
-        }
-      ],
-      "block": 5343432
-    },
-    "48": {
-      "matched": [
-        {
-          "uid": 0,
-          "coldkey": "5GZSAgaVGQqegjhEkxpJjpSVLVmNnE2vx2PFLzr7kBBMKpGQ",
-          "hotkey": "5FFApaS75bv5pJHfAp2FVLBj9ZaXuFDjEypsaBNc1wCfe52v"
-        },
-        {
-          "uid": 15,
-          "coldkey": "5HBtpwxuGNL1gwzwomwR7sjwUt8WXYSuWcLYN6f9KpTZkP4k",
-          "hotkey": "5F4tQyWrhfGVcNhoqeiNsR6KjD4wMZ2kfhLj4oHYuyHbZAc3"
-        }
-      ],
-      "block": 5343432
-    },
-    "49": {
-      "matched": [
-        {
-          "uid": 45,
-          "coldkey": "5HBtpwxuGNL1gwzwomwR7sjwUt8WXYSuWcLYN6f9KpTZkP4k",
-          "hotkey": "5F4tQyWrhfGVcNhoqeiNsR6KjD4wMZ2kfhLj4oHYuyHbZAc3"
-        },
-        {
-          "uid": 201,
-          "coldkey": "5GZSAgaVGQqegjhEkxpJjpSVLVmNnE2vx2PFLzr7kBBMKpGQ",
-          "hotkey": "5FFApaS75bv5pJHfAp2FVLBj9ZaXuFDjEypsaBNc1wCfe52v"
-        }
-      ],
-      "block": 5343432
-    },
-    "50": {
-      "matched": [
-        {
-          "uid": 0,
-          "coldkey": "5GZSAgaVGQqegjhEkxpJjpSVLVmNnE2vx2PFLzr7kBBMKpGQ",
-          "hotkey": "5FFApaS75bv5pJHfAp2FVLBj9ZaXuFDjEypsaBNc1wCfe52v"
-        },
-        {
-          "uid": 49,
-          "coldkey": "5HBtpwxuGNL1gwzwomwR7sjwUt8WXYSuWcLYN6f9KpTZkP4k",
-          "hotkey": "5F4tQyWrhfGVcNhoqeiNsR6KjD4wMZ2kfhLj4oHYuyHbZAc3"
-        }
-      ],
-      "block": 5343432
-    },
-    "51": {
-      "matched": [
-        {
-          "uid": 0,
-          "coldkey": "5GZSAgaVGQqegjhEkxpJjpSVLVmNnE2vx2PFLzr7kBBMKpGQ",
-          "hotkey": "5FFApaS75bv5pJHfAp2FVLBj9ZaXuFDjEypsaBNc1wCfe52v"
-        }
-      ],
-      "block": 5343432
-    },
-    "52": {
-      "matched": [
-        {
-          "uid": 3,
-          "coldkey": "5GZSAgaVGQqegjhEkxpJjpSVLVmNnE2vx2PFLzr7kBBMKpGQ",
-          "hotkey": "5FFApaS75bv5pJHfAp2FVLBj9ZaXuFDjEypsaBNc1wCfe52v"
-        },
-        {
-          "uid": 159,
-          "coldkey": "5HBtpwxuGNL1gwzwomwR7sjwUt8WXYSuWcLYN6f9KpTZkP4k",
-          "hotkey": "5F4tQyWrhfGVcNhoqeiNsR6KjD4wMZ2kfhLj4oHYuyHbZAc3"
-        }
-      ],
-      "block": 5343432
-    },
-    "53": {
-      "matched": [
-        {
-          "uid": 0,
-          "coldkey": "5GZSAgaVGQqegjhEkxpJjpSVLVmNnE2vx2PFLzr7kBBMKpGQ",
-          "hotkey": "5FFApaS75bv5pJHfAp2FVLBj9ZaXuFDjEypsaBNc1wCfe52v"
-        },
-        {
-          "uid": 32,
-          "coldkey": "5HBtpwxuGNL1gwzwomwR7sjwUt8WXYSuWcLYN6f9KpTZkP4k",
-          "hotkey": "5F4tQyWrhfGVcNhoqeiNsR6KjD4wMZ2kfhLj4oHYuyHbZAc3"
-        }
-      ],
-      "block": 5343432
-    },
-    "54": {
-      "matched": [
-        {
-          "uid": 3,
-          "coldkey": "5GZSAgaVGQqegjhEkxpJjpSVLVmNnE2vx2PFLzr7kBBMKpGQ",
-          "hotkey": "5FFApaS75bv5pJHfAp2FVLBj9ZaXuFDjEypsaBNc1wCfe52v"
-        },
-        {
-          "uid": 137,
-          "coldkey": "5HBtpwxuGNL1gwzwomwR7sjwUt8WXYSuWcLYN6f9KpTZkP4k",
-          "hotkey": "5F4tQyWrhfGVcNhoqeiNsR6KjD4wMZ2kfhLj4oHYuyHbZAc3"
-        }
-      ],
-      "block": 5343432
-    },
-    "55": {
-      "matched": [
-        {
-          "uid": 0,
-          "coldkey": "5GZSAgaVGQqegjhEkxpJjpSVLVmNnE2vx2PFLzr7kBBMKpGQ",
-          "hotkey": "5FFApaS75bv5pJHfAp2FVLBj9ZaXuFDjEypsaBNc1wCfe52v"
-        },
-        {
-          "uid": 47,
-          "coldkey": "5HBtpwxuGNL1gwzwomwR7sjwUt8WXYSuWcLYN6f9KpTZkP4k",
-          "hotkey": "5F4tQyWrhfGVcNhoqeiNsR6KjD4wMZ2kfhLj4oHYuyHbZAc3"
-        }
-      ],
-      "block": 5343432
-    },
-    "56": {
-      "matched": [
-        {
-          "uid": 1,
-          "coldkey": "5GZSAgaVGQqegjhEkxpJjpSVLVmNnE2vx2PFLzr7kBBMKpGQ",
-          "hotkey": "5FFApaS75bv5pJHfAp2FVLBj9ZaXuFDjEypsaBNc1wCfe52v"
-        },
-        {
-          "uid": 207,
-          "coldkey": "5HBtpwxuGNL1gwzwomwR7sjwUt8WXYSuWcLYN6f9KpTZkP4k",
-          "hotkey": "5F4tQyWrhfGVcNhoqeiNsR6KjD4wMZ2kfhLj4oHYuyHbZAc3"
-        }
-      ],
-      "block": 5343432
-    },
-    "57": {
-      "matched": [
-        {
-          "uid": 119,
-          "coldkey": "5HBtpwxuGNL1gwzwomwR7sjwUt8WXYSuWcLYN6f9KpTZkP4k",
-          "hotkey": "5F4tQyWrhfGVcNhoqeiNsR6KjD4wMZ2kfhLj4oHYuyHbZAc3"
-        },
-        {
-          "uid": 162,
-          "coldkey": "5GZSAgaVGQqegjhEkxpJjpSVLVmNnE2vx2PFLzr7kBBMKpGQ",
-          "hotkey": "5FFApaS75bv5pJHfAp2FVLBj9ZaXuFDjEypsaBNc1wCfe52v"
-        }
-      ],
-      "block": 5343432
-    },
-    "58": {
-      "matched": [
-        {
-          "uid": 0,
-          "coldkey": "5GZSAgaVGQqegjhEkxpJjpSVLVmNnE2vx2PFLzr7kBBMKpGQ",
-          "hotkey": "5FFApaS75bv5pJHfAp2FVLBj9ZaXuFDjEypsaBNc1wCfe52v"
-        },
-        {
-          "uid": 149,
-          "coldkey": "5HBtpwxuGNL1gwzwomwR7sjwUt8WXYSuWcLYN6f9KpTZkP4k",
-          "hotkey": "5F4tQyWrhfGVcNhoqeiNsR6KjD4wMZ2kfhLj4oHYuyHbZAc3"
-        }
-      ],
-      "block": 5343432
-    },
-    "59": {
-      "matched": [
-        {
-          "uid": 239,
-          "coldkey": "5HBtpwxuGNL1gwzwomwR7sjwUt8WXYSuWcLYN6f9KpTZkP4k",
-          "hotkey": "5F4tQyWrhfGVcNhoqeiNsR6KjD4wMZ2kfhLj4oHYuyHbZAc3"
-        },
-        {
-          "uid": 242,
-          "coldkey": "5GZSAgaVGQqegjhEkxpJjpSVLVmNnE2vx2PFLzr7kBBMKpGQ",
-          "hotkey": "5FFApaS75bv5pJHfAp2FVLBj9ZaXuFDjEypsaBNc1wCfe52v"
-        }
-      ],
-      "block": 5343432
-    },
-    "60": {
-      "matched": [
-        {
-          "uid": 3,
-          "coldkey": "5GZSAgaVGQqegjhEkxpJjpSVLVmNnE2vx2PFLzr7kBBMKpGQ",
-          "hotkey": "5FFApaS75bv5pJHfAp2FVLBj9ZaXuFDjEypsaBNc1wCfe52v"
-        },
-        {
-          "uid": 160,
-          "coldkey": "5HBtpwxuGNL1gwzwomwR7sjwUt8WXYSuWcLYN6f9KpTZkP4k",
-          "hotkey": "5F4tQyWrhfGVcNhoqeiNsR6KjD4wMZ2kfhLj4oHYuyHbZAc3"
-        }
-      ],
-      "block": 5343432
-    },
-    "61": {
-      "matched": [
-        {
-          "uid": 0,
-          "coldkey": "5GZSAgaVGQqegjhEkxpJjpSVLVmNnE2vx2PFLzr7kBBMKpGQ",
-          "hotkey": "5FFApaS75bv5pJHfAp2FVLBj9ZaXuFDjEypsaBNc1wCfe52v"
-        },
-        {
-          "uid": 88,
-          "coldkey": "5HBtpwxuGNL1gwzwomwR7sjwUt8WXYSuWcLYN6f9KpTZkP4k",
-          "hotkey": "5F4tQyWrhfGVcNhoqeiNsR6KjD4wMZ2kfhLj4oHYuyHbZAc3"
-        }
-      ],
-      "block": 5343432
-    },
-    "62": {
-      "matched": [
-        {
-          "uid": 0,
-          "coldkey": "5GZSAgaVGQqegjhEkxpJjpSVLVmNnE2vx2PFLzr7kBBMKpGQ",
-          "hotkey": "5FFApaS75bv5pJHfAp2FVLBj9ZaXuFDjEypsaBNc1wCfe52v"
-        },
-        {
-          "uid": 17,
-          "coldkey": "5HBtpwxuGNL1gwzwomwR7sjwUt8WXYSuWcLYN6f9KpTZkP4k",
-          "hotkey": "5F4tQyWrhfGVcNhoqeiNsR6KjD4wMZ2kfhLj4oHYuyHbZAc3"
-        }
-      ],
-      "block": 5343432
-    },
-    "64": {
-      "matched": [
-        {
-          "uid": 8,
-          "coldkey": "5GZSAgaVGQqegjhEkxpJjpSVLVmNnE2vx2PFLzr7kBBMKpGQ",
-          "hotkey": "5FFApaS75bv5pJHfAp2FVLBj9ZaXuFDjEypsaBNc1wCfe52v"
-        }
-      ],
-      "block": 5343432
-    },
-    "65": {
-      "matched": [
-        {
-          "uid": 4,
-          "coldkey": "5GZSAgaVGQqegjhEkxpJjpSVLVmNnE2vx2PFLzr7kBBMKpGQ",
-          "hotkey": "5FFApaS75bv5pJHfAp2FVLBj9ZaXuFDjEypsaBNc1wCfe52v"
-        }
-      ],
-      "block": 5343432
-    },
-    "66": {
-      "matched": [
-        {
-          "uid": 13,
-          "coldkey": "5GZSAgaVGQqegjhEkxpJjpSVLVmNnE2vx2PFLzr7kBBMKpGQ",
-          "hotkey": "5FFApaS75bv5pJHfAp2FVLBj9ZaXuFDjEypsaBNc1wCfe52v"
-        }
-      ],
-      "block": 5343432
-    },
-    "68": {
-      "matched": [
-        {
-          "uid": 124,
-          "coldkey": "5GZSAgaVGQqegjhEkxpJjpSVLVmNnE2vx2PFLzr7kBBMKpGQ",
-          "hotkey": "5FFApaS75bv5pJHfAp2FVLBj9ZaXuFDjEypsaBNc1wCfe52v"
-        }
-      ],
-      "block": 5343432
-    },
-    "69": {
-      "matched": [
-        {
-          "uid": 14,
-          "coldkey": "5GZSAgaVGQqegjhEkxpJjpSVLVmNnE2vx2PFLzr7kBBMKpGQ",
-          "hotkey": "5FFApaS75bv5pJHfAp2FVLBj9ZaXuFDjEypsaBNc1wCfe52v"
-        }
-      ],
-      "block": 5343432
-    },
-    "70": {
-      "matched": [
-        {
-          "uid": 67,
-          "coldkey": "5GZSAgaVGQqegjhEkxpJjpSVLVmNnE2vx2PFLzr7kBBMKpGQ",
-          "hotkey": "5FFApaS75bv5pJHfAp2FVLBj9ZaXuFDjEypsaBNc1wCfe52v"
-        }
-      ],
-      "block": 5343432
-    },
-    "72": {
-      "matched": [
-        {
-          "uid": 119,
-          "coldkey": "5HBtpwxuGNL1gwzwomwR7sjwUt8WXYSuWcLYN6f9KpTZkP4k",
-          "hotkey": "5F4tQyWrhfGVcNhoqeiNsR6KjD4wMZ2kfhLj4oHYuyHbZAc3"
-        }
-      ],
-      "block": 5343432
-    },
-    "74": {
-      "matched": [
-        {
-          "uid": 217,
-          "coldkey": "5HBtpwxuGNL1gwzwomwR7sjwUt8WXYSuWcLYN6f9KpTZkP4k",
-          "hotkey": "5HBtpwxuGNL1gwzwomwR7sjwUt8WXYSuWcLYN6f9KpTZkP4k"
-        }
-      ],
-      "block": 5343432
-    },
-    "76": {
-      "matched": [
-        {
-          "uid": 42,
-          "coldkey": "5GZSAgaVGQqegjhEkxpJjpSVLVmNnE2vx2PFLzr7kBBMKpGQ",
-          "hotkey": "5FFApaS75bv5pJHfAp2FVLBj9ZaXuFDjEypsaBNc1wCfe52v"
-        }
-      ],
-      "block": 5343432
-    },
-    "77": {
-      "matched": [
-        {
-          "uid": 37,
-          "coldkey": "5GZSAgaVGQqegjhEkxpJjpSVLVmNnE2vx2PFLzr7kBBMKpGQ",
-          "hotkey": "5FFApaS75bv5pJHfAp2FVLBj9ZaXuFDjEypsaBNc1wCfe52v"
-        }
-      ],
-      "block": 5343432
-    },
-    "78": {
-      "matched": [
-        {
-          "uid": 75,
-          "coldkey": "5HBtpwxuGNL1gwzwomwR7sjwUt8WXYSuWcLYN6f9KpTZkP4k",
-          "hotkey": "5F4tQyWrhfGVcNhoqeiNsR6KjD4wMZ2kfhLj4oHYuyHbZAc3"
-        }
-      ],
-      "block": 5343432
-    },
-    "79": {
-      "matched": [
-        {
-          "uid": 46,
-          "coldkey": "5HBtpwxuGNL1gwzwomwR7sjwUt8WXYSuWcLYN6f9KpTZkP4k",
-          "hotkey": "5F4tQyWrhfGVcNhoqeiNsR6KjD4wMZ2kfhLj4oHYuyHbZAc3"
-        }
-      ],
-      "block": 5343432
-    },
-    "80": {
-      "matched": [
-        {
-          "uid": 16,
-          "coldkey": "5HBtpwxuGNL1gwzwomwR7sjwUt8WXYSuWcLYN6f9KpTZkP4k",
-          "hotkey": "5F4tQyWrhfGVcNhoqeiNsR6KjD4wMZ2kfhLj4oHYuyHbZAc3"
-        },
-        {
-          "uid": 17,
-          "coldkey": "5GZSAgaVGQqegjhEkxpJjpSVLVmNnE2vx2PFLzr7kBBMKpGQ",
-          "hotkey": "5FFApaS75bv5pJHfAp2FVLBj9ZaXuFDjEypsaBNc1wCfe52v"
-        }
-      ],
-      "block": 5343432
-    },
-    "81": {
-      "matched": [
-        {
-          "uid": 5,
-          "coldkey": "5GZSAgaVGQqegjhEkxpJjpSVLVmNnE2vx2PFLzr7kBBMKpGQ",
-          "hotkey": "5FFApaS75bv5pJHfAp2FVLBj9ZaXuFDjEypsaBNc1wCfe52v"
-        }
-      ],
-      "block": 5343432
-    },
-    "82": {
-      "matched": [
-        {
-          "uid": 11,
-          "coldkey": "5GZSAgaVGQqegjhEkxpJjpSVLVmNnE2vx2PFLzr7kBBMKpGQ",
-          "hotkey": "5FFApaS75bv5pJHfAp2FVLBj9ZaXuFDjEypsaBNc1wCfe52v"
-        },
-        {
-          "uid": 15,
-          "coldkey": "5HBtpwxuGNL1gwzwomwR7sjwUt8WXYSuWcLYN6f9KpTZkP4k",
-          "hotkey": "5F4tQyWrhfGVcNhoqeiNsR6KjD4wMZ2kfhLj4oHYuyHbZAc3"
-        }
-      ],
-      "block": 5343432
-    },
-    "84": {
-      "matched": [
-        {
-          "uid": 9,
-          "coldkey": "5GZSAgaVGQqegjhEkxpJjpSVLVmNnE2vx2PFLzr7kBBMKpGQ",
-          "hotkey": "5FFApaS75bv5pJHfAp2FVLBj9ZaXuFDjEypsaBNc1wCfe52v"
-        }
-      ],
-      "block": 5343432
-    },
-    "85": {
-      "matched": [
-        {
-          "uid": 4,
-          "coldkey": "5GZSAgaVGQqegjhEkxpJjpSVLVmNnE2vx2PFLzr7kBBMKpGQ",
-          "hotkey": "5FFApaS75bv5pJHfAp2FVLBj9ZaXuFDjEypsaBNc1wCfe52v"
-        }
-      ],
-      "block": 5343432
-    },
-    "86": {
-      "matched": [
-        {
-          "uid": 11,
-          "coldkey": "5GZSAgaVGQqegjhEkxpJjpSVLVmNnE2vx2PFLzr7kBBMKpGQ",
-          "hotkey": "5FFApaS75bv5pJHfAp2FVLBj9ZaXuFDjEypsaBNc1wCfe52v"
-        }
-      ],
-      "block": 5343432
-    },
-    "88": {
-      "matched": [
-        {
-          "uid": 43,
-          "coldkey": "5GZSAgaVGQqegjhEkxpJjpSVLVmNnE2vx2PFLzr7kBBMKpGQ",
-          "hotkey": "5FFApaS75bv5pJHfAp2FVLBj9ZaXuFDjEypsaBNc1wCfe52v"
-        }
-      ],
-      "block": 5343432
-    },
-    "89": {
-      "matched": [
-        {
-          "uid": 2,
-          "coldkey": "5GZSAgaVGQqegjhEkxpJjpSVLVmNnE2vx2PFLzr7kBBMKpGQ",
-          "hotkey": "5FFApaS75bv5pJHfAp2FVLBj9ZaXuFDjEypsaBNc1wCfe52v"
-        }
-      ],
-      "block": 5343432
-    },
-    "90": {
-      "matched": [
-        {
-          "uid": 1,
-          "coldkey": "5GZSAgaVGQqegjhEkxpJjpSVLVmNnE2vx2PFLzr7kBBMKpGQ",
-          "hotkey": "5FFApaS75bv5pJHfAp2FVLBj9ZaXuFDjEypsaBNc1wCfe52v"
-        }
-      ],
-      "block": 5343432
+  "samples": [
+    {
+      "sample_index": 0,
+      "requested_time": "2025-04-13T00:00:00+00:00",
+      "block_timestamp_utc": "2025-04-13T00:00:00+00:00",
+      "closest_block": 5338632,
+      "emissions": {
+        "1": 0.054462878,
+        "2": 0.005950268,
+        "3": 0.115715548,
+        "4": 0.192235679,
+        "5": 0.009088698,
+        "6": 0.009055488,
+        "7": 0.001952577,
+        "8": 0.135449913,
+        "9": 0.015282654,
+        "10": 0.01581753,
+        "11": 0.008016415,
+        "12": 0.00365912,
+        "13": 0.056382135,
+        "14": 0.001139832,
+        "15": 0.00130658,
+        "16": 0.004431307,
+        "17": 0.04347895,
+        "18": 0.008065663,
+        "19": 0.09281267,
+        "20": 0.010656946,
+        "21": 0.005423757,
+        "22": 0.007325537,
+        "23": 0.005952498,
+        "24": 0.00453785,
+        "25": 0.027192121,
+        "26": 0.008244038,
+        "27": 0.002524207,
+        "28": 0.000694914,
+        "29": 0.003342914,
+        "30": 0.007674497,
+        "31": 0.001336385,
+        "32": 0.006240814,
+        "33": 0.013557695,
+        "34": 0.053835229,
+        "35": 0.001495316,
+        "36": 0.002369459,
+        "37": 0.008562784,
+        "38": 0.013364882,
+        "39": 0.001374988,
+        "40": 0.004629086,
+        "41": 0.017528023,
+        "42": 0.012301938,
+        "43": 0.020323698,
+        "44": 0.026671827,
+        "45": 0.008557384,
+        "46": 0.004996098,
+        "47": 0.003254582,
+        "48": 0.005907682,
+        "49": 0.001486591,
+        "50": 0.005110188,
+        "51": 0.073280819,
+        "52": 0.045933277,
+        "53": 0.020461101,
+        "54": 0.00118537,
+        "55": 0.002537553,
+        "56": 0.171810315,
+        "57": 0.005119359,
+        "58": 0.002507117,
+        "59": 0.002301877,
+        "60": 0.004071575,
+        "61": 0.003366946,
+        "62": 0.001461271,
+        "63": 0.001705469,
+        "64": 0.360968756,
+        "65": 0.002145618,
+        "66": 0.001954882,
+        "67": 0.000520766,
+        "68": 0.095587552,
+        "69": 0.0012138,
+        "70": 0.002958982,
+        "71": 0.000410743,
+        "72": 0.007077523,
+        "73": 0.001049108,
+        "74": 0.001180829,
+        "75": 0.051953098,
+        "76": 0.003783421,
+        "77": 0.008156604,
+        "78": 0.000702305,
+        "79": 0.001729811,
+        "80": 0.002816625,
+        "81": 0.076430917,
+        "82": 0.000816951,
+        "83": 8.681043718,
+        "84": 3670.690841486,
+        "85": 504.76930967,
+        "86": 100.678770444,
+        "87": 21.750936116,
+        "88": 71.723404415,
+        "89": 22.431345553,
+        "90": 283.725762752
+      },
+      "statistics": {
+        "active_subnets": 90,
+        "avg_emission_rate": 52.071993248077774,
+        "max_emission_rate": 3670.690841486,
+        "min_emission_rate": 0.000410743,
+        "total_emission_rate": 4686.479392327
+      }
+    },
+    {
+      "sample_index": 1,
+      "requested_time": "2025-04-13T01:00:00+00:00",
+      "block_timestamp_utc": "2025-04-13T01:00:00+00:00",
+      "closest_block": 5338932,
+      "emissions": {
+        "1": 0.054821967,
+        "2": 0.00595042,
+        "3": 0.115752809,
+        "4": 0.191112129,
+        "5": 0.009058854,
+        "6": 0.00904007,
+        "7": 0.001951584,
+        "8": 0.13546747,
+        "9": 0.015236951,
+        "10": 0.015788146,
+        "11": 0.008013381,
+        "12": 0.00365003,
+        "13": 0.056321409,
+        "14": 0.001138699,
+        "15": 0.001306065,
+        "16": 0.004429552,
+        "17": 0.043479034,
+        "18": 0.008196057,
+        "19": 0.0927634,
+        "20": 0.010648771,
+        "21": 0.005420992,
+        "22": 0.00732214,
+        "23": 0.005364424,
+        "24": 0.004535138,
+        "25": 0.0271627,
+        "26": 0.008218069,
+        "27": 0.002523426,
+        "28": 0.000694735,
+        "29": 0.003341227,
+        "30": 0.0076716,
+        "31": 0.001348264,
+        "32": 0.006238159,
+        "33": 0.013890985,
+        "34": 0.053820036,
+        "35": 0.001494895,
+        "36": 0.002368363,
+        "37": 0.008557916,
+        "38": 0.012729946,
+        "39": 0.001374442,
+        "40": 0.004627378,
+        "41": 0.017531984,
+        "42": 0.012249269,
+        "43": 0.02031199,
+        "44": 0.026421249,
+        "45": 0.008558425,
+        "46": 0.004994644,
+        "47": 0.003253128,
+        "48": 0.00590781,
+        "49": 0.001473671,
+        "50": 0.005031133,
+        "51": 0.073246802,
+        "52": 0.045503121,
+        "53": 0.020443217,
+        "54": 0.001184882,
+        "55": 0.002536732,
+        "56": 0.17191456,
+        "57": 0.005120491,
+        "58": 0.002506281,
+        "59": 0.002349072,
+        "60": 0.004070233,
+        "61": 0.003365667,
+        "62": 0.0014607,
+        "63": 0.001840334,
+        "64": 0.362508944,
+        "65": 0.002173902,
+        "66": 0.001954049,
+        "67": 0.00052043,
+        "68": 0.094631085,
+        "69": 0.001213191,
+        "70": 0.002957743,
+        "71": 0.000410088,
+        "72": 0.007073797,
+        "73": 0.001049225,
+        "74": 0.001180042,
+        "75": 0.052732358,
+        "76": 0.003599036,
+        "77": 0.00801194,
+        "78": 0.000701709,
+        "79": 0.001726821,
+        "80": 0.002809815,
+        "81": 0.075029363,
+        "82": 0.00081386,
+        "83": 8.681043718,
+        "84": 3670.690841486,
+        "85": 504.76930967,
+        "86": 100.678770444,
+        "87": 21.750936116,
+        "88": 71.723404415,
+        "89": 22.431345553,
+        "90": 283.724043274
+      },
+      "statistics": {
+        "active_subnets": 90,
+        "avg_emission_rate": 52.071943323355555,
+        "max_emission_rate": 3670.690841486,
+        "min_emission_rate": 0.000410088,
+        "total_emission_rate": 4686.474899102
+      }
+    },
+    {
+      "sample_index": 2,
+      "requested_time": "2025-04-13T02:00:00+00:00",
+      "block_timestamp_utc": "2025-04-13T02:00:00+00:00",
+      "closest_block": 5339232,
+      "emissions": {
+        "1": 0.054799243,
+        "2": 0.005969212,
+        "3": 0.115653821,
+        "4": 0.191187542,
+        "5": 0.009045488,
+        "6": 0.009288453,
+        "7": 0.001933603,
+        "8": 0.135726766,
+        "9": 0.015227249,
+        "10": 0.015778143,
+        "11": 0.008010657,
+        "12": 0.003648289,
+        "13": 0.056285368,
+        "14": 0.001137537,
+        "15": 0.001305551,
+        "16": 0.0044278,
+        "17": 0.043530029,
+        "18": 0.008544981,
+        "19": 0.093331962,
+        "20": 0.010603557,
+        "21": 0.005418202,
+        "22": 0.007321333,
+        "23": 0.005373329,
+        "24": 0.004560235,
+        "25": 0.027168592,
+        "26": 0.008188122,
+        "27": 0.002519499,
+        "28": 0.000694539,
+        "29": 0.003339323,
+        "30": 0.007681695,
+        "31": 0.001351995,
+        "32": 0.006235507,
+        "33": 0.014393272,
+        "34": 0.053821902,
+        "35": 0.001494474,
+        "36": 0.002367173,
+        "37": 0.008553056,
+        "38": 0.012710955,
+        "39": 0.001373896,
+        "40": 0.004625671,
+        "41": 0.017535795,
+        "42": 0.01224401,
+        "43": 0.020328071,
+        "44": 0.026367886,
+        "45": 0.008557015,
+        "46": 0.004993022,
+        "47": 0.00319727,
+        "48": 0.005907318,
+        "49": 0.001474514,
+        "50": 0.005022161,
+        "51": 0.073113513,
+        "52": 0.045089073,
+        "53": 0.020456373,
+        "54": 0.001184395,
+        "55": 0.002534164,
+        "56": 0.174543804,
+        "57": 0.005108829,
+        "58": 0.002505445,
+        "59": 0.002355159,
+        "60": 0.004069424,
+        "61": 0.003364554,
+        "62": 0.00146013,
+        "63": 0.001839324,
+        "64": 0.365138587,
+        "65": 0.002167402,
+        "66": 0.001953216,
+        "67": 0.000520094,
+        "68": 0.096959653,
+        "69": 0.00121253,
+        "70": 0.002954814,
+        "71": 0.000409429,
+        "72": 0.007070008,
+        "73": 0.001049527,
+        "74": 0.001177282,
+        "75": 0.051766478,
+        "76": 0.003598712,
+        "77": 0.007805991,
+        "78": 0.000701074,
+        "79": 0.001723844,
+        "80": 0.002803045,
+        "81": 0.072441691,
+        "82": 0.000811667,
+        "83": 8.681043718,
+        "84": 3670.690841486,
+        "85": 504.76930967,
+        "86": 100.678770444,
+        "87": 21.750936116,
+        "88": 71.723404415,
+        "89": 22.431345553,
+        "90": 204.674774537
+      },
+      "statistics": {
+        "active_subnets": 90,
+        "avg_emission_rate": 51.19367300281111,
+        "max_emission_rate": 3670.690841486,
+        "min_emission_rate": 0.000409429,
+        "total_emission_rate": 4607.430570253
+      }
+    },
+    {
+      "sample_index": 3,
+      "requested_time": "2025-04-13T03:00:00+00:00",
+      "block_timestamp_utc": "2025-04-13T03:00:00+00:00",
+      "closest_block": 5339532,
+      "emissions": {
+        "1": 0.054768755,
+        "2": 0.005932418,
+        "3": 0.116164289,
+        "4": 0.191864886,
+        "5": 0.009041976,
+        "6": 0.009131873,
+        "7": 0.001933556,
+        "8": 0.136003594,
+        "9": 0.0152199,
+        "10": 0.015778858,
+        "11": 0.008007936,
+        "12": 0.003646577,
+        "13": 0.056217381,
+        "14": 0.001136408,
+        "15": 0.001305038,
+        "16": 0.00442605,
+        "17": 0.043505093,
+        "18": 0.008547764,
+        "19": 0.095471102,
+        "20": 0.01060017,
+        "21": 0.005415453,
+        "22": 0.007320276,
+        "23": 0.005371901,
+        "24": 0.004559842,
+        "25": 0.027252156,
+        "26": 0.008194915,
+        "27": 0.002517011,
+        "28": 0.000694364,
+        "29": 0.00333696,
+        "30": 0.007678798,
+        "31": 0.001355979,
+        "32": 0.00623576,
+        "33": 0.014536427,
+        "34": 0.0537966,
+        "35": 0.001494054,
+        "36": 0.002366104,
+        "37": 0.008548205,
+        "38": 0.012685849,
+        "39": 0.00137335,
+        "40": 0.004623967,
+        "41": 0.017403822,
+        "42": 0.012273377,
+        "43": 0.02031638,
+        "44": 0.026852238,
+        "45": 0.00856165,
+        "46": 0.004991312,
+        "47": 0.003180983,
+        "48": 0.005906344,
+        "49": 0.001447902,
+        "50": 0.005018348,
+        "51": 0.072856531,
+        "52": 0.04498038,
+        "53": 0.020447989,
+        "54": 0.001183908,
+        "55": 0.002532661,
+        "56": 0.176717677,
+        "57": 0.005115382,
+        "58": 0.00250461,
+        "59": 0.002346566,
+        "60": 0.004066723,
+        "61": 0.003362154,
+        "62": 0.00145956,
+        "63": 0.001838194,
+        "64": 0.371258003,
+        "65": 0.002166417,
+        "66": 0.001952385,
+        "67": 0.000519925,
+        "68": 0.098904217,
+        "69": 0.001211858,
+        "70": 0.00295251,
+        "71": 0.000408779,
+        "72": 0.007066312,
+        "73": 0.001048473,
+        "74": 0.00117499,
+        "75": 0.051662601,
+        "76": 0.003594971,
+        "77": 0.007794365,
+        "78": 0.000700492,
+        "79": 0.001720879,
+        "80": 0.002796315,
+        "81": 0.075344189,
+        "82": 0.000809981,
+        "83": 8.681043718,
+        "84": 3670.690841486,
+        "85": 504.76930967,
+        "86": 100.678770444,
+        "87": 21.750936116,
+        "88": 71.723404415,
+        "89": 19.585181447,
+        "90": 224.633385704
+      },
+      "statistics": {
+        "active_subnets": 90,
+        "avg_emission_rate": 51.38399318831111,
+        "max_emission_rate": 3670.690841486,
+        "min_emission_rate": 0.000408779,
+        "total_emission_rate": 4624.559386948
+      }
+    },
+    {
+      "sample_index": 4,
+      "requested_time": "2025-04-13T04:00:00+00:00",
+      "block_timestamp_utc": "2025-04-13T04:00:00+00:00",
+      "closest_block": 5339832,
+      "emissions": {
+        "1": 0.056147873,
+        "2": 0.005928872,
+        "3": 0.11644009,
+        "4": 0.191939648,
+        "5": 0.0090697,
+        "6": 0.008771641,
+        "7": 0.001931617,
+        "8": 0.136397889,
+        "9": 0.015205332,
+        "10": 0.015769851,
+        "11": 0.008005218,
+        "12": 0.003644862,
+        "13": 0.057575898,
+        "14": 0.001135374,
+        "15": 0.001304525,
+        "16": 0.004424302,
+        "17": 0.043495836,
+        "18": 0.008535254,
+        "19": 0.095409539,
+        "20": 0.010626259,
+        "21": 0.0054127,
+        "22": 0.007318443,
+        "23": 0.005372762,
+        "24": 0.004565843,
+        "25": 0.027246762,
+        "26": 0.008168463,
+        "27": 0.002516235,
+        "28": 0.000694185,
+        "29": 0.003335646,
+        "30": 0.007675904,
+        "31": 0.001364066,
+        "32": 0.006233114,
+        "33": 0.01505568,
+        "34": 0.053774694,
+        "35": 0.001493635,
+        "36": 0.002365154,
+        "37": 0.008543363,
+        "38": 0.013307238,
+        "39": 0.001372806,
+        "40": 0.004622265,
+        "41": 0.017362939,
+        "42": 0.012263561,
+        "43": 0.02030471,
+        "44": 0.027502743,
+        "45": 0.008560901,
+        "46": 0.004992038,
+        "47": 0.003179581,
+        "48": 0.005904928,
+        "49": 0.001441088,
+        "50": 0.005016218,
+        "51": 0.072840168,
+        "52": 0.045218576,
+        "53": 0.020436525,
+        "54": 0.001181205,
+        "55": 0.002527467,
+        "56": 0.185194308,
+        "57": 0.005112901,
+        "58": 0.002503777,
+        "59": 0.002345002,
+        "60": 0.004066054,
+        "61": 0.003361051,
+        "62": 0.001458991,
+        "63": 0.001837308,
+        "64": 0.369728112,
+        "65": 0.002165433,
+        "66": 0.001951554,
+        "67": 0.000519591,
+        "68": 0.105257257,
+        "69": 0.001211345,
+        "70": 0.002947882,
+        "71": 0.00040801,
+        "72": 0.007061268,
+        "73": 0.001047414,
+        "74": 0.001174211,
+        "75": 0.051666375,
+        "76": 0.003594744,
+        "77": 0.007793907,
+        "78": 0.0006999,
+        "79": 0.001715581,
+        "80": 0.002789624,
+        "81": 0.074707274,
+        "82": 0.000808204,
+        "83": 8.681043718,
+        "84": 3670.690841486,
+        "85": 504.76930967,
+        "86": 100.678770444,
+        "87": 21.750936116,
+        "88": 71.723404415,
+        "89": 19.585181447,
+        "90": 225.192888681
+      },
+      "statistics": {
+        "active_subnets": 90,
+        "avg_emission_rate": 51.390404824899996,
+        "max_emission_rate": 3670.690841486,
+        "min_emission_rate": 0.00040801,
+        "total_emission_rate": 4625.136434241
+      }
+    },
+    {
+      "sample_index": 5,
+      "requested_time": "2025-04-13T05:00:00+00:00",
+      "block_timestamp_utc": "2025-04-13T05:00:00+00:00",
+      "closest_block": 5340132,
+      "emissions": {
+        "1": 0.056144883,
+        "2": 0.005943811,
+        "3": 0.120713375,
+        "4": 0.191921214,
+        "5": 0.009066869,
+        "6": 0.008728584,
+        "7": 0.001930771,
+        "8": 0.136406922,
+        "9": 0.015192464,
+        "10": 0.015760098,
+        "11": 0.008002755,
+        "12": 0.003643078,
+        "13": 0.057601108,
+        "14": 0.001134035,
+        "15": 0.001304013,
+        "16": 0.004422556,
+        "17": 0.044742492,
+        "18": 0.00856545,
+        "19": 0.095571587,
+        "20": 0.010637743,
+        "21": 0.005410373,
+        "22": 0.00730726,
+        "23": 0.005374027,
+        "24": 0.00456447,
+        "25": 0.027228444,
+        "26": 0.008170827,
+        "27": 0.002514369,
+        "28": 0.00069401,
+        "29": 0.00333364,
+        "30": 0.007672813,
+        "31": 0.001368146,
+        "32": 0.006293525,
+        "33": 0.015077974,
+        "34": 0.05375658,
+        "35": 0.001493215,
+        "36": 0.002364089,
+        "37": 0.00853853,
+        "38": 0.015151484,
+        "39": 0.00137227,
+        "40": 0.004620565,
+        "41": 0.018169716,
+        "42": 0.012255336,
+        "43": 0.020293061,
+        "44": 0.027492781,
+        "45": 0.008663076,
+        "46": 0.004990331,
+        "47": 0.003178614,
+        "48": 0.005905632,
+        "49": 0.001440457,
+        "50": 0.00501409,
+        "51": 0.072808481,
+        "52": 0.046330529,
+        "53": 0.020426855,
+        "54": 0.001180721,
+        "55": 0.00252621,
+        "56": 0.188011802,
+        "57": 0.005111678,
+        "58": 0.002502944,
+        "59": 0.002344295,
+        "60": 0.004049845,
+        "61": 0.003360131,
+        "62": 0.001458487,
+        "63": 0.00183606,
+        "64": 0.36973031,
+        "65": 0.002164451,
+        "66": 0.001950712,
+        "67": 0.000519257,
+        "68": 0.1061286,
+        "69": 0.001210694,
+        "70": 0.002946439,
+        "71": 0.000407365,
+        "72": 0.007057586,
+        "73": 0.001046366,
+        "74": 0.001173458,
+        "75": 0.051552646,
+        "76": 0.003593988,
+        "77": 0.007777747,
+        "78": 0.000699321,
+        "79": 0.001712647,
+        "80": 0.002782973,
+        "81": 0.074287255,
+        "82": 0.000806541,
+        "83": 8.681043718,
+        "84": 3670.690841486,
+        "85": 504.929502978,
+        "86": 100.678770444,
+        "87": 21.750936116,
+        "88": 71.723404415,
+        "89": 19.585181447,
+        "90": 228.422189767
+      },
+      "statistics": {
+        "active_subnets": 90,
+        "avg_emission_rate": 51.428205669755556,
+        "max_emission_rate": 3670.690841486,
+        "min_emission_rate": 0.000407365,
+        "total_emission_rate": 4628.538510278
+      }
+    },
+    {
+      "sample_index": 6,
+      "requested_time": "2025-04-13T06:00:00+00:00",
+      "block_timestamp_utc": "2025-04-13T06:00:00.001000+00:00",
+      "closest_block": 5340432,
+      "emissions": {
+        "1": 0.056133681,
+        "2": 0.005920442,
+        "3": 0.118262153,
+        "4": 0.191870968,
+        "5": 0.009074847,
+        "6": 0.008689895,
+        "7": 0.001929799,
+        "8": 0.135856104,
+        "9": 0.01518436,
+        "10": 0.015752413,
+        "11": 0.008000043,
+        "12": 0.003649436,
+        "13": 0.057426508,
+        "14": 0.001132576,
+        "15": 0.001303502,
+        "16": 0.004422386,
+        "17": 0.042889345,
+        "18": 0.008634997,
+        "19": 0.09503453,
+        "20": 0.010496065,
+        "21": 0.005409668,
+        "22": 0.007312906,
+        "23": 0.005373768,
+        "24": 0.004602772,
+        "25": 0.027191972,
+        "26": 0.008138448,
+        "27": 0.002513595,
+        "28": 0.000693831,
+        "29": 0.003331594,
+        "30": 0.007669927,
+        "31": 0.001380922,
+        "32": 0.006317807,
+        "33": 0.015313483,
+        "34": 0.053773626,
+        "35": 0.001501847,
+        "36": 0.002363,
+        "37": 0.008544091,
+        "38": 0.015177955,
+        "39": 0.001326788,
+        "40": 0.004620547,
+        "41": 0.018052567,
+        "42": 0.012239403,
+        "43": 0.020305331,
+        "44": 0.027615949,
+        "45": 0.008915795,
+        "46": 0.004988694,
+        "47": 0.003184405,
+        "48": 0.005902309,
+        "49": 0.001462417,
+        "50": 0.005007944,
+        "51": 0.072787652,
+        "52": 0.046756292,
+        "53": 0.02041649,
+        "54": 0.001180237,
+        "55": 0.002549495,
+        "56": 0.184270836,
+        "57": 0.005071876,
+        "58": 0.002502112,
+        "59": 0.002343469,
+        "60": 0.004049188,
+        "61": 0.003358861,
+        "62": 0.001457928,
+        "63": 0.001834906,
+        "64": 0.370695841,
+        "65": 0.002154854,
+        "66": 0.001944544,
+        "67": 0.000518923,
+        "68": 0.105742438,
+        "69": 0.001210045,
+        "70": 0.002942856,
+        "71": 0.000406723,
+        "72": 0.007053891,
+        "73": 0.001069154,
+        "74": 0.001172675,
+        "75": 0.051437662,
+        "76": 0.003543059,
+        "77": 0.007763597,
+        "78": 0.000698733,
+        "79": 0.001709726,
+        "80": 0.002733455,
+        "81": 0.075303914,
+        "82": 0.000804783,
+        "83": 8.681043718,
+        "84": 3622.317337704,
+        "85": 504.929502978,
+        "86": 100.678770444,
+        "87": 21.750936116,
+        "88": 71.723404415,
+        "89": 19.585181447,
+        "90": 235.292916492
+      },
+      "statistics": {
+        "active_subnets": 90,
+        "avg_emission_rate": 50.96698307711111,
+        "max_emission_rate": 3622.317337704,
+        "min_emission_rate": 0.000406723,
+        "total_emission_rate": 4587.02847694
+      }
+    },
+    {
+      "sample_index": 7,
+      "requested_time": "2025-04-13T07:00:00+00:00",
+      "block_timestamp_utc": "2025-04-13T07:00:00+00:00",
+      "closest_block": 5340732,
+      "emissions": {
+        "1": 0.055495824,
+        "2": 0.006026073,
+        "3": 0.114203599,
+        "4": 0.198622033,
+        "5": 0.009072137,
+        "6": 0.008680798,
+        "7": 0.001928827,
+        "8": 0.1327362,
+        "9": 0.015155993,
+        "10": 0.015158488,
+        "11": 0.007997335,
+        "12": 0.003647724,
+        "13": 0.056881887,
+        "14": 0.001131488,
+        "15": 0.001302991,
+        "16": 0.004420888,
+        "17": 0.041574813,
+        "18": 0.008906382,
+        "19": 0.095746302,
+        "20": 0.010490016,
+        "21": 0.005406926,
+        "22": 0.007311836,
+        "23": 0.005121837,
+        "24": 0.004732717,
+        "25": 0.027528392,
+        "26": 0.008136463,
+        "27": 0.002507391,
+        "28": 0.000690022,
+        "29": 0.003330059,
+        "30": 0.007664675,
+        "31": 0.001383452,
+        "32": 0.006315114,
+        "33": 0.014590394,
+        "34": 0.053751845,
+        "35": 0.001501424,
+        "36": 0.002362332,
+        "37": 0.008546777,
+        "38": 0.014406287,
+        "39": 0.00132628,
+        "40": 0.004623923,
+        "41": 0.017153024,
+        "42": 0.012230865,
+        "43": 0.020259466,
+        "44": 0.026900402,
+        "45": 0.008999902,
+        "46": 0.00498699,
+        "47": 0.002973371,
+        "48": 0.005893705,
+        "49": 0.001461777,
+        "50": 0.005002766,
+        "51": 0.073029589,
+        "52": 0.045649479,
+        "53": 0.020399344,
+        "54": 0.001179755,
+        "55": 0.002545013,
+        "56": 0.17770363,
+        "57": 0.005196093,
+        "58": 0.002500757,
+        "59": 0.002327761,
+        "60": 0.004049862,
+        "61": 0.003357593,
+        "62": 0.001457909,
+        "63": 0.001828272,
+        "64": 0.368624105,
+        "65": 0.002154081,
+        "66": 0.00194372,
+        "67": 0.00051859,
+        "68": 0.102304028,
+        "69": 0.001209468,
+        "70": 0.002941435,
+        "71": 0.000406083,
+        "72": 0.007048959,
+        "73": 0.001084083,
+        "74": 0.001171448,
+        "75": 0.051030359,
+        "76": 0.003533588,
+        "77": 0.007661333,
+        "78": 0.000698146,
+        "79": 0.001672313,
+        "80": 0.002727033,
+        "81": 0.067071602,
+        "82": 0.000805574,
+        "83": 8.681043718,
+        "84": 3804.852028242,
+        "85": 504.929502978,
+        "86": 100.678770444,
+        "87": 20.786135154,
+        "88": 71.723404415,
+        "89": 19.585181447,
+        "90": 284.249622678
+      },
+      "statistics": {
+        "active_subnets": 90,
+        "avg_emission_rate": 53.528086669922224,
+        "max_emission_rate": 3804.852028242,
+        "min_emission_rate": 0.000406083,
+        "total_emission_rate": 4817.527800293
+      }
+    },
+    {
+      "sample_index": 8,
+      "requested_time": "2025-04-13T08:00:00+00:00",
+      "block_timestamp_utc": "2025-04-13T08:00:00+00:00",
+      "closest_block": 5341032,
+      "emissions": {
+        "1": 0.05543488,
+        "2": 0.00601765,
+        "3": 0.116823148,
+        "4": 0.198288685,
+        "5": 0.009065403,
+        "6": 0.00866513,
+        "7": 0.00192755,
+        "8": 0.132399115,
+        "9": 0.015147199,
+        "10": 0.015198246,
+        "11": 0.007991719,
+        "12": 0.003645437,
+        "13": 0.056688093,
+        "14": 0.001130069,
+        "15": 0.001260853,
+        "16": 0.004418637,
+        "17": 0.041544562,
+        "18": 0.008952725,
+        "19": 0.095846372,
+        "20": 0.010644698,
+        "21": 0.00540255,
+        "22": 0.007309209,
+        "23": 0.004825969,
+        "24": 0.004722574,
+        "25": 0.027622971,
+        "26": 0.008136626,
+        "27": 0.002506226,
+        "28": 0.000689487,
+        "29": 0.003327215,
+        "30": 0.007668681,
+        "31": 0.001385989,
+        "32": 0.006312042,
+        "33": 0.014610644,
+        "34": 0.053150211,
+        "35": 0.00150018,
+        "36": 0.002361337,
+        "37": 0.008539827,
+        "38": 0.014378461,
+        "39": 0.001325381,
+        "40": 0.004619918,
+        "41": 0.017203064,
+        "42": 0.012224101,
+        "43": 0.020246809,
+        "44": 0.026727606,
+        "45": 0.009033939,
+        "46": 0.004985274,
+        "47": 0.002629141,
+        "48": 0.005680168,
+        "49": 0.001451984,
+        "50": 0.004949333,
+        "51": 0.072847339,
+        "52": 0.045505251,
+        "53": 0.020386255,
+        "54": 0.001179182,
+        "55": 0.00264366,
+        "56": 0.181958749,
+        "57": 0.005190095,
+        "58": 0.002522188,
+        "59": 0.00232424,
+        "60": 0.004047822,
+        "61": 0.003356012,
+        "62": 0.001457165,
+        "63": 0.00181248,
+        "64": 0.367398816,
+        "65": 0.002152427,
+        "66": 0.001942245,
+        "67": 0.000518647,
+        "68": 0.101969291,
+        "69": 0.001210911,
+        "70": 0.002938542,
+        "71": 0.000405212,
+        "72": 0.007047215,
+        "73": 0.001081869,
+        "74": 0.001169556,
+        "75": 0.051667658,
+        "76": 0.003547671,
+        "77": 0.00764566,
+        "78": 0.00069747,
+        "79": 0.001707277,
+        "80": 0.002719492,
+        "81": 0.068767496,
+        "82": 0.000803562,
+        "83": 8.681043718,
+        "84": 3822.086009934,
+        "85": 504.929502978,
+        "86": 100.678770444,
+        "87": 20.786135154,
+        "88": 71.723404415,
+        "89": 19.585181447,
+        "90": 282.775430864
+      },
+      "statistics": {
+        "active_subnets": 90,
+        "avg_emission_rate": 53.70325241663333,
+        "max_emission_rate": 3822.086009934,
+        "min_emission_rate": 0.000405212,
+        "total_emission_rate": 4833.292717497
+      }
+    },
+    {
+      "sample_index": 9,
+      "requested_time": "2025-04-13T09:00:00+00:00",
+      "block_timestamp_utc": "2025-04-13T09:00:00.001000+00:00",
+      "closest_block": 5341332,
+      "emissions": {
+        "1": 0.057201103,
+        "2": 0.006039422,
+        "3": 0.119289213,
+        "4": 0.210809319,
+        "5": 0.009062208,
+        "6": 0.008737733,
+        "7": 0.001903789,
+        "8": 0.131691363,
+        "9": 0.015458686,
+        "10": 0.014831649,
+        "11": 0.007988479,
+        "12": 0.003643732,
+        "13": 0.058384625,
+        "14": 0.001128989,
+        "15": 0.001260368,
+        "16": 0.004416901,
+        "17": 0.041565746,
+        "18": 0.008986535,
+        "19": 0.102627743,
+        "20": 0.010721583,
+        "21": 0.005401893,
+        "22": 0.007305077,
+        "23": 0.004755323,
+        "24": 0.004871909,
+        "25": 0.028516293,
+        "26": 0.008167285,
+        "27": 0.002495494,
+        "28": 0.000689259,
+        "29": 0.003325907,
+        "30": 0.007667072,
+        "31": 0.00138829,
+        "32": 0.006307905,
+        "33": 0.015281507,
+        "34": 0.053154275,
+        "35": 0.001499761,
+        "36": 0.00236162,
+        "37": 0.008816669,
+        "38": 0.014262801,
+        "39": 0.001324867,
+        "40": 0.004618343,
+        "41": 0.017184363,
+        "42": 0.012219179,
+        "43": 0.020235258,
+        "44": 0.026739745,
+        "45": 0.009135532,
+        "46": 0.004983797,
+        "47": 0.002587849,
+        "48": 0.005689848,
+        "49": 0.001451363,
+        "50": 0.004940594,
+        "51": 0.075483173,
+        "52": 0.046798307,
+        "53": 0.020385062,
+        "54": 0.001178712,
+        "55": 0.002611257,
+        "56": 0.196106349,
+        "57": 0.005189242,
+        "58": 0.002521349,
+        "59": 0.002321703,
+        "60": 0.004046951,
+        "61": 0.003320727,
+        "62": 0.001456609,
+        "63": 0.001811395,
+        "64": 0.390667879,
+        "65": 0.002151457,
+        "66": 0.001941424,
+        "67": 0.000518315,
+        "68": 0.106381403,
+        "69": 0.001210434,
+        "70": 0.002935943,
+        "71": 0.000404553,
+        "72": 0.007043539,
+        "73": 0.001080725,
+        "74": 0.001169396,
+        "75": 0.05393769,
+        "76": 0.003548199,
+        "77": 0.007630198,
+        "78": 0.000696886,
+        "79": 0.001747308,
+        "80": 0.002713149,
+        "81": 0.07484914,
+        "82": 0.000801824,
+        "83": 8.681327772,
+        "84": 3822.086009934,
+        "85": 504.929502978,
+        "86": 100.678770444,
+        "87": 20.786135154,
+        "88": 71.015534508,
+        "89": 19.338943344,
+        "90": 354.511553235
+      },
+      "statistics": {
+        "active_subnets": 90,
+        "avg_emission_rate": 54.49061739923333,
+        "max_emission_rate": 3822.086009934,
+        "min_emission_rate": 0.000404553,
+        "total_emission_rate": 4904.155565931
+      }
+    },
+    {
+      "sample_index": 10,
+      "requested_time": "2025-04-13T10:00:00+00:00",
+      "block_timestamp_utc": "2025-04-13T10:00:00+00:00",
+      "closest_block": 5341632,
+      "emissions": {
+        "1": 0.057405181,
+        "2": 0.006420349,
+        "3": 0.119872443,
+        "4": 0.210235683,
+        "5": 0.009058906,
+        "6": 0.008658567,
+        "7": 0.00190284,
+        "8": 0.131685397,
+        "9": 0.015405523,
+        "10": 0.01473322,
+        "11": 0.007985783,
+        "12": 0.003642029,
+        "13": 0.058115483,
+        "14": 0.001128059,
+        "15": 0.001259884,
+        "16": 0.004415167,
+        "17": 0.041659472,
+        "18": 0.008996214,
+        "19": 0.103224249,
+        "20": 0.010690926,
+        "21": 0.005394987,
+        "22": 0.007304831,
+        "23": 0.00476241,
+        "24": 0.004868536,
+        "25": 0.028347436,
+        "26": 0.008140565,
+        "27": 0.002451498,
+        "28": 0.000688003,
+        "29": 0.003324033,
+        "30": 0.007664,
+        "31": 0.001411059,
+        "32": 0.006345846,
+        "33": 0.01528114,
+        "34": 0.052974788,
+        "35": 0.001483418,
+        "36": 0.002357177,
+        "37": 0.008790147,
+        "38": 0.014345754,
+        "39": 0.001324353,
+        "40": 0.004616636,
+        "41": 0.017170398,
+        "42": 0.012214265,
+        "43": 0.020223729,
+        "44": 0.026813985,
+        "45": 0.00913137,
+        "46": 0.004982096,
+        "47": 0.002517497,
+        "48": 0.005688636,
+        "49": 0.001450722,
+        "50": 0.004938292,
+        "51": 0.075822594,
+        "52": 0.045491017,
+        "53": 0.020372001,
+        "54": 0.001178231,
+        "55": 0.00261145,
+        "56": 0.195818943,
+        "57": 0.005231951,
+        "58": 0.002520511,
+        "59": 0.002320961,
+        "60": 0.004046111,
+        "61": 0.003319636,
+        "62": 0.001473605,
+        "63": 0.001805521,
+        "64": 0.395819804,
+        "65": 0.002147933,
+        "66": 0.001940461,
+        "67": 0.000517984,
+        "68": 0.10639768,
+        "69": 0.001210463,
+        "70": 0.002933827,
+        "71": 0.000406148,
+        "72": 0.007039869,
+        "73": 0.001083841,
+        "74": 0.001159428,
+        "75": 0.053820396,
+        "76": 0.003577872,
+        "77": 0.007643261,
+        "78": 0.000696303,
+        "79": 0.001751406,
+        "80": 0.002706844,
+        "81": 0.074367862,
+        "82": 0.000800096,
+        "83": 8.681327772,
+        "84": 3687.548822223,
+        "85": 504.929502978,
+        "86": 100.678770444,
+        "87": 20.786135154,
+        "88": 72.641476898,
+        "89": 19.680052491,
+        "90": 215.939925651
+      },
+      "statistics": {
+        "active_subnets": 90,
+        "avg_emission_rate": 51.47797278447778,
+        "max_emission_rate": 3687.548822223,
+        "min_emission_rate": 0.000406148,
+        "total_emission_rate": 4633.017550603
+      }
+    },
+    {
+      "sample_index": 11,
+      "requested_time": "2025-04-13T11:00:00+00:00",
+      "block_timestamp_utc": "2025-04-13T11:00:00+00:00",
+      "closest_block": 5341932,
+      "emissions": {
+        "1": 0.057409384,
+        "2": 0.005967898,
+        "3": 0.120500759,
+        "4": 0.207661463,
+        "5": 0.009087358,
+        "6": 0.008661946,
+        "7": 0.001901203,
+        "8": 0.13169524,
+        "9": 0.015617551,
+        "10": 0.014727866,
+        "11": 0.007501105,
+        "12": 0.003640329,
+        "13": 0.058149457,
+        "14": 0.001126889,
+        "15": 0.001259396,
+        "16": 0.004413436,
+        "17": 0.041603779,
+        "18": 0.008998515,
+        "19": 0.105048653,
+        "20": 0.010785037,
+        "21": 0.005392267,
+        "22": 0.00730302,
+        "23": 0.004748212,
+        "24": 0.004865972,
+        "25": 0.028509765,
+        "26": 0.008136345,
+        "27": 0.002425888,
+        "28": 0.000687825,
+        "29": 0.003322005,
+        "30": 0.007659789,
+        "31": 0.001412536,
+        "32": 0.006384049,
+        "33": 0.014251397,
+        "34": 0.052842606,
+        "35": 0.001483005,
+        "36": 0.002357539,
+        "37": 0.008791816,
+        "38": 0.014318451,
+        "39": 0.001323841,
+        "40": 0.004614947,
+        "41": 0.017153372,
+        "42": 0.012207209,
+        "43": 0.020196984,
+        "44": 0.026818715,
+        "45": 0.009148765,
+        "46": 0.004978125,
+        "47": 0.002516517,
+        "48": 0.005683091,
+        "49": 0.001453723,
+        "50": 0.005013049,
+        "51": 0.075911593,
+        "52": 0.045520692,
+        "53": 0.020362269,
+        "54": 0.001177751,
+        "55": 0.002611356,
+        "56": 0.189073152,
+        "57": 0.005231932,
+        "58": 0.002519674,
+        "59": 0.002318598,
+        "60": 0.004033433,
+        "61": 0.00337115,
+        "62": 0.001466451,
+        "63": 0.001804181,
+        "64": 0.398971365,
+        "65": 0.0021586,
+        "66": 0.001936831,
+        "67": 0.000517653,
+        "68": 0.099357647,
+        "69": 0.00120921,
+        "70": 0.002927339,
+        "71": 0.000405516,
+        "72": 0.007036084,
+        "73": 0.001082737,
+        "74": 0.00115866,
+        "75": 0.053701971,
+        "76": 0.003571515,
+        "77": 0.007623972,
+        "78": 0.000686782,
+        "79": 0.001801213,
+        "80": 0.002700574,
+        "81": 0.073726859,
+        "82": 0.000773945,
+        "83": 8.681327772,
+        "84": 3764.265253931,
+        "85": 504.929502978,
+        "86": 100.678770444,
+        "87": 20.786135154,
+        "88": 72.641476898,
+        "89": 19.680052491,
+        "90": 222.392007735
+      },
+      "statistics": {
+        "active_subnets": 90,
+        "avg_emission_rate": 52.401922624411114,
+        "max_emission_rate": 3764.265253931,
+        "min_emission_rate": 0.000405516,
+        "total_emission_rate": 4716.173036197
+      }
+    },
+    {
+      "sample_index": 12,
+      "requested_time": "2025-04-13T12:00:00+00:00",
+      "block_timestamp_utc": "2025-04-13T12:00:00+00:00",
+      "closest_block": 5342232,
+      "emissions": {
+        "1": 0.057437344,
+        "2": 0.005957808,
+        "3": 0.118361211,
+        "4": 0.210260615,
+        "5": 0.009068769,
+        "6": 0.008634263,
+        "7": 0.001900315,
+        "8": 0.131744691,
+        "9": 0.015633241,
+        "10": 0.014724822,
+        "11": 0.007471137,
+        "12": 0.003673113,
+        "13": 0.058559311,
+        "14": 0.001125739,
+        "15": 0.001258981,
+        "16": 0.004411897,
+        "17": 0.041669687,
+        "18": 0.008704393,
+        "19": 0.103827765,
+        "20": 0.010778767,
+        "21": 0.005391113,
+        "22": 0.007299678,
+        "23": 0.004754888,
+        "24": 0.004871044,
+        "25": 0.028367757,
+        "26": 0.008349433,
+        "27": 0.002427239,
+        "28": 0.000687683,
+        "29": 0.003320123,
+        "30": 0.007659642,
+        "31": 0.001414878,
+        "32": 0.006381326,
+        "33": 0.014118581,
+        "34": 0.052880345,
+        "35": 0.001455488,
+        "36": 0.002359532,
+        "37": 0.008835185,
+        "38": 0.014838576,
+        "39": 0.00132386,
+        "40": 0.00461326,
+        "41": 0.01714311,
+        "42": 0.012206496,
+        "43": 0.020189437,
+        "44": 0.026675129,
+        "45": 0.009158934,
+        "46": 0.003408498,
+        "47": 0.002515538,
+        "48": 0.005679107,
+        "49": 0.001453081,
+        "50": 0.004915134,
+        "51": 0.076129048,
+        "52": 0.045569014,
+        "53": 0.020364148,
+        "54": 0.001177272,
+        "55": 0.00260698,
+        "56": 0.192689908,
+        "57": 0.005317362,
+        "58": 0.002518837,
+        "59": 0.002314834,
+        "60": 0.003931666,
+        "61": 0.003369954,
+        "62": 0.001460945,
+        "63": 0.001802726,
+        "64": 0.396338251,
+        "65": 0.002155933,
+        "66": 0.001935847,
+        "67": 0.000517544,
+        "68": 0.099799775,
+        "69": 0.001208636,
+        "70": 0.002928262,
+        "71": 0.000404887,
+        "72": 0.007032425,
+        "73": 0.001081637,
+        "74": 0.001157635,
+        "75": 0.053230604,
+        "76": 0.003576026,
+        "77": 0.00760358,
+        "78": 0.000686213,
+        "79": 0.001836271,
+        "80": 0.002694339,
+        "81": 0.073225742,
+        "82": 0.000778067,
+        "83": 8.681327772,
+        "84": 3862.410297722,
+        "85": 504.929502978,
+        "86": 100.678770444,
+        "87": 20.786135154,
+        "88": 72.641476898,
+        "89": 19.680052491,
+        "90": 280.345993222,
+        "91": 69.388337334
+      },
+      "statistics": {
+        "active_subnets": 91,
+        "avg_emission_rate": 54.30394765216484,
+        "max_emission_rate": 3862.410297722,
+        "min_emission_rate": 0.000404887,
+        "total_emission_rate": 4941.659236347
+      }
+    },
+    {
+      "sample_index": 13,
+      "requested_time": "2025-04-13T13:00:00+00:00",
+      "block_timestamp_utc": "2025-04-13T13:00:00+00:00",
+      "closest_block": 5342532,
+      "emissions": {
+        "1": 0.057008587,
+        "2": 0.005998083,
+        "3": 0.118658182,
+        "4": 0.209764976,
+        "5": 0.009064607,
+        "6": 0.008662374,
+        "7": 0.00189816,
+        "8": 0.132101357,
+        "9": 0.015639291,
+        "10": 0.014855119,
+        "11": 0.007513628,
+        "12": 0.003674783,
+        "13": 0.058612272,
+        "14": 0.001108044,
+        "15": 0.001258499,
+        "16": 0.004410169,
+        "17": 0.041680832,
+        "18": 0.008819063,
+        "19": 0.103417462,
+        "20": 0.010813373,
+        "21": 0.00540966,
+        "22": 0.007322697,
+        "23": 0.00474696,
+        "24": 0.004928388,
+        "25": 0.028258684,
+        "26": 0.008334178,
+        "27": 0.002428668,
+        "28": 0.000687508,
+        "29": 0.003318247,
+        "30": 0.00766204,
+        "31": 0.001418371,
+        "32": 0.006378607,
+        "33": 0.014176068,
+        "34": 0.052865958,
+        "35": 0.001455086,
+        "36": 0.002361873,
+        "37": 0.008853171,
+        "38": 0.01400141,
+        "39": 0.001323356,
+        "40": 0.004580846,
+        "41": 0.01710914,
+        "42": 0.012205886,
+        "43": 0.020205061,
+        "44": 0.026511983,
+        "45": 0.009194057,
+        "46": 0.003437156,
+        "47": 0.00251456,
+        "48": 0.005682606,
+        "49": 0.00145244,
+        "50": 0.004916061,
+        "51": 0.075420067,
+        "52": 0.045807207,
+        "53": 0.020358977,
+        "54": 0.001176794,
+        "55": 0.00259953,
+        "56": 0.199149744,
+        "57": 0.005297199,
+        "58": 0.002518002,
+        "59": 0.002316503,
+        "60": 0.003928287,
+        "61": 0.003368792,
+        "62": 0.001454836,
+        "63": 0.001819634,
+        "64": 0.400535006,
+        "65": 0.002154963,
+        "66": 0.001935033,
+        "67": 0.000517214,
+        "68": 0.095937314,
+        "69": 0.001207991,
+        "70": 0.002915856,
+        "71": 0.00040426,
+        "72": 0.007034222,
+        "73": 0.001080539,
+        "74": 0.001156889,
+        "75": 0.054338226,
+        "76": 0.003557875,
+        "77": 0.007552361,
+        "78": 0.000685646,
+        "79": 0.001833065,
+        "80": 0.002688141,
+        "81": 0.073891356,
+        "82": 0.000776425,
+        "83": 8.681327772,
+        "84": 3432.070814524,
+        "85": 511.299786097,
+        "86": 100.678770444,
+        "87": 20.786135154,
+        "88": 72.641476898,
+        "89": 19.680052491,
+        "90": 233.530019946,
+        "91": 84.137162588
+      },
+      "statistics": {
+        "active_subnets": 91,
+        "avg_emission_rate": 49.292633664340656,
+        "max_emission_rate": 3432.070814524,
+        "min_emission_rate": 0.00040426,
+        "total_emission_rate": 4485.629663455
+      }
+    },
+    {
+      "sample_index": 14,
+      "requested_time": "2025-04-13T14:00:00+00:00",
+      "block_timestamp_utc": "2025-04-13T14:00:00+00:00",
+      "closest_block": 5342832,
+      "emissions": {
+        "1": 0.056380829,
+        "2": 0.00604872,
+        "3": 0.118463552,
+        "4": 0.206435287,
+        "5": 0.009060989,
+        "6": 0.00868443,
+        "7": 0.001888821,
+        "8": 0.133379105,
+        "9": 0.015624384,
+        "10": 0.01483451,
+        "11": 0.007510916,
+        "12": 0.003661425,
+        "13": 0.058611318,
+        "14": 0.001106818,
+        "15": 0.001247699,
+        "16": 0.004407073,
+        "17": 0.041570007,
+        "18": 0.00952124,
+        "19": 0.102763687,
+        "20": 0.010823689,
+        "21": 0.005409192,
+        "22": 0.007319346,
+        "23": 0.004719259,
+        "24": 0.004750332,
+        "25": 0.028213722,
+        "26": 0.008391029,
+        "27": 0.002427368,
+        "28": 0.00068733,
+        "29": 0.00331174,
+        "30": 0.007658882,
+        "31": 0.001418893,
+        "32": 0.006375891,
+        "33": 0.014211006,
+        "34": 0.053105354,
+        "35": 0.001441096,
+        "36": 0.002360737,
+        "37": 0.008854752,
+        "38": 0.012656069,
+        "39": 0.001322857,
+        "40": 0.004579179,
+        "41": 0.017089405,
+        "42": 0.012200992,
+        "43": 0.020194382,
+        "44": 0.02655618,
+        "45": 0.009189836,
+        "46": 0.003409101,
+        "47": 0.002513584,
+        "48": 0.005677303,
+        "49": 0.001451799,
+        "50": 0.004914011,
+        "51": 0.075365407,
+        "52": 0.046005901,
+        "53": 0.020350007,
+        "54": 0.001176316,
+        "55": 0.002560684,
+        "56": 0.199111089,
+        "57": 0.00529845,
+        "58": 0.002517076,
+        "59": 0.002315697,
+        "60": 0.003928513,
+        "61": 0.00335514,
+        "62": 0.001507827,
+        "63": 0.001818372,
+        "64": 0.398607572,
+        "65": 0.002170004,
+        "66": 0.00193422,
+        "67": 0.000516886,
+        "68": 0.094775759,
+        "69": 0.001207164,
+        "70": 0.002912575,
+        "71": 0.000403635,
+        "72": 0.007027848,
+        "73": 0.0010796,
+        "74": 0.001155818,
+        "75": 0.053434972,
+        "76": 0.00355139,
+        "77": 0.007535694,
+        "78": 0.00068508,
+        "79": 0.001830165,
+        "80": 0.002682433,
+        "81": 0.071005529,
+        "82": 0.00077502,
+        "83": 8.681327772,
+        "84": 3438.177149663,
+        "85": 512.611664156,
+        "86": 100.894643667,
+        "87": 20.786135154,
+        "88": 73.631796387,
+        "89": 19.680052491,
+        "90": 177.588948348,
+        "91": 31.635460002
+      },
+      "statistics": {
+        "active_subnets": 91,
+        "avg_emission_rate": 48.19560675394506,
+        "max_emission_rate": 3438.177149663,
+        "min_emission_rate": 0.000403635,
+        "total_emission_rate": 4385.800214609
+      }
+    },
+    {
+      "sample_index": 15,
+      "requested_time": "2025-04-13T15:00:00+00:00",
+      "block_timestamp_utc": "2025-04-13T15:00:00+00:00",
+      "closest_block": 5343132,
+      "emissions": {
+        "1": 0.056542649,
+        "2": 0.006041021,
+        "3": 0.117458416,
+        "4": 0.205954967,
+        "5": 0.009034217,
+        "6": 0.008576751,
+        "7": 0.001887832,
+        "8": 0.133774094,
+        "9": 0.015584059,
+        "10": 0.014815159,
+        "11": 0.007509759,
+        "12": 0.003659717,
+        "13": 0.058360798,
+        "14": 0.001105654,
+        "15": 0.001247224,
+        "16": 0.004400893,
+        "17": 0.042424932,
+        "18": 0.009717509,
+        "19": 0.101848185,
+        "20": 0.010814068,
+        "21": 0.005417667,
+        "22": 0.007326947,
+        "23": 0.004675467,
+        "24": 0.004741527,
+        "25": 0.027912764,
+        "26": 0.008374672,
+        "27": 0.002426638,
+        "28": 0.00066774,
+        "29": 0.003309865,
+        "30": 0.007654779,
+        "31": 0.001400625,
+        "32": 0.006383398,
+        "33": 0.0163253,
+        "34": 0.053232516,
+        "35": 0.001440703,
+        "36": 0.002359658,
+        "37": 0.008854782,
+        "38": 0.013144004,
+        "39": 0.001322347,
+        "40": 0.004577515,
+        "41": 0.017068385,
+        "42": 0.012196103,
+        "43": 0.020182935,
+        "44": 0.026542506,
+        "45": 0.009203016,
+        "46": 0.003408145,
+        "47": 0.002508199,
+        "48": 0.005670867,
+        "49": 0.001454217,
+        "50": 0.004911963,
+        "51": 0.075343042,
+        "52": 0.04597778,
+        "53": 0.020339488,
+        "54": 0.001175838,
+        "55": 0.002562416,
+        "56": 0.199497192,
+        "57": 0.005227573,
+        "58": 0.002516242,
+        "59": 0.002314884,
+        "60": 0.00392989,
+        "61": 0.00335421,
+        "62": 0.00149684,
+        "63": 0.001811802,
+        "64": 0.399942201,
+        "65": 0.002169026,
+        "66": 0.001933408,
+        "67": 0.000516558,
+        "68": 0.097968164,
+        "69": 0.001204811,
+        "70": 0.002911378,
+        "71": 0.000403013,
+        "72": 0.007023688,
+        "73": 0.001078508,
+        "74": 0.001155552,
+        "75": 0.055732439,
+        "76": 0.004397098,
+        "77": 0.007424228,
+        "78": 0.000684515,
+        "79": 0.001826984,
+        "80": 0.002676733,
+        "81": 0.071648677,
+        "82": 0.000773394,
+        "83": 8.681327772,
+        "84": 3487.226276637,
+        "85": 516.696996236,
+        "86": 100.894643667,
+        "87": 18.286763778,
+        "88": 73.631796387,
+        "89": 17.300190963,
+        "90": 187.657897631,
+        "91": 24.969143919
+      },
+      "statistics": {
+        "active_subnets": 91,
+        "avg_emission_rate": 48.76337920567033,
+        "max_emission_rate": 3487.226276637,
+        "min_emission_rate": 0.000403013,
+        "total_emission_rate": 4437.467507716
+      }
+    },
+    {
+      "sample_index": 16,
+      "requested_time": "2025-04-13T16:00:00+00:00",
+      "block_timestamp_utc": "2025-04-13T16:00:00+00:00",
+      "closest_block": 5343432,
+      "emissions": {
+        "1": 0.056400096,
+        "2": 0.00603329,
+        "3": 0.120950495,
+        "4": 0.205738111,
+        "5": 0.008809904,
+        "6": 0.008576207,
+        "7": 0.001822497,
+        "8": 0.135122568,
+        "9": 0.015540193,
+        "10": 0.014829693,
+        "11": 0.007735118,
+        "12": 0.003658011,
+        "13": 0.058978161,
+        "14": 0.00110455,
+        "15": 0.001244123,
+        "16": 0.004399175,
+        "17": 0.041806059,
+        "18": 0.009897536,
+        "19": 0.100785827,
+        "20": 0.010817591,
+        "21": 0.005415419,
+        "22": 0.007322519,
+        "23": 0.004745717,
+        "24": 0.004741121,
+        "25": 0.026784312,
+        "26": 0.008287799,
+        "27": 0.002421574,
+        "28": 0.00066586,
+        "29": 0.003307855,
+        "30": 0.007643903,
+        "31": 0.001403233,
+        "32": 0.006388914,
+        "33": 0.015625019,
+        "34": 0.053299684,
+        "35": 0.001430768,
+        "36": 0.002352496,
+        "37": 0.008839142,
+        "38": 0.013108351,
+        "39": 0.001321837,
+        "40": 0.004575847,
+        "41": 0.017053775,
+        "42": 0.012191221,
+        "43": 0.020183276,
+        "44": 0.027065659,
+        "45": 0.009188992,
+        "46": 0.003360873,
+        "47": 0.002507228,
+        "48": 0.005668841,
+        "49": 0.001435423,
+        "50": 0.004855427,
+        "51": 0.075410746,
+        "52": 0.044362825,
+        "53": 0.020336944,
+        "54": 0.001175361,
+        "55": 0.002481499,
+        "56": 0.201628106,
+        "57": 0.005222336,
+        "58": 0.002515409,
+        "59": 0.002294279,
+        "60": 0.003927936,
+        "61": 0.003353097,
+        "62": 0.001496285,
+        "63": 0.001810465,
+        "64": 0.40197122,
+        "65": 0.002161341,
+        "66": 0.001932609,
+        "67": 0.000516231,
+        "68": 0.100395456,
+        "69": 0.001204308,
+        "70": 0.002907075,
+        "71": 0.000402394,
+        "72": 0.007020871,
+        "73": 0.001071193,
+        "74": 0.001150148,
+        "75": 0.055398372,
+        "76": 0.003941338,
+        "77": 0.007402003,
+        "78": 0.000679188,
+        "79": 0.001796855,
+        "80": 0.002670635,
+        "81": 0.073355503,
+        "82": 0.000771776,
+        "83": 8.681327772,
+        "84": 3515.81551435,
+        "85": 519.154768737,
+        "86": 100.894643667,
+        "87": 18.286763778,
+        "88": 91.738592709,
+        "89": 17.300190963,
+        "90": 187.657897631,
+        "91": 39.449303279
+      },
+      "statistics": {
+        "active_subnets": 91,
+        "avg_emission_rate": 49.46273854923077,
+        "max_emission_rate": 3515.81551435,
+        "min_emission_rate": 0.000402394,
+        "total_emission_rate": 4501.10920798
+      }
+    },
+    {
+      "sample_index": 17,
+      "requested_time": "2025-04-13T17:00:00+00:00",
+      "block_timestamp_utc": "2025-04-13T17:00:00+00:00",
+      "closest_block": 5343732,
+      "emissions": {
+        "1": 0.056380319,
+        "2": 0.006038015,
+        "3": 0.123914348,
+        "4": 0.206424909,
+        "5": 0.008806317,
+        "6": 0.008657571,
+        "7": 0.001819325,
+        "8": 0.136126811,
+        "9": 0.015519207,
+        "10": 0.014825039,
+        "11": 0.007731292,
+        "12": 0.003656308,
+        "13": 0.058815689,
+        "14": 0.001103478,
+        "15": 0.001238377,
+        "16": 0.004397459,
+        "17": 0.041918613,
+        "18": 0.009901912,
+        "19": 0.100114607,
+        "20": 0.010818927,
+        "21": 0.005413536,
+        "22": 0.00732336,
+        "23": 0.004812498,
+        "24": 0.004753171,
+        "25": 0.026706101,
+        "26": 0.008285856,
+        "27": 0.002419497,
+        "28": 0.000665693,
+        "29": 0.003306017,
+        "30": 0.007641015,
+        "31": 0.001411375,
+        "32": 0.006386198,
+        "33": 0.015632419,
+        "34": 0.053257341,
+        "35": 0.001430378,
+        "36": 0.002352053,
+        "37": 0.008827594,
+        "38": 0.013019763,
+        "39": 0.001321337,
+        "40": 0.004592982,
+        "41": 0.017038173,
+        "42": 0.01225177,
+        "43": 0.020171781,
+        "44": 0.027053593,
+        "45": 0.009233748,
+        "46": 0.003364532,
+        "47": 0.002506259,
+        "48": 0.00566797,
+        "49": 0.001434795,
+        "50": 0.00487095,
+        "51": 0.075052095,
+        "52": 0.043080635,
+        "53": 0.02034708,
+        "54": 0.001168856,
+        "55": 0.002481713,
+        "56": 0.20634201,
+        "57": 0.005211791,
+        "58": 0.002514578,
+        "59": 0.002293006,
+        "60": 0.003929771,
+        "61": 0.003352117,
+        "62": 0.001495717,
+        "63": 0.001809272,
+        "64": 0.402588933,
+        "65": 0.00216055,
+        "66": 0.001931799,
+        "67": 0.000515905,
+        "68": 0.102743194,
+        "69": 0.001203807,
+        "70": 0.002906389,
+        "71": 0.000401777,
+        "72": 0.007017239,
+        "73": 0.001102757,
+        "74": 0.001149214,
+        "75": 0.055153071,
+        "76": 0.003956915,
+        "77": 0.007389435,
+        "78": 0.000678632,
+        "79": 0.001863375,
+        "80": 0.002664571,
+        "81": 0.077262523,
+        "82": 0.000770167,
+        "83": 8.681327772,
+        "84": 3515.81551435,
+        "85": 519.154768737,
+        "86": 100.894643667,
+        "87": 19.852788403,
+        "88": 91.738592709,
+        "89": 17.300190963,
+        "90": 188.107554973,
+        "91": 43.420311877
+      },
+      "statistics": {
+        "active_subnets": 91,
+        "avg_emission_rate": 49.52867684201099,
+        "max_emission_rate": 3515.81551435,
+        "min_emission_rate": 0.000401777,
+        "total_emission_rate": 4507.109592623
+      }
+    },
+    {
+      "sample_index": 18,
+      "requested_time": "2025-04-13T18:00:00+00:00",
+      "block_timestamp_utc": "2025-04-13T18:00:00+00:00",
+      "closest_block": 5344032,
+      "emissions": {
+        "1": 0.057988143,
+        "2": 0.006097963,
+        "3": 0.12612242,
+        "4": 0.208707973,
+        "5": 0.008803405,
+        "6": 0.008621063,
+        "7": 0.001837753,
+        "8": 0.140806649,
+        "9": 0.016147277,
+        "10": 0.01491481,
+        "11": 0.007721403,
+        "12": 0.003662359,
+        "13": 0.058808029,
+        "14": 0.001102467,
+        "15": 0.001237751,
+        "16": 0.004395746,
+        "17": 0.041151687,
+        "18": 0.009890022,
+        "19": 0.100414481,
+        "20": 0.010911957,
+        "21": 0.00541089,
+        "22": 0.00731945,
+        "23": 0.004915833,
+        "24": 0.004747296,
+        "25": 0.027181095,
+        "26": 0.007927381,
+        "27": 0.002443852,
+        "28": 0.000665526,
+        "29": 0.003304199,
+        "30": 0.007710888,
+        "31": 0.001405344,
+        "32": 0.006383629,
+        "33": 0.015694376,
+        "34": 0.053341979,
+        "35": 0.00142999,
+        "36": 0.002409834,
+        "37": 0.008869158,
+        "38": 0.013085053,
+        "39": 0.001320828,
+        "40": 0.004616426,
+        "41": 0.017103025,
+        "42": 0.01230851,
+        "43": 0.020191665,
+        "44": 0.027108945,
+        "45": 0.009321246,
+        "46": 0.003363628,
+        "47": 0.002505291,
+        "48": 0.005728838,
+        "49": 0.001434168,
+        "50": 0.004902473,
+        "51": 0.075093387,
+        "52": 0.043046411,
+        "53": 0.020378963,
+        "54": 0.001196442,
+        "55": 0.002483652,
+        "56": 0.201413503,
+        "57": 0.005239752,
+        "58": 0.002513797,
+        "59": 0.002317632,
+        "60": 0.003928541,
+        "61": 0.003383057,
+        "62": 0.001489627,
+        "63": 0.001808318,
+        "64": 0.403587395,
+        "65": 0.002159581,
+        "66": 0.001930991,
+        "67": 0.000515571,
+        "68": 0.104611351,
+        "69": 0.001203102,
+        "70": 0.002902244,
+        "71": 0.000401162,
+        "72": 0.007013612,
+        "73": 0.001103896,
+        "74": 0.001149777,
+        "75": 0.056928578,
+        "76": 0.003930982,
+        "77": 0.007383021,
+        "78": 0.000678077,
+        "79": 0.001837798,
+        "80": 0.002658542,
+        "81": 0.078617138,
+        "82": 0.000768566,
+        "83": 8.681327772,
+        "84": 2389.460133756,
+        "85": 519.154768737,
+        "86": 100.894643667,
+        "87": 20.475099317,
+        "88": 71.116516816,
+        "89": 17.300190963,
+        "90": 161.70811991,
+        "91": 50.535953387
+      },
+      "statistics": {
+        "active_subnets": 91,
+        "avg_emission_rate": 36.71960354906593,
+        "max_emission_rate": 2389.460133756,
+        "min_emission_rate": 0.000401162,
+        "total_emission_rate": 3341.4839229649997
+      }
+    },
+    {
+      "sample_index": 19,
+      "requested_time": "2025-04-13T19:00:00+00:00",
+      "block_timestamp_utc": "2025-04-13T19:00:00.001000+00:00",
+      "closest_block": 5344332,
+      "emissions": {
+        "1": 0.058050245,
+        "2": 0.006088392,
+        "3": 0.125479899,
+        "4": 0.209091174,
+        "5": 0.008775849,
+        "6": 0.008621135,
+        "7": 0.001836683,
+        "8": 0.141753378,
+        "9": 0.016129838,
+        "10": 0.015087327,
+        "11": 0.007718856,
+        "12": 0.003659212,
+        "13": 0.058866296,
+        "14": 0.00110098,
+        "15": 0.001237283,
+        "16": 0.004394434,
+        "17": 0.041285907,
+        "18": 0.009754788,
+        "19": 0.100474519,
+        "20": 0.01115739,
+        "21": 0.005409105,
+        "22": 0.007315634,
+        "23": 0.004928949,
+        "24": 0.004818285,
+        "25": 0.027241776,
+        "26": 0.007863938,
+        "27": 0.002441588,
+        "28": 0.000665359,
+        "29": 0.00330296,
+        "30": 0.007707256,
+        "31": 0.001402594,
+        "32": 0.006380921,
+        "33": 0.015681761,
+        "34": 0.053292936,
+        "35": 0.001410657,
+        "36": 0.002409443,
+        "37": 0.008862038,
+        "38": 0.013025084,
+        "39": 0.001320321,
+        "40": 0.004626577,
+        "41": 0.017173388,
+        "42": 0.012421127,
+        "43": 0.020184467,
+        "44": 0.027279756,
+        "45": 0.00926038,
+        "46": 0.003364106,
+        "47": 0.002504324,
+        "48": 0.005726505,
+        "49": 0.001433541,
+        "50": 0.004899165,
+        "51": 0.075179057,
+        "52": 0.043568939,
+        "53": 0.020370749,
+        "54": 0.001195954,
+        "55": 0.00248412,
+        "56": 0.2049359,
+        "57": 0.005225489,
+        "58": 0.002512967,
+        "59": 0.002330158,
+        "60": 0.003927126,
+        "61": 0.003382009,
+        "62": 0.001489047,
+        "63": 0.001807112,
+        "64": 0.402706872,
+        "65": 0.002153137,
+        "66": 0.001930183,
+        "67": 0.000515246,
+        "68": 0.10520194,
+        "69": 0.001202438,
+        "70": 0.00290025,
+        "71": 0.00040055,
+        "72": 0.007009845,
+        "73": 0.00110252,
+        "74": 0.001149043,
+        "75": 0.056332054,
+        "76": 0.00390191,
+        "77": 0.007480385,
+        "78": 0.000677523,
+        "79": 0.001834618,
+        "80": 0.002733529,
+        "81": 0.079997276,
+        "82": 0.000766973,
+        "83": 8.681327772,
+        "84": 2707.279851568,
+        "85": 501.849679884,
+        "86": 100.894643667,
+        "87": 20.475099317,
+        "88": 71.116516816,
+        "89": 15.102394264,
+        "90": 152.260002897,
+        "91": 48.118032572
+      },
+      "statistics": {
+        "active_subnets": 91,
+        "avg_emission_rate": 39.86748210112088,
+        "max_emission_rate": 2707.279851568,
+        "min_emission_rate": 0.00040055,
+        "total_emission_rate": 3627.940871202
+      }
+    },
+    {
+      "sample_index": 20,
+      "requested_time": "2025-04-13T20:00:00+00:00",
+      "block_timestamp_utc": "2025-04-13T20:00:00+00:00",
+      "closest_block": 5344632,
+      "emissions": {
+        "1": 0.05825,
+        "2": 0.00591132,
+        "3": 0.128548803,
+        "4": 0.211301128,
+        "5": 0.008772722,
+        "6": 0.008571231,
+        "7": 0.001836592,
+        "8": 0.143786418,
+        "9": 0.016035457,
+        "10": 0.015573448,
+        "11": 0.007717643,
+        "12": 0.003658894,
+        "13": 0.05886356,
+        "14": 0.001099886,
+        "15": 0.00123677,
+        "16": 0.004396932,
+        "17": 0.041265193,
+        "18": 0.009614701,
+        "19": 0.102055864,
+        "20": 0.011326708,
+        "21": 0.005407309,
+        "22": 0.007311948,
+        "23": 0.004927059,
+        "24": 0.004779781,
+        "25": 0.027158018,
+        "26": 0.007855766,
+        "27": 0.002440849,
+        "28": 0.000665193,
+        "29": 0.003301275,
+        "30": 0.007704224,
+        "31": 0.001409241,
+        "32": 0.006378215,
+        "33": 0.016100704,
+        "34": 0.053068407,
+        "35": 0.001410276,
+        "36": 0.002400866,
+        "37": 0.009058257,
+        "38": 0.012871204,
+        "39": 0.001319767,
+        "40": 0.00465957,
+        "41": 0.017181029,
+        "42": 0.012444189,
+        "43": 0.020169084,
+        "44": 0.027196957,
+        "45": 0.009281788,
+        "46": 0.00336349,
+        "47": 0.002503359,
+        "48": 0.005720946,
+        "49": 0.001432916,
+        "50": 0.004879277,
+        "51": 0.075092872,
+        "52": 0.044427309,
+        "53": 0.020362483,
+        "54": 0.001195466,
+        "55": 0.002481334,
+        "56": 0.209414309,
+        "57": 0.005110367,
+        "58": 0.002510194,
+        "59": 0.00232985,
+        "60": 0.003925727,
+        "61": 0.00337999,
+        "62": 0.001489526,
+        "63": 0.00180432,
+        "64": 0.404786516,
+        "65": 0.002152182,
+        "66": 0.001929377,
+        "67": 0.000514922,
+        "68": 0.105091005,
+        "69": 0.001201873,
+        "70": 0.002897895,
+        "71": 0.000485349,
+        "72": 0.00700623,
+        "73": 0.001104711,
+        "74": 0.00114572,
+        "75": 0.056010811,
+        "76": 0.004230434,
+        "77": 0.00747168,
+        "78": 0.000677073,
+        "79": 0.001831796,
+        "80": 0.002727379,
+        "81": 0.0778543,
+        "82": 0.000721502,
+        "83": 8.681327772,
+        "84": 2613.696435756,
+        "85": 534.53892009,
+        "86": 93.323783737,
+        "87": 10.665064971,
+        "88": 60.124496008,
+        "89": 14.132452328,
+        "90": 152.532944961,
+        "91": 54.812266454
+      },
+      "statistics": {
+        "active_subnets": 91,
+        "avg_emission_rate": 38.952585503439565,
+        "max_emission_rate": 2613.696435756,
+        "min_emission_rate": 0.000485349,
+        "total_emission_rate": 3544.685280813
+      }
+    },
+    {
+      "sample_index": 21,
+      "requested_time": "2025-04-13T21:00:00+00:00",
+      "block_timestamp_utc": "2025-04-13T21:00:00+00:00",
+      "closest_block": 5344932,
+      "emissions": {
+        "1": 0.057930803,
+        "2": 0.005846472,
+        "3": 0.130036879,
+        "4": 0.213402144,
+        "5": 0.008774618,
+        "6": 0.008493032,
+        "7": 0.001835198,
+        "8": 0.141598039,
+        "9": 0.016024337,
+        "10": 0.015945315,
+        "11": 0.00771511,
+        "12": 0.003657325,
+        "13": 0.058794263,
+        "14": 0.001093735,
+        "15": 0.001236389,
+        "16": 0.004395329,
+        "17": 0.041129697,
+        "18": 0.009547672,
+        "19": 0.102923897,
+        "20": 0.011296211,
+        "21": 0.005404579,
+        "22": 0.007308444,
+        "23": 0.004928349,
+        "24": 0.004776992,
+        "25": 0.027040806,
+        "26": 0.007892218,
+        "27": 0.002440116,
+        "28": 0.000661725,
+        "29": 0.003299474,
+        "30": 0.007701354,
+        "31": 0.001417327,
+        "32": 0.006377727,
+        "33": 0.016501276,
+        "34": 0.053152749,
+        "35": 0.001409895,
+        "36": 0.002399765,
+        "37": 0.009076375,
+        "38": 0.012916532,
+        "39": 0.001319261,
+        "40": 0.004660232,
+        "41": 0.017098105,
+        "42": 0.012444829,
+        "43": 0.020156137,
+        "44": 0.027465244,
+        "45": 0.009360227,
+        "46": 0.003364118,
+        "47": 0.002500824,
+        "48": 0.005721273,
+        "49": 0.001432291,
+        "50": 0.004854505,
+        "51": 0.075502077,
+        "52": 0.04440126,
+        "53": 0.020299377,
+        "54": 0.001194979,
+        "55": 0.002481397,
+        "56": 0.221546457,
+        "57": 0.005118492,
+        "58": 0.002509367,
+        "59": 0.00232904,
+        "60": 0.003923853,
+        "61": 0.003380244,
+        "62": 0.001488888,
+        "63": 0.001801579,
+        "64": 0.40152164,
+        "65": 0.002150699,
+        "66": 0.001928571,
+        "67": 0.000514598,
+        "68": 0.104673902,
+        "69": 0.001201373,
+        "70": 0.002896594,
+        "71": 0.000484605,
+        "72": 0.007002621,
+        "73": 0.001103588,
+        "74": 0.001144991,
+        "75": 0.05590516,
+        "76": 0.004228803,
+        "77": 0.007459303,
+        "78": 0.000676522,
+        "79": 0.001805994,
+        "80": 0.002700817,
+        "81": 0.077047263,
+        "82": 0.000704102,
+        "83": 8.681327772,
+        "84": 2613.696435756,
+        "85": 527.733532057,
+        "86": 93.323783737,
+        "87": 10.665064971,
+        "88": 60.124496008,
+        "89": 14.132452328,
+        "90": 180.009361774,
+        "91": 53.884490571
+      },
+      "statistics": {
+        "active_subnets": 91,
+        "avg_emission_rate": 39.169657498285716,
+        "max_emission_rate": 2613.696435756,
+        "min_emission_rate": 0.000484605,
+        "total_emission_rate": 3564.4388323440003
+      }
+    },
+    {
+      "sample_index": 22,
+      "requested_time": "2025-04-13T22:00:00+00:00",
+      "block_timestamp_utc": "2025-04-13T22:00:00.001000+00:00",
+      "closest_block": 5345232,
+      "emissions": {
+        "1": 0.057828611,
+        "2": 0.005512058,
+        "3": 0.142519407,
+        "4": 0.213264331,
+        "5": 0.008771802,
+        "6": 0.008602827,
+        "7": 0.001832945,
+        "8": 0.142604482,
+        "9": 0.016042331,
+        "10": 0.015919536,
+        "11": 0.007706913,
+        "12": 0.00365563,
+        "13": 0.05884044,
+        "14": 0.001092538,
+        "15": 0.001227107,
+        "16": 0.004393858,
+        "17": 0.042051078,
+        "18": 0.008952271,
+        "19": 0.10531658,
+        "20": 0.01128417,
+        "21": 0.005413865,
+        "22": 0.007316206,
+        "23": 0.004918915,
+        "24": 0.004768563,
+        "25": 0.026765879,
+        "26": 0.007918432,
+        "27": 0.002439021,
+        "28": 0.00066156,
+        "29": 0.003297683,
+        "30": 0.007697732,
+        "31": 0.001412536,
+        "32": 0.006375717,
+        "33": 0.017717014,
+        "34": 0.052964455,
+        "35": 0.001409515,
+        "36": 0.002398666,
+        "37": 0.009150043,
+        "38": 0.012938451,
+        "39": 0.001300233,
+        "40": 0.004645485,
+        "41": 0.017113769,
+        "42": 0.012446,
+        "43": 0.020165752,
+        "44": 0.027446969,
+        "45": 0.010631953,
+        "46": 0.003348156,
+        "47": 0.002563509,
+        "48": 0.005724905,
+        "49": 0.001431668,
+        "50": 0.004852505,
+        "51": 0.075461151,
+        "52": 0.04533088,
+        "53": 0.020325293,
+        "54": 0.001194493,
+        "55": 0.002480426,
+        "56": 0.226662438,
+        "57": 0.005115975,
+        "58": 0.002508541,
+        "59": 0.002328415,
+        "60": 0.003954345,
+        "61": 0.003367192,
+        "62": 0.001488602,
+        "63": 0.001798644,
+        "64": 0.399362641,
+        "65": 0.002149739,
+        "66": 0.00192699,
+        "67": 0.000514275,
+        "68": 0.096818166,
+        "69": 0.001200427,
+        "70": 0.00289393,
+        "71": 0.000483862,
+        "72": 0.006999018,
+        "73": 0.001113481,
+        "74": 0.001144264,
+        "75": 0.055479791,
+        "76": 0.004225052,
+        "77": 0.007337507,
+        "78": 0.000675971,
+        "79": 0.001802909,
+        "80": 0.002694718,
+        "81": 0.074457129,
+        "82": 0.000702714,
+        "83": 8.681327772,
+        "84": 2613.696435756,
+        "85": 527.733532057,
+        "86": 93.323783737,
+        "87": 10.665064971,
+        "88": 61.356451727,
+        "89": 12.583888666,
+        "90": 192.756740739,
+        "91": 53.661845214
+      },
+      "statistics": {
+        "active_subnets": 91,
+        "avg_emission_rate": 39.303931029560445,
+        "max_emission_rate": 2613.696435756,
+        "min_emission_rate": 0.000483862,
+        "total_emission_rate": 3576.6577236900002
+      }
+    },
+    {
+      "sample_index": 23,
+      "requested_time": "2025-04-13T23:00:00+00:00",
+      "block_timestamp_utc": "2025-04-13T23:00:00.001000+00:00",
+      "closest_block": 5345532,
+      "emissions": {
+        "1": 0.0581583,
+        "2": 0.005505611,
+        "3": 0.137923277,
+        "4": 0.213080453,
+        "5": 0.008768685,
+        "6": 0.008586058,
+        "7": 0.001832058,
+        "8": 0.142736261,
+        "9": 0.016482097,
+        "10": 0.016847035,
+        "11": 0.00770438,
+        "12": 0.003653938,
+        "13": 0.05873519,
+        "14": 0.001091401,
+        "15": 0.001226646,
+        "16": 0.004392154,
+        "17": 0.042559117,
+        "18": 0.008663634,
+        "19": 0.104313777,
+        "20": 0.011267732,
+        "21": 0.005412113,
+        "22": 0.007312399,
+        "23": 0.004920764,
+        "24": 0.004766916,
+        "25": 0.026712876,
+        "26": 0.007904337,
+        "27": 0.00243829,
+        "28": 0.000661395,
+        "29": 0.003295905,
+        "30": 0.007683574,
+        "31": 0.001413153,
+        "32": 0.006373658,
+        "33": 0.018374864,
+        "34": 0.052817346,
+        "35": 0.001409135,
+        "36": 0.002397568,
+        "37": 0.009157154,
+        "38": 0.010450189,
+        "39": 0.001299739,
+        "40": 0.004631982,
+        "41": 0.017083335,
+        "42": 0.012436899,
+        "43": 0.020140054,
+        "44": 0.026811732,
+        "45": 0.010735801,
+        "46": 0.00334765,
+        "47": 0.002562512,
+        "48": 0.00572286,
+        "49": 0.001540225,
+        "50": 0.00479356,
+        "51": 0.075416021,
+        "52": 0.045048213,
+        "53": 0.020499461,
+        "54": 0.001194008,
+        "55": 0.002478822,
+        "56": 0.221890497,
+        "57": 0.00511337,
+        "58": 0.002507716,
+        "59": 0.002327607,
+        "60": 0.004017909,
+        "61": 0.003366125,
+        "62": 0.001489106,
+        "63": 0.001797821,
+        "64": 0.391884242,
+        "65": 0.002148781,
+        "66": 0.001926188,
+        "67": 0.000513954,
+        "68": 0.098800354,
+        "69": 0.001199638,
+        "70": 0.002892751,
+        "71": 0.00048312,
+        "72": 0.006992402,
+        "73": 0.001120895,
+        "74": 0.00114349,
+        "75": 0.058767367,
+        "76": 0.00419854,
+        "77": 0.007324296,
+        "78": 0.000675422,
+        "79": 0.001799839,
+        "80": 0.002684259,
+        "81": 0.0763643,
+        "82": 0.000701332,
+        "83": 8.681327772,
+        "84": 2613.696435756,
+        "85": 527.733532057,
+        "86": 93.323783737,
+        "87": 10.665064971,
+        "88": 59.296340014,
+        "89": 12.200774662,
+        "90": 192.756740739,
+        "91": 49.007216493
+      },
+      "statistics": {
+        "active_subnets": 91,
+        "avg_emission_rate": 39.225803514681324,
+        "max_emission_rate": 2613.696435756,
+        "min_emission_rate": 0.00048312,
+        "total_emission_rate": 3569.5481198360003
+      }
     }
+  ],
+  "generated_at": "2025-10-30T06:24:41.430270+00:00",
+  "summary": {
+    "observations": 24,
+    "active_subnets_min": 90,
+    "active_subnets_max": 91,
+    "total_emission_rate_min": 3341.4839229649997,
+    "total_emission_rate_max": 4941.659236347,
+    "total_emission_rate_avg": 4368.056021424583
   }
 }
