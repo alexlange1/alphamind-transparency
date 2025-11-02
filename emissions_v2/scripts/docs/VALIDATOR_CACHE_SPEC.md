@@ -33,17 +33,10 @@ future dividend / staking analysis without re-reading the chain.
      requested day; fall back to binary search when the cache lacks an entry.
    - Fetch the block timestamp for logging/context.
 2. **Validator lookup**
-   - Track the most recent `(netuid, uid, hotkey)` placement for every coldkey.
-   - On the first day (or whenever a prior placement is missing), perform a
-     full scan:
-     - Call `get_all_subnets_info(block=…)` to get the list of netuids.
+   - Perform a full scan for every day:
+     - Call `get_all_subnets_info(block=…)` to list netuids.
      - For each netuid, call `neurons_lite(netuid=…, block=…)` and capture any
        neurons whose `coldkey` is in the tracked set.
-   - On subsequent days, attempt a fast verification:
-     - For each previously discovered netuid, call `neurons_lite` just once and
-       verify the stored uid/coldkey/hotkey pair still matches.
-     - If every tracked coldkey is confirmed, reuse the updated placements.
-     - On any mismatch or missing entry, fall back to the full scan for that day.
 3. **Output**
    - Write one JSON per day with the structure below, including only the
      netuids that contain tracked validators.
@@ -85,11 +78,8 @@ future dividend / staking analysis without re-reading the chain.
 ---
 
 ## Notes
-- The script stores minimal state (the last known placement per coldkey) so it
-  can skip full scans when nothing changes.
-- All network calls occur once per day:
-  - Full scan: 1 `get_all_subnets_info` + `neurons_lite` per netuid.
-  - Fast path: `neurons_lite` only for the netuids discovered previously.
+- Every day triggers a full scan: 1 `get_all_subnets_info` call plus
+  `neurons_lite` for each netuid observed.
 - When no tracked validators are found for a day, the JSON still records the
   block metadata with an empty `validators` map so downstream jobs can detect
   gaps.

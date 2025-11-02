@@ -280,79 +280,11 @@ def perform_full_scan(
     return validators, state
 
 
-def attempt_fast_path(
-    sub: bt.Subtensor,
-    block: int,
-    tracked_coldkeys: Set[str],
-    previous_state: ValidatorState,
-) -> Optional[Tuple[Dict[str, List[ValidatorEntry]], ValidatorState]]:
-    if not previous_state:
-        return None
-    if not tracked_coldkeys.issubset(previous_state.keys()):
-        return None
-
-    validators: Dict[str, List[ValidatorEntry]] = {}
-    new_state: ValidatorState = {}
-
-    netuids = sorted(
-        {
-            info.get("netuid")
-            for info in previous_state.values()
-            if isinstance(info.get("netuid"), int)
-        }
-    )
-    if not netuids:
-        return None
-
-    found: Set[str] = set()
-    for netuid in netuids:
-        if netuid is None:
-            continue
-        matches, placements = collect_netuid_matches(sub, netuid, block, tracked_coldkeys)
-        if matches:
-            validators[str(netuid)] = matches
-        for coldkey, info in placements.items():
-            info_with_netuid = {
-                "netuid": netuid,
-                "uid": info.get("uid"),
-                "hotkey": info.get("hotkey"),
-            }
-            new_state[coldkey] = info_with_netuid
-            found.add(coldkey)
-
-    if not tracked_coldkeys.issubset(found):
-        return None
-
-    # Detect changes (UID/hotkey drift).
-    for coldkey in tracked_coldkeys:
-        prev = previous_state.get(coldkey)
-        curr = new_state.get(coldkey)
-        if curr is None:
-            return None
-        if prev is None:
-            continue
-        prev_uid = prev.get("uid")
-        curr_uid = curr.get("uid")
-        if prev_uid is not None and curr_uid is not None and prev_uid != curr_uid:
-            log(
-                f"UID changed for coldkey {coldkey}: {prev_uid} -> {curr_uid}; triggering full scan.",
-                level="info",
-            )
-            return None
-
-    return validators, new_state
-
-
 def gather_validators(
     sub: bt.Subtensor,
     block: int,
     tracked_coldkeys: Set[str],
-    previous_state: ValidatorState,
 ) -> Tuple[Dict[str, List[ValidatorEntry]], ValidatorState, str]:
-    fast_result = attempt_fast_path(sub, block, tracked_coldkeys, previous_state)
-    if fast_result is not None:
-        validators, state = fast_result
-        return validators, state, "fast"
     validators, state = perform_full_scan(sub, block, tracked_coldkeys)
     return validators, state, "full"
 
@@ -474,7 +406,6 @@ def main() -> None:
 
     sub = get_primary_subtensor(args.network)
 
-    previous_state: ValidatorState = {}
     previous_block: Optional[int] = None
 
     for day in target_days:
@@ -487,7 +418,7 @@ def main() -> None:
         previous_block = block
         timestamp = get_block_timestamp(sub, block)
 
-        validators, previous_state, mode = gather_validators(sub, block, tracked_set, previous_state)
+        validators, _, mode = gather_validators(sub, block, tracked_set)
         total_matches = sum(len(entries) for entries in validators.values())
         log(
             f"{day}: block {block} ({mode} scan) — {total_matches} tracked validators.",
